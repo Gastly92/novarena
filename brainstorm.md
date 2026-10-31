@@ -6,9 +6,9 @@ where the ideas stand, what was ruled out and
 why, and what is still open. When something is
 decided, it moves into a real design doc.
 
-Working title: **Seven Hours**, aboard the ship
-***Lullaby***. Tagline idea: *"One night. Three
-hundred years."*
+The game and the ship are both **unnamed** for
+now. Name ideas are collected under
+[Naming](#naming), with nothing chosen yet.
 
 ---
 
@@ -150,10 +150,10 @@ out.
 
 ## Structure
 
-### Seven hours, seven wakes
+### One night, seven wakes
 
-The title doubles as the structure. For the
-passengers, the voyage is one night's sleep.
+For the passengers, the voyage is one night's
+sleep, and the chapters can follow that night.
 
 - **Seven chapters, one per "hour" of the
   night.** Each chapter is a wake-up: 11 p.m.,
@@ -562,7 +562,8 @@ leaderboard.
 2026 has a lot of Windows 98 / XP nostalgia. The
 UI is an **original** late-90s-style OS (beveled
 grey windows, taskbar, Start button) with its own
-name, logo and sounds, e.g. **"LullabyOS 98"**.
+name, logo and sounds, e.g. **"ShipOS 98"**
+(renamed to match the ship once it has a name).
 Do **not** copy Microsoft's look, logo or startup
 sound (trademark risk).
 
@@ -625,25 +626,30 @@ autocomplete.
 
 ## Naming
 
-- **Title (favourite): *Seven Hours*.** A full
-  night's sleep; gives the seven-wake structure;
-  dawn = arrival. Spell it out (not "7 Hours").
-  It's a plain phrase, so check the App Store and
-  Steam for clashes before settling.
-- **Ship: *Lullaby*.** "Welcome aboard the
-  *Lullaby*."
-- **Tagline:** "One night. Three hundred years."
-- **Also liked:** *Quiet Hours* (when everyone is
+Nothing is decided: the game and the ship stay
+unnamed until the design settles. Candidates so
+far:
+
+- **Title ideas:** *Seven Hours* (a full night's
+  sleep; fits the seven-wake structure, dawn =
+  arrival; spell it out, not "7 Hours"),
+  *Quiet Hours* (when everyone is
   asked to keep it down so others can sleep),
   *Wee Hours*, *Off Hours* (when only maintenance
   is around), *Small Hours*, *Pilot Light*,
   *1024 Sleepers* (1024 passengers; a classic
   computer number).
+- **Ship name ideas:** *Lullaby*, *Slumberline*.
+- **Tagline idea:** "One night. Three hundred
+  years."
+- **Before choosing:** plain phrases are likely
+  taken; check the App Store and Steam for
+  clashes.
 - **Avoid:** *Watchdog* (Watch Dogs), *3 A.M.*
   (horror associations online), *Dark Hours*,
   *Lonely Hours*, *Long Hours*.
 - **Use a codename** for the repo, the app's name
-  in code and the bundle ID (e.g. `lullaby`). The
+  in code and the bundle ID (e.g. `game01`). The
   bundle ID can never change once the app exists
   in App Store Connect; the App Store display
   name can change any time.
