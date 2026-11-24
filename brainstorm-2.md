@@ -35,6 +35,12 @@ Carried over from brainstorm 1:
 4. **Damage previews as ranges** while a
    foe's stats are unknown, exact once they
    are known.
+5. **Single player, against the computer.**
+   Balance is asymmetric and aims at the
+   player's fun, not a competitive meta (the
+   fork's "flavour and fun come before
+   competitive balance"). There is no
+   human opponent to keep things fair for.
 
 Changed:
 
@@ -71,6 +77,17 @@ and is fine.
   own kit).
 - **Collecting them all** is a goal in
   itself.
+- **Traits stack.** Like the fork's innate
+  abilities, a hero can have any number of
+  always-on traits on top of their kit:
+  Gerald might be *Small*, *Brave* and
+  *Fire-wary* at once. Traits are pure
+  upsides (or plain facts, like an
+  immunity), always visible, and some come
+  from upgrades. "Trait" is the working
+  name, replacing "innate" (which
+  autocorrects to "inmate"); others to
+  consider: *boon*, *gift*, *mark*.
 - **Hand-made, one of a kind.** Every hero is
   designed by hand: name, look, kit. No
   generated heroes or name variants. A fixed
@@ -301,13 +318,17 @@ Here, defensive heroes are always ready:
 - **Mech warrior**, *Energy Shield*: a
   150-point shield that fully recharges at
   the start of its turn if it took no damage
-  since its last turn. Halo-style.
+  since its last turn. Like the
+  recharging energy shields in the *Halo*
+  games.
 - **Wizard**, *Ward*: blocks special damage
   up to a cap, and every status effect while
   up.
 - **Nano swarm**: repairs a fixed amount of
   HP at the start of each turn.
-- **Halo aura** (from the fork's Halo): no
+- **Damage-cap aura** (the fork's Halo
+  ability, a different idea from *Halo*'s
+  shields): no
   single hit can take more than 40% of the
   max HP of anyone within range, friend or
   foe, so nobody nearby goes down in fewer
@@ -338,6 +359,63 @@ from different worlds.
 A team then needs answers for several kinds
 of defence, and the random foe draw decides
 which.
+
+### Resources: uses, not accuracy
+
+The fork's lesson: accuracy became a price
+(fewer uses), not a coin flip. Here every
+attack hits, and the strong ones cost more of
+the hero's resource. Heroes don't all share
+one resource; each kind fits its hero and
+behaves differently:
+
+| Resource | Example | Behaves like |
+|---|---|---|
+| Mana | Wizard | A pool that refills slowly each turn |
+| Charge | Mech | Spent in bursts, refilled by recharging or arena power |
+| Stamina | Knight | Refills fast if the turn was light |
+| Ammo | Gunner, pickups | A fixed count, no refill mid-fight |
+
+- **Some heroes mix them**: a spellblade
+  might spend stamina on sword work and mana
+  on spells.
+- **Resources give counters too**: an EMP
+  drains charge, a silence locks mana,
+  exhaustion hits stamina. Another layer of
+  the era-against-era matchups.
+- **Cheap, reliable attacks always exist**,
+  so a hero with an empty pool still has a
+  turn (the fork's strong-but-short vs.
+  reliable choice).
+
+### Kinds of status
+
+Borrowed from *Guild Wars 1*: effects on a
+hero come in kinds, each with its own rules,
+and abilities can interact with a kind as a
+whole:
+
+| Kind | What it is | Example |
+|---|---|---|
+| Enchantment | A magic boon, can be dispelled | Ward, Haste |
+| Hex | A magic curse, can be cleansed | Weakness, Doom |
+| Stance | A hero's own posture, one at a time | Brace, Berserk |
+| Condition | A physical state | Poison, Burn, Paralysis |
+
+- **Abilities key off kinds**: "deals more to
+  hexed foes", "strips one enchantment",
+  "while in a stance, …", "spreads every
+  condition on the target".
+- **Not limited to these.** More kinds can
+  join (a mech's *malfunction*, a spirit's
+  *possession*).
+- **The same status can mean different
+  things per hero.** A condition has a
+  default effect, and a hero's traits can
+  change it: a paralysed knight's muscles
+  lock (actions get heavier), while a
+  paralysed mech short-circuits (its charge
+  drains instead).
 
 ### Status effects without dice
 
@@ -476,6 +554,18 @@ in:
 - **They act between turns**, at any moment
   you choose, and don't take a hero's turn.
 
+The fork's **free gimmicks** are the model
+for what the commander can do. Translated:
+
+- **Dynamax → Titan**: a hero's HP doubles
+  for 3 turns. Once per hero per fight.
+- **Z-Move → Finisher**: one attack does 1.5×
+  damage and ignores defences.
+- Possibly **Mega Evolution → a
+  transformation** for the rest of the fight,
+  and **Terastallize → a change of element**
+  (new weaknesses and immunities).
+
 ### What you can see
 
 Everything the fork learned about previews
@@ -545,7 +635,8 @@ above:
   protections with a clear rule are fun and
   easy to plan around. Halo's 40% cap means
   "never fewer than three hits".
-- **Innates vs. chosen abilities.** An innate
+- **Innates (here: traits) vs. chosen
+  abilities.** An innate
   is a pure upside and always visible; a
   chosen ability can carry a real downside.
   Heroes could have both: always-visible
@@ -577,9 +668,24 @@ above:
 
 - **Heroes level up** and **unlock upgrades**
   (new abilities, passives, evolutions).
+- **Stat upgrades are bought outside
+  battle**, like *Fire Emblem: The Sacred
+  Stones*' stat boosters, so maximising one
+  hero is something you work on between
+  fights.
+- **Levels may not raise base stats.** Battle
+  experience could do something else instead
+  (unlock abilities or traits, a mastery, a
+  title); what exactly is open.
 - **Currency** is earned by winning. It buys
-  recruits (heroes on offer) and possibly
-  upgrades or training.
+  recruits (heroes on offer), possibly
+  upgrades or training, and **cosmetic
+  upgrades** (looks for heroes, the home
+  base).
+- **Flair and shinies**: rare cosmetic
+  variants of heroes and their equipment (a
+  gilded sword, a shiny palette), like
+  Pokémon's shinies.
 - **Losing ends the streak**, but something
   persists. With a leveling clan, the obvious
   answer is **the clan itself**: heroes,
@@ -598,13 +704,66 @@ work here:
   same level. Pure tactics and team-building,
   nothing that grinding can fix.
 
+If levels don't raise base stats, the two
+brackets differ less, and this may not be
+needed.
+
+## Game modes ("facilities")
+
+The fork's Battle Frontier has several
+facilities with different rules; the fork has
+converted the Battle Factory and is working
+on the Battle Tower. This game can have more
+than one too. Ideas:
+
+- **Draft**: fight with heroes offered at
+  random, swap in from beaten teams (the
+  Factory).
+- **Clan gauntlet**: your own clan, endless
+  (the Tower).
+- **Boss rush**: champions only.
+- **Trials**: hand-made puzzles, such as "win
+  in 3 turns".
+- **Survival**: no healing between fights.
+
+## Collection
+
+A **bestiary** is a must, like the Pokédex:
+
+- **Every hero and foe you've met**, with
+  what you've learned about them. Once a
+  foe's stats are known, every later preview
+  against them is exact ("knowledge is
+  kept", from
+  [What you can see](#what-you-can-see)).
+- **Heroes you own vs. heroes you've seen**,
+  so collecting them all has a checklist.
+- **Shinies and flair** collected too.
+
 ## Outside of combat
 
-No non-combat gameplay idea has felt fun, so
-there isn't any. What happens between fights
+Combat is the primary system. Between fights
 is clan management, FFTA-style: recruiting,
 leveling, choosing upgrades, picking who to
-bring. That's enough.
+bring.
+
+**Farming and exploring aren't ruled out**,
+just not the main system. No idea for them
+has felt fun yet.
+
+### Home base
+
+A home base, like in some gacha games:
+
+- **Navigated by menus**, not by walking
+  around. Walking from place to place (as in
+  the fork's Battle Frontier) is tedious, and
+  menus are easier to build.
+- **Places in the base are the game's
+  systems**: the arena gate, the barracks
+  (clan), the shop, the training ground,
+  and so on.
+- **Cosmetics** can decorate it.
 
 ## Set aside
 
@@ -617,8 +776,8 @@ bring. That's enough.
   Everyone fights.
 - **Factions or eras to organise the theme.**
   Not needed.
-- **Non-combat activities** (crafting,
-  farming, exploring). None felt fun.
+- **Walking around a hub** (as in the fork's
+  Frontier). Menus instead.
 
 ## Open questions
 
@@ -627,6 +786,16 @@ bring. That's enough.
   timeline maths feels right, how heavy and
   light actions are priced, and the damage
   formula's numbers.
+- **What battle experience does** if levels
+  don't raise base stats.
+- **Which resources exist**, and how each
+  refills.
+- **Which status kinds exist** beyond
+  enchantments, hexes, stances and
+  conditions.
+- **The trait name.**
+- **Which facilities** come first after the
+  main one.
 - **Element list:** which elements exist, and
   how many.
 - **How big fights get**, given every hero
