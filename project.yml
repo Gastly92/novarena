@@ -1,4 +1,4 @@
-name: Sample
+name: Game01
 options:
   bundleIdPrefix: com.gastly92
   deploymentTarget:
@@ -22,7 +22,7 @@ settings:
     SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
     # Translations live in the String
     # Catalog:
-    # Sample/Localizable.xcstrings
+    # Game01/Localizable.xcstrings
     LOCALIZATION_PREFERS_STRING_CATALOGS: YES
     SWIFT_EMIT_LOC_STRINGS: YES
 # Test-only libraries, declared in
@@ -32,18 +32,18 @@ packages:
   TestSupport:
     path: Packages/TestSupport
 targets:
-  Sample:
+  Game01:
     type: application
     platform: iOS
     sources:
-      - Sample
+      - Game01
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER:
-          com.gastly92.sample
+          com.gastly92.game01
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName:
-          Sample
+          Game01
         INFOPLIST_KEY_UILaunchScreen_Generation:
           YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents:
@@ -58,41 +58,41 @@ targets:
           AppIcon
         TARGETED_DEVICE_FAMILY: "1"
         CODE_SIGN_STYLE: Automatic
-  SampleTests:
+  Game01Tests:
     type: bundle.unit-test
     platform: iOS
     sources:
-      - SampleTests
+      - Game01Tests
     dependencies:
-      - target: Sample
+      - target: Game01
       - package: TestSupport
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER:
-          com.gastly92.sample.tests
+          com.gastly92.game01.tests
         GENERATE_INFOPLIST_FILE: YES
         TARGETED_DEVICE_FAMILY: "1"
-  SampleUITests:
+  Game01UITests:
     type: bundle.ui-testing
     platform: iOS
     sources:
-      - SampleUITests
+      - Game01UITests
       # The app's list of screens, so UI
       # tests loop over every one.
-      - path: Sample/Support/ScreenID.swift
+      - path: Game01/Support/ScreenID.swift
     dependencies:
-      - target: Sample
+      - target: Game01
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER:
-          com.gastly92.sample.uitests
+          com.gastly92.game01.uitests
         GENERATE_INFOPLIST_FILE: YES
         TARGETED_DEVICE_FAMILY: "1"
 schemes:
-  Sample:
+  Game01:
     build:
       targets:
-        Sample: all
+        Game01: all
     test:
       gatherCoverageData: true
       # US English and UTC for unit and
@@ -105,7 +105,7 @@ schemes:
       environmentVariables:
         TZ: UTC
       coverageTargets:
-        - Sample
+        - Game01
       targets:
-        - SampleTests
-        - SampleUITests
+        - Game01Tests
+        - Game01UITests

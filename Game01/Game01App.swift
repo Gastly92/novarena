@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 @main
-struct SampleApp: App {
+struct Game01App: App {
   private let launch: AppLaunch
 
   init() {

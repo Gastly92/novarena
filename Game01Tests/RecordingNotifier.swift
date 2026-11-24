@@ -1,4 +1,4 @@
-@testable import Sample
+@testable import Game01
 import UserNotifications
 
 /// A `Notifier` that remembers what the app

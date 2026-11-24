@@ -1,4 +1,4 @@
-@testable import Sample
+@testable import Game01
 import XCTest
 
 /// A picture of every screen (`ScreenID`) in

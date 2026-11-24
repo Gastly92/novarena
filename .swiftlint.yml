@@ -2,9 +2,9 @@
 # `swiftlint lint --strict`, so warnings fail
 # the build.
 included:
-  - Sample
-  - SampleTests
-  - SampleUITests
+  - Game01
+  - Game01Tests
+  - Game01UITests
   - Packages
 
 # Every opt-in rule is on. Rules below are

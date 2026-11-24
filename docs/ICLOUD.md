@@ -6,7 +6,7 @@ from an iPhone only (no Mac). Learned
 building One Hundo 1.1 (gastly92/one-hundo:
 its `docs/ICLOUD.md` and `docs/CLOUDKIT.md`
 are the worked example, with the code).
-`Sample` doesn't sync, so nothing here is
+`Game01` doesn't sync, so nothing here is
 in the template's code: copy the pieces
 when an app needs them.
 
