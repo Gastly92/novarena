@@ -301,13 +301,17 @@ Here, defensive heroes are always ready:
 - **Mech warrior**, *Energy Shield*: a
   150-point shield that fully recharges at
   the start of its turn if it took no damage
-  since its last turn. Halo-style.
+  since its last turn. Like the
+  recharging energy shields in the *Halo*
+  games.
 - **Wizard**, *Ward*: blocks special damage
   up to a cap, and every status effect while
   up.
 - **Nano swarm**: repairs a fixed amount of
   HP at the start of each turn.
-- **Halo aura** (from the fork's Halo): no
+- **Damage-cap aura** (the fork's Halo
+  ability, a different idea from *Halo*'s
+  shields): no
   single hit can take more than 40% of the
   max HP of anyone within range, friend or
   foe, so nobody nearby goes down in fewer
@@ -338,6 +342,34 @@ from different worlds.
 A team then needs answers for several kinds
 of defence, and the random foe draw decides
 which.
+
+### Resources: uses, not accuracy
+
+The fork's lesson: accuracy became a price
+(fewer uses), not a coin flip. Here every
+attack hits, and the strong ones cost more of
+the hero's resource. Heroes don't all share
+one resource; each kind fits its hero and
+behaves differently:
+
+| Resource | Example | Behaves like |
+|---|---|---|
+| Mana | Wizard | A pool that refills slowly each turn |
+| Charge | Mech | Spent in bursts, refilled by recharging or arena power |
+| Stamina | Knight | Refills fast if the turn was light |
+| Ammo | Gunner, pickups | A fixed count, no refill mid-fight |
+
+- **Some heroes mix them**: a spellblade
+  might spend stamina on sword work and mana
+  on spells.
+- **Resources give counters too**: an EMP
+  drains charge, a silence locks mana,
+  exhaustion hits stamina. Another layer of
+  the era-against-era matchups.
+- **Cheap, reliable attacks always exist**,
+  so a hero with an empty pool still has a
+  turn (the fork's strong-but-short vs.
+  reliable choice).
 
 ### Status effects without dice
 
@@ -476,6 +508,18 @@ in:
 - **They act between turns**, at any moment
   you choose, and don't take a hero's turn.
 
+The fork's **free gimmicks** are the model
+for what the commander can do. Translated:
+
+- **Dynamax → Titan**: a hero's HP doubles
+  for 3 turns. Once per hero per fight.
+- **Z-Move → Finisher**: one attack does 1.5×
+  damage and ignores defences.
+- Possibly **Mega Evolution → a
+  transformation** for the rest of the fight,
+  and **Terastallize → a change of element**
+  (new weaknesses and immunities).
+
 ### What you can see
 
 Everything the fork learned about previews
@@ -577,9 +621,15 @@ above:
 
 - **Heroes level up** and **unlock upgrades**
   (new abilities, passives, evolutions).
+- **Levels may not raise base stats.** Battle
+  experience could do something else instead
+  (unlock abilities or traits, a mastery, a
+  title); what exactly is open.
 - **Currency** is earned by winning. It buys
-  recruits (heroes on offer) and possibly
-  upgrades or training.
+  recruits (heroes on offer), possibly
+  upgrades or training, and **cosmetic
+  upgrades** (looks for heroes, the home
+  base).
 - **Losing ends the streak**, but something
   persists. With a leveling clan, the obvious
   answer is **the clan itself**: heroes,
@@ -598,13 +648,34 @@ work here:
   same level. Pure tactics and team-building,
   nothing that grinding can fix.
 
+If levels don't raise base stats, the two
+brackets differ less, and this may not be
+needed.
+
 ## Outside of combat
 
-No non-combat gameplay idea has felt fun, so
-there isn't any. What happens between fights
+Combat is the primary system. Between fights
 is clan management, FFTA-style: recruiting,
 leveling, choosing upgrades, picking who to
-bring. That's enough.
+bring.
+
+**Farming and exploring aren't ruled out**,
+just not the main system. No idea for them
+has felt fun yet.
+
+### Home base
+
+A home base, like in some gacha games:
+
+- **Navigated by menus**, not by walking
+  around. Walking from place to place (as in
+  the fork's Battle Frontier) is tedious, and
+  menus are easier to build.
+- **Places in the base are the game's
+  systems**: the arena gate, the barracks
+  (clan), the shop, the training ground,
+  and so on.
+- **Cosmetics** can decorate it.
 
 ## Set aside
 
@@ -617,8 +688,8 @@ bring. That's enough.
   Everyone fights.
 - **Factions or eras to organise the theme.**
   Not needed.
-- **Non-combat activities** (crafting,
-  farming, exploring). None felt fun.
+- **Walking around a hub** (as in the fork's
+  Frontier). Menus instead.
 
 ## Open questions
 
@@ -627,6 +698,10 @@ bring. That's enough.
   timeline maths feels right, how heavy and
   light actions are priced, and the damage
   formula's numbers.
+- **What battle experience does** if levels
+  don't raise base stats.
+- **Which resources exist**, and how each
+  refills.
 - **Element list:** which elements exist, and
   how many.
 - **How big fights get**, given every hero
