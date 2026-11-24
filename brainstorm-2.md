@@ -102,34 +102,6 @@ Star Trek's Q), so the entity and its world
 need their own character, and the game should
 borrow no names from the album or from those.
 
-## Naming
-
-Nothing chosen. The developer's other app is
-**One Hundo**, so a number in the name would
-make a pair; **92** is the favourite number,
-but how to make it a name is open.
-
-- **Number ideas**: *The 92* (a roster of 92
-  heroes to collect), *Ninety-Two Worlds*
-  (one champion from each of 92 realities),
-  *Arena 92*, *XCII*, *Niner-Two* (radio
-  speak), *Eight Shy* (of a hundo),
-  *Fourscore and Twelve* (4 × 20 + 12).
-- **Premise ideas**: *Encore* (the entity
-  always wants another fight), *Menagerie*,
-  *Curio* (a cabinet of curiosities),
-  *Terrarium*, *Spectacle*.
-- **Mixed**: *Curio 92*, *Encore 92*.
-- **Ruled out**: anything with "deuce", and a
-  Japanese theme (so no *Kuni*, the Japanese
-  wordplay reading of 92).
-- **Avoid**: *Contest of Champions*,
-  *Battlerealm*, *Collector*, *Grandmaster*
-  (Marvel), and anything from the album
-  (*Electric Castle*, *Forever*).
-- **Before choosing**: check the App Store
-  and Steam for clashes.
-
 ## Heroes and the clan
 
 - **Like FFTA's clan.** You build up a roster
