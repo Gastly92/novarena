@@ -39,8 +39,8 @@ Carried over from brainstorm 1:
    Balance is asymmetric and aims at the
    player's fun, not a competitive meta (the
    fork's "flavour and fun come before
-   competitive balance"). There is no
-   human opponent to keep things fair for.
+   competitive balance"). There is no human
+   opponent to keep things fair for.
 
 Changed:
 
@@ -82,12 +82,12 @@ and is fine.
   always-on traits on top of their kit:
   Gerald might be *Small*, *Brave* and
   *Fire-wary* at once. Traits are pure
-  upsides (or plain facts, like an
-  immunity), always visible, and some come
-  from upgrades. "Trait" is the working
-  name, replacing "innate" (which
-  autocorrects to "inmate"); others to
-  consider: *boon*, *gift*, *mark*.
+  upsides (or plain facts, like an immunity),
+  always visible, and some come from
+  upgrades. "Trait" is the working name,
+  replacing "innate" (which autocorrects to
+  "inmate"); others to consider: *boon*,
+  *gift*, *mark*.
 - **Hand-made, one of a kind.** Every hero is
   designed by hand: name, look, kit. No
   generated heroes or name variants. A fixed
@@ -174,7 +174,7 @@ ability.
   numbers, rounded down). Speed 100 waits 100
   ticks, Speed 125 waits 80, Speed 80 waits
   125. Over 1,000 ticks the Speed 125 hero
-  acts 12 times and the Speed 80 hero 8.
+       acts 12 times and the Speed 80 hero 8.
 - **Actions have a weight.** A heavy action
   (a big swing, a long spell) adds to the
   wait; a light one (a quick jab, a buff)
@@ -318,9 +318,8 @@ Here, defensive heroes are always ready:
 - **Mech warrior**, *Energy Shield*: a
   150-point shield that fully recharges at
   the start of its turn if it took no damage
-  since its last turn. Like the
-  recharging energy shields in the *Halo*
-  games.
+  since its last turn. Like the recharging
+  energy shields in the *Halo* games.
 - **Wizard**, *Ward*: blocks special damage
   up to a cap, and every status effect while
   up.
@@ -328,11 +327,10 @@ Here, defensive heroes are always ready:
   HP at the start of each turn.
 - **Damage-cap aura** (the fork's Halo
   ability, a different idea from *Halo*'s
-  shields): no
-  single hit can take more than 40% of the
-  max HP of anyone within range, friend or
-  foe, so nobody nearby goes down in fewer
-  than three hits.
+  shields): no single hit can take more than
+  40% of the max HP of anyone within range,
+  friend or foe, so nobody nearby goes down
+  in fewer than three hits.
 - **Last stand** (the fork's
   Sturdy/Psybubble): survives the first
   lethal hit of the fight at 1 HP.
@@ -359,6 +357,20 @@ from different worlds.
 A team then needs answers for several kinds
 of defence, and the random foe draw decides
 which.
+
+### A full toolbox
+
+**Heroes have as many abilities as suits
+them**, not a fixed four like Pokémon. A
+wizard with a dozen spells keeps all twelve.
+Nothing is swapped out before a fight; what
+limits a turn is the resource each ability
+costs (below), so every hero always has their
+whole toolbox.
+
+On a phone, a long ability list needs a good
+picker: grouped by kind, with what's
+affordable this turn first.
 
 ### Resources: uses, not accuracy
 
@@ -409,13 +421,12 @@ whole:
 - **Not limited to these.** More kinds can
   join (a mech's *malfunction*, a spirit's
   *possession*).
-- **The same status can mean different
-  things per hero.** A condition has a
-  default effect, and a hero's traits can
-  change it: a paralysed knight's muscles
-  lock (actions get heavier), while a
-  paralysed mech short-circuits (its charge
-  drains instead).
+- **The same status can mean different things
+  per hero.** A condition has a default
+  effect, and a hero's traits can change it:
+  a paralysed knight's muscles lock (actions
+  get heavier), while a paralysed mech
+  short-circuits (its charge drains instead).
 
 ### Status effects without dice
 
@@ -498,11 +509,44 @@ random, and can change a fight drastically:
   magic, a scrapyard that recharges machines,
   holy ground, a storm that charges shock
   attacks, darkness that shortens ranges.
+- **Weather**: rain (douses fire, conducts
+  shock), sandstorm, snow, fog (shortens
+  sight), wind (carries clouds and arrows),
+  heat. It can change mid-fight on a schedule
+  shown in advance.
+- **Elements meet the environment**: fire
+  burns grass and melts ice, frost freezes
+  water into a walkable floor, shock spreads
+  through water and metal.
 - **Hazards on the clock**: a gate that opens
   at tick 300, a collapsing floor, a rising
   tide. All shown in advance on the timeline.
 - **You see the arena before deploying**, so
   it's a puzzle to read, not a surprise.
+
+### Interactions beyond abilities
+
+Heroes can act on each other and the arena in
+ways any hero can try, not only through their
+own abilities:
+
+- **Shove**: push someone a short way. Off a
+  cliff, into lava or a pit, or into another
+  hero.
+- **Knockback** (pushed further, by a hit)
+  and **knockdown** (put on the ground,
+  delayed on the timeline).
+- **Grapple**: hold someone so neither of you
+  moves until one breaks free or the other
+  lets go.
+- **Steal**: take a held item or pickup from
+  someone in reach.
+- **Size and weight decide, not dice**: how
+  far a shove goes is a fixed rule of the two
+  heroes' sizes and strength. Gerald can't
+  shove a dragon; a dragon can shove Gerald
+  across the arena. The preview shows where
+  someone will land.
 
 ### Items and equipment
 
@@ -536,6 +580,41 @@ Support heroes have three kinds of tools:
   push and pull, swap places, teleport.
 - **Time**: haste, slow, delay, quicken (see
   the timeline).
+
+### Lethal and non-lethal
+
+Not every fight has to be to the death:
+
+- **Fights have stakes**: an exhibition bout
+  (the loser is knocked out and recovers) vs.
+  a fight to the death (a hero who falls may
+  be lost). What a fall costs could depend on
+  the fight.
+- **Abilities can be lethal or not**: a
+  subduing blow knocks out instead of
+  killing, which matters when you want to
+  recruit the foe afterwards.
+
+### Winning without fighting
+
+Pacifist ways through a fight, or part of
+one:
+
+- **Bargaining**: pay a foe to yield or leave
+  the arena.
+- **Control**: charm or mind control, so a
+  foe fights for you for a fixed time.
+- **Seduction**: a foe that won't attack the
+  hero who charmed it, like the fork's
+  infatuation (which never cancels a turn).
+- **A reason to use them**: foes won over
+  this way might be easier to recruit, or pay
+  out differently.
+
+All of it deterministic: whether a bargain
+works follows from rules the player can read
+(what the foe values, how hurt it is), never
+a roll.
 
 ### Commander actions
 
@@ -636,11 +715,11 @@ above:
   easy to plan around. Halo's 40% cap means
   "never fewer than three hits".
 - **Innates (here: traits) vs. chosen
-  abilities.** An innate
-  is a pure upside and always visible; a
-  chosen ability can carry a real downside.
-  Heroes could have both: always-visible
-  traits, plus a kit that has trade-offs.
+  abilities.** An innate is a pure upside and
+  always visible; a chosen ability can carry
+  a real downside. Heroes could have both:
+  always-visible traits, plus a kit that has
+  trade-offs.
 - **The preview and the AI share one damage
   calculation**, so they never disagree, and
   the AI is taught every rule it would
@@ -733,9 +812,9 @@ A **bestiary** is a must, like the Pokédex:
 - **Every hero and foe you've met**, with
   what you've learned about them. Once a
   foe's stats are known, every later preview
-  against them is exact ("knowledge is
-  kept", from
-  [What you can see](#what-you-can-see)).
+  against them is exact ("knowledge is kept",
+  from [What you can
+  see](#what-you-can-see)).
 - **Heroes you own vs. heroes you've seen**,
   so collecting them all has a checklist.
 - **Shinies and flair** collected too.
@@ -761,8 +840,8 @@ A home base, like in some gacha games:
   menus are easier to build.
 - **Places in the base are the game's
   systems**: the arena gate, the barracks
-  (clan), the shop, the training ground,
-  and so on.
+  (clan), the shop, the training ground, and
+  so on.
 - **Cosmetics** can decorate it.
 
 ## Set aside
@@ -802,6 +881,10 @@ A home base, like in some gacha games:
   takes its own turn and you play them all.
 - **Fallen fighters:** knocked out for the
   fight only, injured for the run, or lost?
+  Possibly decided by the fight's stakes
+  (lethal or not).
+- **How bargaining and charm are decided**
+  without dice.
 - **Commander actions:** how many per run,
   and how they are unlocked.
 - **Run shape:** sets of fights with a
