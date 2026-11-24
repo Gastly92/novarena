@@ -1,5 +1,9 @@
 # Brainstorm
 
+> The game has since pivoted to an arena tactics
+> game. See [brainstorm-2.md](brainstorm-2.md).
+> These notes are kept for reference.
+
 Working notes from the first design
 conversation. Nothing here is final: it records
 where the ideas stand, what was ruled out and
