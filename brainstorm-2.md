@@ -65,6 +65,15 @@ Gathering mixes everything and is fine.
   mouse knights, each their own person with their
   own name (and presumably their own kit).
 - **Collecting them all** is a goal in itself.
+- **Hand-made, one of a kind.** Every hero is
+  designed by hand: name, look, kit. No generated
+  heroes or name variants. A fixed roster to
+  collect, which makes each one worth having
+  (and makes art and writing the main cost).
+- **Two ways to gain heroes:**
+  - **Recruit from teams you beat**, the Battle
+    Factory swap.
+  - **Buy with currency.**
 
 ## The fight
 
@@ -72,6 +81,9 @@ Gathering mixes everything and is fine.
   enters the arena. No bench, no sitting out:
   games that don't let you use everyone are less
   fun.
+- **Fight size isn't capped by the screen.** The
+  battlefield can be panned, so large fights are
+  fine on a phone.
 - **The player is not on the field.** You command
   everyone from outside.
 - **But the player can still reach in**: a
@@ -130,8 +142,9 @@ for small level-ups to matter.
 
 - **Heroes level up** and **unlock upgrades**
   (new abilities, passives, evolutions).
-- **Currency** is earned by winning. What it buys
-  is open: recruits, upgrades, training.
+- **Currency** is earned by winning. It buys
+  recruits (heroes on offer) and possibly
+  upgrades or training.
 - **Losing ends the streak**, but something
   persists. With a leveling clan, the obvious
   answer is **the clan itself**: heroes, levels
@@ -172,18 +185,7 @@ enough.
 
 ## Open questions
 
-- **Clan size vs. fight size.** If everyone you
-  bring fights, how many is that? Is the whole
-  clan always in the fight (so clan size is
-  capped), or do you pick a squad from a bigger
-  clan before each run?
 - **Stats:** option A, B, C, or something else?
-- **Hero uniqueness:** is each named hero
-  hand-made and one of a kind (collect all 80),
-  or can names and variants be generated?
-- **How do you gain heroes?** Recruit from teams
-  you beat (Battle Factory swap), buy with
-  currency, or both?
 - **Fallen fighters:** knocked out for the fight
   only, injured for the run, or lost?
 - **Commander actions:** how many, what resource,
@@ -191,5 +193,12 @@ enough.
 - **Run shape:** sets of fights with a champion at
   the end of each (Battle Factory's sets of
   seven), or one continuous climb?
-- **What currency buys**, and whether there's one
-  currency or two (in-run vs. persistent).
+- **What else currency buys** beyond recruits,
+  and whether there's one currency or two (in-run
+  vs. persistent).
+- **Many fighters, long rounds.** Panning solves
+  the screen, but a big fight means many turns
+  per round. Does the player issue every order,
+  or can some heroes act on their own?
+- **How recruiting from beaten teams works:** one
+  pick per win, or only some foes can join?
