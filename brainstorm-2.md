@@ -603,3 +603,30 @@ enough.
 - **Difficulty over a streak.** The fork draws
   foes uniformly with no scaling; with a leveling
   clan, foes probably need to scale.
+
+## Roadmap
+
+The order of work, one or more pull requests per
+step. The near-term goal is step 4: a **0.0.1**
+build with a battle that starts to feel right,
+then iterate from there. No throwaway browser
+prototypes: the battle is built in the real game
+and improved as we go.
+
+1. **Brainstorm 2.** These notes.
+2. **Take what's needed from
+   `gastly92/ios-template`**: project layout, CI,
+   TestFlight and App Store pipeline, coverage
+   gate.
+3. **Repository set-up and TestFlight with a
+   "hello world"** build on the phone.
+4. **Basic battle engine with a few heroes.**
+   Several pull requests: the rules as a pure
+   Swift package (timeline, damage, shields,
+   immunities, movement), a first handful of
+   heroes, then a battle screen, until it starts
+   to feel right. Tag **0.0.1**. ("Hero" is a
+   working name; the final word is not chosen.)
+5. **The rest of the game**: battle flow, menus,
+   clan management, drafting, earning and
+   spending currency, and so on.
