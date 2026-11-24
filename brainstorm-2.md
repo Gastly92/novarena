@@ -64,6 +64,67 @@ in-world reason) is needed to make the mix
 work. Magic: the Gathering mixes everything
 and is fine.
 
+### Premise
+
+Inspired by Ayreon's *Into the Electric
+Castle*: an **interdimensional entity pulls
+characters from across time, space and
+dimensions of reality into its own pocket of
+existence, for its own amusement**.
+
+The mix needs no structure, but this gives it
+a reason, and it explains a lot of the game's
+rules at once:
+
+- **Why a mouse knight fights a mech**: the
+  entity took both.
+- **Why the fights never end**: the entity
+  wants another show. An endless streak is an
+  encore.
+- **Why arenas, weather and hazards change**:
+  the entity reshapes its pocket world on a
+  whim.
+- **Why a fallen hero can come back**: the
+  entity puts its toys back together, unless
+  it decides a fight is to the death.
+- **Why there's a home base**: it's the
+  heroes' corner of the pocket world.
+- **Why cosmetics and shinies**: the entity
+  likes its collection to look good.
+- **The commander actions** could be the
+  entity (or whoever it favours) reaching in.
+
+Open: who the player is. The entity itself, a
+favourite it lets play, or a captive champion
+who runs the clan. Similar premises exist
+(Marvel's *Contest of Champions*, *Dissidia*,
+Star Trek's Q), so the entity and its world
+need their own character, and the game should
+borrow no names from the album or from those.
+
+## Naming
+
+Nothing chosen. The developer's other app is
+**One Hundo**, so a number in the name would
+make a pair; **92** is the favourite number,
+but how to make it a name is open.
+
+- **Number ideas**: *The 92* (a roster of 92
+  heroes to collect), *Ninety-Two Worlds*
+  (one champion from each of 92 realities),
+  *Ninety-Deuce*, *Arena 92*, *XCII*.
+- **Premise ideas**: *Encore* (the entity
+  always wants another fight), *Menagerie*,
+  *Curio* (a cabinet of curiosities),
+  *Terrarium*, *Spectacle*.
+- **Mixed**: *Curio 92*, *Encore 92*.
+- **Avoid**: *Contest of Champions*,
+  *Battlerealm*, *Collector*, *Grandmaster*
+  (Marvel), and anything from the album
+  (*Electric Castle*, *Forever*).
+- **Before choosing**: check the App Store
+  and Steam for clashes.
+
 ## Heroes and the clan
 
 - **Like FFTA's clan.** You build up a roster
