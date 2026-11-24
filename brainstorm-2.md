@@ -35,6 +35,12 @@ Carried over from brainstorm 1:
 4. **Damage previews as ranges** while a
    foe's stats are unknown, exact once they
    are known.
+5. **Single player, against the computer.**
+   Balance is asymmetric and aims at the
+   player's fun, not a competitive meta (the
+   fork's "flavour and fun come before
+   competitive balance"). There is no
+   human opponent to keep things fair for.
 
 Changed:
 
@@ -71,6 +77,17 @@ and is fine.
   own kit).
 - **Collecting them all** is a goal in
   itself.
+- **Traits stack.** Like the fork's innate
+  abilities, a hero can have any number of
+  always-on traits on top of their kit:
+  Gerald might be *Small*, *Brave* and
+  *Fire-wary* at once. Traits are pure
+  upsides (or plain facts, like an
+  immunity), always visible, and some come
+  from upgrades. "Trait" is the working
+  name, replacing "innate" (which
+  autocorrects to "inmate"); others to
+  consider: *boon*, *gift*, *mark*.
 - **Hand-made, one of a kind.** Every hero is
   designed by hand: name, look, kit. No
   generated heroes or name variants. A fixed
@@ -371,6 +388,35 @@ behaves differently:
   turn (the fork's strong-but-short vs.
   reliable choice).
 
+### Kinds of status
+
+Borrowed from *Guild Wars 1*: effects on a
+hero come in kinds, each with its own rules,
+and abilities can interact with a kind as a
+whole:
+
+| Kind | What it is | Example |
+|---|---|---|
+| Enchantment | A magic boon, can be dispelled | Ward, Haste |
+| Hex | A magic curse, can be cleansed | Weakness, Doom |
+| Stance | A hero's own posture, one at a time | Brace, Berserk |
+| Condition | A physical state | Poison, Burn, Paralysis |
+
+- **Abilities key off kinds**: "deals more to
+  hexed foes", "strips one enchantment",
+  "while in a stance, …", "spreads every
+  condition on the target".
+- **Not limited to these.** More kinds can
+  join (a mech's *malfunction*, a spirit's
+  *possession*).
+- **The same status can mean different
+  things per hero.** A condition has a
+  default effect, and a hero's traits can
+  change it: a paralysed knight's muscles
+  lock (actions get heavier), while a
+  paralysed mech short-circuits (its charge
+  drains instead).
+
 ### Status effects without dice
 
 Following the fork's determinism rules:
@@ -589,7 +635,8 @@ above:
   protections with a clear rule are fun and
   easy to plan around. Halo's 40% cap means
   "never fewer than three hits".
-- **Innates vs. chosen abilities.** An innate
+- **Innates (here: traits) vs. chosen
+  abilities.** An innate
   is a pure upside and always visible; a
   chosen ability can carry a real downside.
   Heroes could have both: always-visible
@@ -621,6 +668,11 @@ above:
 
 - **Heroes level up** and **unlock upgrades**
   (new abilities, passives, evolutions).
+- **Stat upgrades are bought outside
+  battle**, like *Fire Emblem: The Sacred
+  Stones*' stat boosters, so maximising one
+  hero is something you work on between
+  fights.
 - **Levels may not raise base stats.** Battle
   experience could do something else instead
   (unlock abilities or traits, a mastery, a
@@ -630,6 +682,10 @@ above:
   upgrades or training, and **cosmetic
   upgrades** (looks for heroes, the home
   base).
+- **Flair and shinies**: rare cosmetic
+  variants of heroes and their equipment (a
+  gilded sword, a shiny palette), like
+  Pokémon's shinies.
 - **Losing ends the streak**, but something
   persists. With a leveling clan, the obvious
   answer is **the clan itself**: heroes,
@@ -651,6 +707,38 @@ work here:
 If levels don't raise base stats, the two
 brackets differ less, and this may not be
 needed.
+
+## Game modes ("facilities")
+
+The fork's Battle Frontier has several
+facilities with different rules; the fork has
+converted the Battle Factory and is working
+on the Battle Tower. This game can have more
+than one too. Ideas:
+
+- **Draft**: fight with heroes offered at
+  random, swap in from beaten teams (the
+  Factory).
+- **Clan gauntlet**: your own clan, endless
+  (the Tower).
+- **Boss rush**: champions only.
+- **Trials**: hand-made puzzles, such as "win
+  in 3 turns".
+- **Survival**: no healing between fights.
+
+## Collection
+
+A **bestiary** is a must, like the Pokédex:
+
+- **Every hero and foe you've met**, with
+  what you've learned about them. Once a
+  foe's stats are known, every later preview
+  against them is exact ("knowledge is
+  kept", from
+  [What you can see](#what-you-can-see)).
+- **Heroes you own vs. heroes you've seen**,
+  so collecting them all has a checklist.
+- **Shinies and flair** collected too.
 
 ## Outside of combat
 
@@ -702,6 +790,12 @@ A home base, like in some gacha games:
   don't raise base stats.
 - **Which resources exist**, and how each
   refills.
+- **Which status kinds exist** beyond
+  enchantments, hexes, stances and
+  conditions.
+- **The trait name.**
+- **Which facilities** come first after the
+  main one.
 - **Element list:** which elements exist, and
   how many.
 - **How big fights get**, given every hero
