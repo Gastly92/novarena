@@ -32,6 +32,13 @@ updates:
     ignore:
       - dependency-name: realm/swiftlint
         versions: [">= 5.5, < 5.6"]
+  # Swift for the rules package's Linux
+  # tests, pinned in this Dockerfile.
+  - package-ecosystem: docker
+    directory: /.github/swift
+    schedule:
+      interval: weekly
+    assignees: [Gastly92]
   - package-ecosystem: swift
     directory: /Packages/TestSupport
     schedule:
