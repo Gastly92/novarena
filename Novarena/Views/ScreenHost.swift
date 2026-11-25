@@ -11,9 +11,26 @@ struct ScreenHost: View {
   }
 
   var body: some View {
-    switch screen {
-    case .home:
-      HomeView()
+    NavigationStack {
+      switch screen {
+      case .home:
+        HomeView()
+      case .battle:
+        battle(.start)
+      case .battleAiming:
+        battle(.aiming)
+      case .battleMiddle:
+        battle(.middle)
+      case .battleEnd:
+        battle(.end)
+      }
     }
+  }
+
+  /// The sample battle at `stage`.
+  private func battle(
+    _ stage: Fight.Stage
+  ) -> some View {
+    BattleView(fight: Fight(stage: stage))
   }
 }

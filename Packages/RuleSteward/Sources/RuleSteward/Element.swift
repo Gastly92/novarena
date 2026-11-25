@@ -10,7 +10,9 @@ public enum Delivery: Sendable {
 
 /// What an attack is made of. Weaknesses,
 /// resistances and immunities key off it,
-/// not the delivery.
+/// not the delivery. More (poison, light,
+/// shadow, …) join with the first unit that
+/// uses them.
 public enum Element: Sendable {
   /// Burns.
   case fire
@@ -18,12 +20,6 @@ public enum Element: Sendable {
   case frost
   /// Electric; breaks energy shields.
   case shock
-  /// Sickens.
-  case poison
-  /// Holy or radiant.
-  case light
-  /// Dark or cursed.
-  case shadow
 }
 
 /// How a unit takes one element.

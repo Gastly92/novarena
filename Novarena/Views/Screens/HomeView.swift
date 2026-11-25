@@ -19,6 +19,11 @@ struct HomeView: View {
         .foregroundStyle(.secondary)
         .multilineTextAlignment(.center)
         .wrapsText()
+      NavigationLink("Fight") {
+        BattleView(fight: Fight())
+      }
+      .buttonStyle(.borderedProminent)
+      .padding(.top)
     }
     .padding()
     .fullWidth()

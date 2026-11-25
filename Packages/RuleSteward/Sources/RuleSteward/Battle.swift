@@ -49,19 +49,48 @@ public struct Battle: Sendable {
       ? standing.first : nil
   }
 
-  /// Whose turn is next: the earliest tick,
+  /// Everyone up, in the order their next
+  /// turns come: the earliest tick first,
   /// ties broken by a fixed ladder (higher
   /// base Speed, then higher health
   /// percent, then the party, then list
-  /// order), never by chance.
-  public var next: Int? {
+  /// order), never by chance. Empty once
+  /// the battle is over.
+  public var queue: [Int] {
     guard winner == nil else {
-      return nil
+      return []
     }
-    return units.filter(\.isUp).min {
-      order($0)
-        .lexicographicallyPrecedes(order($1))
-    }?.id
+    return units
+      .filter(\.isUp)
+      .sorted {
+        order($0).lexicographicallyPrecedes(
+          order($1)
+        )
+      }
+      .map(\.id)
+  }
+
+  /// Whose turn is next (the queue's
+  /// first).
+  public var next: Int? {
+    queue.first
+  }
+
+  /// Whether the next unit can pay for its
+  /// ability at this index, counting what
+  /// its resource refills as its turn
+  /// starts.
+  public func canUse(
+    _ ability: Int
+  ) -> Bool {
+    guard let actor = next else {
+      return false
+    }
+    var ready = units[actor]
+    ready.startTurn()
+    let all = ready.unit.abilities
+    return all.indices.contains(ability)
+      && ready.affords(all[ability])
   }
 
   /// A unit's place in the turn order.

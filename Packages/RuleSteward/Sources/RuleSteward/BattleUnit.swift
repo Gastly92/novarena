@@ -9,7 +9,8 @@ public enum Side: Sendable {
 /// A unit during a battle: its health,
 /// shield, resource and place on the
 /// timeline.
-public struct BattleUnit: Sendable {
+public struct BattleUnit: Sendable,
+  Identifiable {
   /// Its place in the battle's list.
   public let id: Int
   /// Its side.

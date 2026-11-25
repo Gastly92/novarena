@@ -11,7 +11,7 @@ options:
   usesTabs: false
 settings:
   base:
-    MARKETING_VERSION: "0.0.1"
+    MARKETING_VERSION: "0.0.2"
     CURRENT_PROJECT_VERSION: "1"
     # Swift 6: data races are compile errors
     # in every target, tests included.
@@ -31,12 +31,18 @@ settings:
 packages:
   TestSupport:
     path: Packages/TestSupport
+  # The game's rules (no UI); see
+  # CLAUDE.md.
+  RuleSteward:
+    path: Packages/RuleSteward
 targets:
   Novarena:
     type: application
     platform: iOS
     sources:
       - Novarena
+    dependencies:
+      - package: RuleSteward
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER:
@@ -66,6 +72,7 @@ targets:
     dependencies:
       - target: Novarena
       - package: TestSupport
+      - package: RuleSteward
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER:
