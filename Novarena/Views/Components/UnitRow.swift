@@ -56,8 +56,8 @@ struct UnitRow: View {
         .font(.caption)
       if let shield = unit.unit.shield {
         Text("""
-          Shield \(unit.shield) of \
-          \(shield.points)
+          \(shield.name) \(unit.shield) \
+          of \(shield.points)
           """)
           .font(.caption)
       }
