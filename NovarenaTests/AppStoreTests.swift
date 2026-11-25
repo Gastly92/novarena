@@ -24,23 +24,13 @@ final class AppStoreTests: XCTestCase {
     guard try SnapshotOS.matches() else {
       return
     }
-    let list = try TestScreens.page(.items)
-    let settings = try TestScreens.page(
-      .settingsOn
-    )
+    let home = TestScreens.page(.home)
     try AppStoreShots.check(
       [
         Shot(
-          name: "1-list",
-          caption:
-            "Keep track of everything",
-          view: list
-        ),
-        Shot(
-          name: "2-reminder",
-          caption: "A nudge every day",
-          view: settings,
-          dark: true
+          name: "1-home",
+          caption: "Heroes from every era",
+          view: home
         ),
       ],
       colors: Self.colors

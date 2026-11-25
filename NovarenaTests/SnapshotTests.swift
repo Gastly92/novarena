@@ -11,7 +11,7 @@ final class SnapshotTests: XCTestCase {
       return
     }
     for screen in ScreenID.allCases {
-      let page = try TestScreens.page(screen)
+      let page = TestScreens.page(screen)
       let name = screen.rawValue
       Looks.check(page, named: name)
     }
