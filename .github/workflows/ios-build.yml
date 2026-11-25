@@ -121,6 +121,19 @@ jobs:
     - name: Lint
       run: .github/scripts/swiftlint.sh
 
+  # The rules package's tests, on Linux,
+  # with every line of its sources run.
+  rules:
+    name: Rule tests
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Test RuleSteward
+      run: .github/scripts/rules-tests.sh
+
   # Every screen must be in the screen list
   # (ScreenID / ScreenHost), so snapshot
   # and localization tests cover it.
@@ -502,6 +515,7 @@ jobs:
     - strings
     - scripts
     - lint
+    - rules
     - screens
     - build
     - test
@@ -520,6 +534,7 @@ jobs:
         STRINGS: ${{ needs.strings.result }}
         SCRIPTS: ${{ needs.scripts.result }}
         LINT: ${{ needs.lint.result }}
+        RULES: ${{ needs.rules.result }}
         SCREENS: ${{ needs.screens.result }}
         BUILD: ${{ needs.build.result }}
         TEST: ${{ needs.test.result }}
@@ -527,17 +542,17 @@ jobs:
         RELEASE: ${{ needs.release.result }}
       run: |
         for job in CHANGES LINES STRINGS \
-          SCRIPTS LINT SCREENS BUILD TEST \
-          COVER RELEASE; do
+          SCRIPTS LINT RULES SCREENS BUILD \
+          TEST COVER RELEASE; do
           echo "$job: ${!job}"
         done
         [ "$CHANGES" = success ] || exit 1
         [ "$LINES" = success ] || exit 1
         [ "$STRINGS" = success ] || exit 1
         [ "$SCRIPTS" = success ] || exit 1
-        for result in "$LINT" "$SCREENS" \
-          "$BUILD" "$TEST" "$COVER" \
-          "$RELEASE"; do
+        for result in "$LINT" "$RULES" \
+          "$SCREENS" "$BUILD" "$TEST" \
+          "$COVER" "$RELEASE"; do
           case "$result" in
             success|skipped) ;;
             *) exit 1 ;;

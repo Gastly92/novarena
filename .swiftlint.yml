@@ -6,6 +6,10 @@ included:
   - NovarenaTests
   - NovarenaUITests
   - Packages
+# What `swift build` and `swift test`
+# make inside a package.
+excluded:
+  - Packages/*/.build
 
 # Every opt-in rule is on. Rules below are
 # off on purpose: where two rules disagree,

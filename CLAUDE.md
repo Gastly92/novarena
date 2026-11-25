@@ -28,6 +28,43 @@ uploading) runs in CI.
 - Repo `gastly92/novarena` (first
   created as `ios-game-01`).
 
+## The rules (Packages/RuleSteward)
+- The game's rules, carried out, with no
+  UI: units, the timeline, damage,
+  shields, resources and a battle played
+  turn by turn. The design is in
+  `brainstorm-2.md`; the app will import
+  the package when a screen needs it.
+- Words: a **unit** is any character in a
+  fight, either side (not all fight); the
+  player's group is the **party**. Not
+  hero, fighter, clan or roster. Foundation
+  has its own `Unit` (measurements), so a
+  module importing both says `typealias
+  Unit = RuleSteward.Unit` once (see
+  `Tests/RuleStewardTests/Fixtures.swift`).
+- No dice, ever: whole numbers only,
+  rounded down; no random numbers, clock
+  or floating point. The same choices
+  always give the same battle.
+- Tests: `.github/scripts/rules-tests.sh`
+  runs them on Linux in Docker (Swift
+  pinned in `.github/swift/Dockerfile`),
+  and fails unless they run every line
+  and region of `Sources/`. CI's `Rule
+  tests` job runs the same script, so run
+  it before pushing rules changes. For
+  quicker loops, a Linux Swift toolchain
+  from swift.org runs `swift test` in the
+  package directly.
+- `SampleBattleTests` pins the whole log
+  of the four sample units' battle. A rule
+  change that changes that fight changes
+  the log: check the new lines read right
+  (turn ticks, damage by the formula),
+  then update them in the same PR, so the
+  diff shows what the change did.
+
 ## Building
 - This container is Linux: nothing
   Swift/Xcode builds locally. CI is the

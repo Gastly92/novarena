@@ -4,6 +4,7 @@
 *.xcworkspace/
 
 build/
+.build/
 DerivedData/
 *.ipa
 *.xcresult
