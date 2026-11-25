@@ -1,0 +1,111 @@
+name: Sample
+options:
+  bundleIdPrefix: com.gastly92
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  # Code is indented with 2 spaces (lines max
+  # 45).
+  indentWidth: 2
+  tabWidth: 2
+  usesTabs: false
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    # Swift 6: data races are compile errors
+    # in every target, tests included.
+    SWIFT_VERSION: "6.0"
+    DEVELOPMENT_TEAM: ""
+    # Every compiler warning fails the build,
+    # so none pile up unread.
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
+    # Translations live in the String
+    # Catalog:
+    # Sample/Localizable.xcstrings
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
+# Test-only libraries, declared in
+# Packages/TestSupport/Package.swift, where
+# Dependabot can update them.
+packages:
+  TestSupport:
+    path: Packages/TestSupport
+targets:
+  Sample:
+    type: application
+    platform: iOS
+    sources:
+      - Sample
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER:
+          com.gastly92.sample
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName:
+          Sample
+        INFOPLIST_KEY_UILaunchScreen_Generation:
+          YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents:
+          YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone:
+          UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption:
+          NO
+        # Drawn by
+        # .github/scripts/app-icon.sh.
+        ASSETCATALOG_COMPILER_APPICON_NAME:
+          AppIcon
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_STYLE: Automatic
+  SampleTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - SampleTests
+    dependencies:
+      - target: Sample
+      - package: TestSupport
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER:
+          com.gastly92.sample.tests
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1"
+  SampleUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - SampleUITests
+      # The app's list of screens, so UI
+      # tests loop over every one.
+      - path: Sample/Support/ScreenID.swift
+    dependencies:
+      - target: Sample
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER:
+          com.gastly92.sample.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1"
+schemes:
+  Sample:
+    build:
+      targets:
+        Sample: all
+    test:
+      gatherCoverageData: true
+      # US English and UTC for unit and
+      # snapshot tests, whatever the
+      # simulator is set to (UI tests pass
+      # the same: `App.start`).
+      commandLineArguments:
+        "-AppleLanguages (en)": true
+        "-AppleLocale en_US": true
+      environmentVariables:
+        TZ: UTC
+      coverageTargets:
+        - Sample
+      targets:
+        - SampleTests
+        - SampleUITests
