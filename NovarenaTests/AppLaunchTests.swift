@@ -1,4 +1,4 @@
-@testable import Sample
+@testable import Novarena
 import SwiftData
 import XCTest
 

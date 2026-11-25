@@ -1,29 +1,6 @@
 # CLAUDE.md
 
-<!-- template -->
-This repo is ios-template: the starting
-point for SwiftUI iPhone apps. A new app
-is a copy ("Use this template") that
-`.github/scripts/setup-app.sh` renames;
-after that the app owns every file, and
-nothing links it back here. README.md
-explains the layout.
-
-If this repo isn't gastly92/ios-template
-itself but a fresh copy (the session start
-hook says so), set it up first: follow
-"Setting up a new repo (for Claude)" in
-docs/NEW-APP.md.
-
-In the template itself, keep `Sample`
-general enough to build any app on, and
-using every piece below, so this repo's
-CI tests them all. A fix made in an app
-that every app needs is ported here by
-hand (and to other apps when asked).
-`setup-app.sh` removes this section.
-<!-- /template -->
-Sample: a SwiftUI iPhone app, set up for
+Novarena: a SwiftUI iPhone app, set up for
 developing entirely from an iPhone with
 Claude Code and the GitHub app, never a
 desktop or Mac. Everything that needs a
@@ -31,8 +8,23 @@ Mac (building, testing, signing,
 uploading) runs in CI.
 
 ## This app
-- What it is: (fill in)
-- Bundle ID `com.gastly92.sample`.
+- What it is: an endless, turn-based
+  tactics game with roguelike runs. An
+  interdimensional entity pulls hand-made,
+  named heroes from every era of fantasy
+  into its pocket world to fight
+  gladiator-style against random teams,
+  with no dice mid-battle. Design notes:
+  `brainstorm-2.md` (current) and
+  `brainstorm.md` (the earlier ship idea).
+  The roadmap is at the end of
+  `brainstorm-2.md`.
+- The name: nova (a new star) and arena
+  (Latin for sand, the fighting floor).
+  Written as one word, never with a
+  capital A in the middle (it reads as
+  "Nov").
+- Bundle ID `com.gastly92.novarena`.
 
 ## Building
 - This container is Linux: nothing
@@ -55,19 +47,19 @@ uploading) runs in CI.
   pass/fail check for a PR; the repo's
   `main` ruleset requires it (see
   `docs/NEW-APP.md`), so keep its name.
-- Tests: `SampleTests/` (unit tests for
-  logic in `Sample/Models/`) and
-  `SampleUITests/` (XCTest UI tests that
+- Tests: `NovarenaTests/` (unit tests for
+  logic in `Novarena/Models/`) and
+  `NovarenaUITests/` (XCTest UI tests that
   launch the app and check the screen).
   Both run in the scheme's test action.
 - Screens: every full screen is a view in
-  `Sample/Views/Screens/` (one per file;
+  `Novarena/Views/Screens/` (one per file;
   pieces of screens go in
   `Views/Components/`). Each screen and
   screen state has a case in `ScreenID`
-  (`Sample/Support/`, also compiled into
+  (`Novarena/Support/`, also compiled into
   the UI tests) and is shown by
-  `Sample/Views/ScreenHost.swift`, which
+  `Novarena/Views/ScreenHost.swift`, which
   UI tests open directly with
   `-showScreen <id>`. CI's `Screen list`
   job fails if a screen in
@@ -103,7 +95,7 @@ uploading) runs in CI.
     there.
   - Words that change with a number ("1
     day" / "2 days") get plural forms in
-    `Sample/Localizable.xcstrings`; edit
+    `Novarena/Localizable.xcstrings`; edit
     its JSON by hand (no Xcode here).
   - CI's `String catalog` job
     (`check-strings.py`) fails on catalog
@@ -250,7 +242,7 @@ uploading) runs in CI.
   full), on a fixed day (`\.now`; views
   read "today" from it, not `Date()`).
   Images live in
-  `SampleTests/__Snapshots__/`. CI records
+  `NovarenaTests/__Snapshots__/`. CI records
   missing ones and commits them to the PR
   branch (pull before pushing again),
   pushing with the snapshot app's token so
@@ -359,7 +351,7 @@ uploading) runs in CI.
 - The Xcode project is generated from
   `project.yml` by XcodeGen. Never add a
   `.xcodeproj`; put new source files under
-  `Sample/` (picked up automatically) and
+  `Novarena/` (picked up automatically) and
   build settings in `project.yml`.
   Info.plist is generated from
   `INFOPLIST_KEY_*` settings there. Add
@@ -416,7 +408,7 @@ uploading) runs in CI.
   step by step, with what was learned
   building it: `docs/ICLOUD.md`.
 - Keep the privacy manifest
-  (`Sample/PrivacyInfo.xcprivacy`) and
+  (`Novarena/PrivacyInfo.xcprivacy`) and
   the privacy page (`site/privacy.html`)
   true to what the app does: update both
   when adding tracking, collected data, or
@@ -438,7 +430,7 @@ uploading) runs in CI.
   and captioned, at the sizes App Store
   Connect takes; the images to upload are
   in
-  `SampleTests/__Snapshots__/AppStoreTests/`.
+  `NovarenaTests/__Snapshots__/AppStoreTests/`.
   Update the shots and captions when a
   pictured screen or a listed feature
   changes.

@@ -1,4 +1,4 @@
-@testable import Sample
+@testable import Novarena
 import UserNotifications
 
 /// A `Notifier` that remembers what the app

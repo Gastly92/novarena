@@ -2,9 +2,9 @@
 # `swiftlint lint --strict`, so warnings fail
 # the build.
 included:
-  - Sample
-  - SampleTests
-  - SampleUITests
+  - Novarena
+  - NovarenaTests
+  - NovarenaUITests
   - Packages
 
 # Every opt-in rule is on. Rules below are

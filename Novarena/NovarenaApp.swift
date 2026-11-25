@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 @main
-struct SampleApp: App {
+struct NovarenaApp: App {
   private let launch: AppLaunch
 
   init() {

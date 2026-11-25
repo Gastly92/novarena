@@ -1,7 +1,7 @@
 # iOS updates for the snapshots
 
 The snapshots are drawn on one iOS, saved
-in `SampleTests/__Snapshots__/iOS.txt`
+in `NovarenaTests/__Snapshots__/iOS.txt`
 (see CLAUDE.md). When GitHub's runners get
 a newer iOS, CI moves to it in a PR you
 review, never on its own.
