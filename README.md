@@ -1,1 +1,3 @@
-# ios-game-01
+# Novarena
+
+An iPhone app. See CLAUDE.md.

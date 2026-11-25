@@ -1,0 +1,36 @@
+# View lines no screen draws, checked by
+# .github/scripts/unpictured.sh.
+# Each ScreenID is opened on its own, so
+# only what a screen shows runs; lines here
+# are expected not to. A file name, then
+# its lines (indented, as trimmed text),
+# with a # comment saying why. Lines of
+# only brackets or quotes are skipped.
+
+# Taps: open an item (pictured as its own
+# screen), add one, and Delete in the
+# long-press menu.
+ItemListView.swift
+  ItemView(item: $0)
+  context.delete(item)
+  context.insert(Item.fresh(at: now))
+
+# Changes: the switch and the time picker
+# schedule the reminder.
+SettingsView.swift
+  schedule()
+  minutes = Reminder.minutes(of: $0)
+  private func schedule() {
+  Task {
+  await reminder.apply(to: notifier)
+
+# UI tests open the store error through the
+# real failure (AppLaunch); snapshots use
+# this case.
+ScreenHost.swift
+  StoreErrorView(details: Self.error)
+
+# Set only by snapshot tests, which fix the
+# day.
+Now.swift
+  set { self[NowKey.self] = newValue }

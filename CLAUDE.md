@@ -1,0 +1,444 @@
+# CLAUDE.md
+
+Novarena: a SwiftUI iPhone app, set up for
+developing entirely from an iPhone with
+Claude Code and the GitHub app, never a
+desktop or Mac. Everything that needs a
+Mac (building, testing, signing,
+uploading) runs in CI.
+
+## This app
+- What it is: an endless, turn-based
+  tactics game with roguelike runs. An
+  interdimensional entity pulls hand-made,
+  named heroes from every era of fantasy
+  into its pocket world to fight
+  gladiator-style against random teams,
+  with no dice mid-battle. Design notes:
+  `brainstorm-2.md` (current) and
+  `brainstorm.md` (the earlier ship idea).
+  The roadmap is at the end of
+  `brainstorm-2.md`.
+- The name: nova (a new star) and arena
+  (Latin for sand, the fighting floor).
+  Written as one word, never with a
+  capital A in the middle (it reads as
+  "Nov").
+- Bundle ID `com.gastly92.novarena`.
+
+## Building
+- This container is Linux: nothing
+  Swift/Xcode builds locally. CI is the
+  compiler.
+- `.github/workflows/ios-build.yml` runs
+  on every PR and push to `main` (macOS
+  runner). It generates the project and
+  builds the tests once, then runs them in
+  two shards on separate runners in
+  parallel (`.github/scripts/run-tests.sh`;
+  `main`, and `localization` for
+  `LocalizationTests` alone), and a
+  `Coverage` job merges the shards'
+  results. A Release device build runs
+  alongside. The CI summary shows how long
+  building and each shard took. Docs-only
+  PRs (`*.md`, `docs/`, `site/`) skip the
+  macOS jobs. `CI Gate` is the single
+  pass/fail check for a PR; the repo's
+  `main` ruleset requires it (see
+  `docs/NEW-APP.md`), so keep its name.
+- Tests: `NovarenaTests/` (unit tests for
+  logic in `Novarena/Models/`) and
+  `NovarenaUITests/` (XCTest UI tests that
+  launch the app and check the screen).
+  Both run in the scheme's test action.
+- Screens: every full screen is a view in
+  `Novarena/Views/Screens/` (one per file;
+  pieces of screens go in
+  `Views/Components/`). Each screen and
+  screen state has a case in `ScreenID`
+  (`Novarena/Support/`, also compiled into
+  the UI tests) and is shown by
+  `Novarena/Views/ScreenHost.swift`, which
+  UI tests open directly with
+  `-showScreen <id>`. CI's `Screen list`
+  job fails if a screen in
+  `Views/Screens/` isn't in `ScreenHost`.
+  The Coverage job's `Screen list gate`
+  (`unpictured.sh`) fails on view code no
+  ScreenID draws (from the localization
+  shard's coverage), so every state gets a
+  snapshot. Lines that are never drawn
+  (what a tap does, a sheet's contents) go
+  in `.github/unpictured.txt` with why.
+- Accessibility: use system colors and
+  text styles (or `@ScaledMetric` for big
+  custom sizes) so text scales and both
+  light and dark mode work; the
+  `fixed_font_size` lint rule flags fixed
+  sizes. Large text snapshots show every
+  screen scaled. Check on the phone too
+  before a release.
+- All user-facing text must be
+  translatable:
+  - In views, pass literals to `Text`,
+    `Label`, `Button`, etc. Helper
+    parameters that reach `Text` are
+    `LocalizedStringKey`, not `String`.
+    Never join text with `+` (one literal,
+    or a `"""` literal with `\` line
+    breaks).
+  - Text built in `Models/` or `Support/`
+    uses `String(localized:)`, as whole
+    sentences (no gluing words together).
+    A SwiftLint rule flags plain sentences
+    there.
+  - Words that change with a number ("1
+    day" / "2 days") get plural forms in
+    `Novarena/Localizable.xcstrings`; edit
+    its JSON by hand (no Xcode here).
+  - CI's `String catalog` job
+    (`check-strings.py`) fails on catalog
+    keys no Swift string uses any more;
+    delete them with the code.
+  - `LocalizationTests` runs every
+    `ScreenID` in a pseudo-language that
+    brackets translatable text, and fails
+    on unbracketed text
+    (`LocalizationCheck`; tell it which
+    system text to let through).
+- SwiftLint runs in CI with `--strict`
+  (warnings fail). Config:
+  `.swiftlint.yml`. Every opt-in rule is
+  on; the few turned off each say why
+  there. When two rules disagree, keep the
+  one that makes code shorter. No
+  `swiftlint:disable` comments in code:
+  fix the cause (a flagged line usually
+  has a cleaner form), or turn the rule
+  off in `.swiftlint.yml` with a reason.
+  Run `.github/scripts/swiftlint.sh`
+  before pushing Swift changes: CI's
+  SwiftLint job runs the same script, in
+  Docker with the version pinned in
+  `.github/swiftlint/Dockerfile` (the
+  session start hook prepares it).
+- Lines max 45 chars, so a diff line fits
+  a phone in portrait without wrapping.
+  This covers docs, YAML and scripts too:
+  CI's `Line length` job runs
+  `check-lines.py` (it skips URLs, single
+  unbreakable words, Markdown tables and
+  code blocks, and `uses:` lines). It
+  reads only files git tracks, so `git
+  add` new files before running it.
+  Indent with 2 spaces. To fit:
+  - Prefer short, clear names; a long line
+    often means a name could be shorter.
+  - Pull deeply nested view code into a
+    small helper view or property, but
+    only where nesting is what pushes lines
+    over.
+  - Use the helpers: `.testID(_:)`,
+    `.fullWidth(_:)`, `.wrapsText()`
+    (`Views/Components/ViewHelpers.swift`);
+    in UI tests `App.start`,
+    `app.text/button/bar(_:)`,
+    `app.menuItem(_:on:ifTapped:)`
+    (long-press; see below),
+    `element.appears()`.
+  - Long text uses a `"""` literal with
+    `\` line breaks (one key, still one
+    sentence).
+  - Otherwise wrap: one argument per line
+    is fine.
+- Wrapped Swift lines go in one level (2
+  spaces), never aligned by hand:
+  SwiftLint's `indentation_width` rule
+  checks it.
+- Compiler warnings are errors, and every
+  target builds in Swift 6 language mode,
+  so data races are compile errors. The
+  `unchecked_concurrency` lint rule bans
+  the ways around that check
+  (`@unchecked Sendable`,
+  `nonisolated(unsafe)`,
+  `@preconcurrency`). A handler for
+  notifications Apple posts from
+  background threads (Core Data,
+  CloudKit) is `@Sendable` and hops to
+  the main actor itself (`Task {
+  @MainActor in … }`): a main-actor
+  handler compiles but crashes when the
+  post comes from another thread.
+- Coverage gate (`coverage.sh`): every line
+  of the app must run in tests (unit,
+  snapshot and UI tests all count); the
+  log names each untested function. Keep
+  decisions out of views: put them in
+  `Models/` or `Support/` and unit test
+  them. Pass in outside pieces (store,
+  clock, notifications) so tests can fake
+  them. For an Apple class tests can't
+  fake (e.g. `CKContainer`), declare a
+  protocol with only the methods used,
+  conform the class in an empty extension
+  (`extension CKContainer: Cloud {}`), and
+  pass fakes in tests. An Apple object
+  tests can't make (e.g. a CloudKit
+  event): read its fields by key-value
+  coding, so a test can post an
+  `NSObject` with the same `@objc`
+  properties. Every button and branch in
+  a view needs a UI test or snapshot that
+  reaches it; code nothing can reach gets
+  deleted. A view using Swift's automatic
+  initializer shows its private property
+  defaults as untested; give it an
+  explicit `init`.
+- UI tests launch the app with
+  `App.start`, which passes `-uiTesting`;
+  the app then turns off UIKit animations,
+  so a long-press never lands on a screen
+  still sliding in (it turns into a tap).
+  No retries or longer waits in UI tests,
+  with one exception: CI's free runners (3
+  cores, no GPU) stall now and then, and a
+  long-press held during a stall reaches
+  the app as a tap. `menuItem` presses
+  again only on that sign (menu missing
+  and the tap's own screen open, given by
+  `ifTapped`, e.g. `app.pushed(title)`),
+  after closing it, up to twice, and logs
+  "Long-press read as a tap" in the CI log
+  each time. Any other miss fails. 100%
+  coverage stays; retries are allowed only
+  like this one: tied to a detected stall
+  sign, never blind.
+  Likewise `run-tests.sh` runs a shard
+  once more only when the UI test runner
+  failed to start and no UI test ran, or
+  the simulator dropped out before any
+  test ran; it adds a warning and a
+  summary line. One UI test taps first on
+  purpose, so the stall path runs every
+  time.
+- In `@MainActor` tests, wait with
+  `await fulfillment(of:)`, never
+  `wait(for:)`: it blocks the main actor,
+  so work that needs it never runs. Keep
+  a `ModelContainer` alive as long as any
+  context from it: a context whose
+  container was freed crashes.
+- Read many elements in one accessibility
+  snapshot (`app.snapshot()`), not
+  element by element: hundreds of separate
+  queries a screen timed out when a runner
+  stalled.
+- Snapshot tests take a picture of every
+  `ScreenID` with `Looks.check` in light,
+  dark and large text (on a screen three
+  phones tall, so long screens show in
+  full), on a fixed day (`\.now`; views
+  read "today" from it, not `Date()`).
+  Images live in
+  `NovarenaTests/__Snapshots__/`. CI records
+  missing ones and commits them to the PR
+  branch (pull before pushing again),
+  pushing with the snapshot app's token so
+  CI runs on the new commit
+  (`docs/SNAPSHOT-APP.md`). Without the
+  app's secrets (e.g. Dependabot PRs) it
+  pushes with CI's own token and starts
+  the run itself; GitHub then also holds a
+  duplicate behind "Approve and run"
+  (`action_required` in `actions_list`),
+  which needs no approval. Look at the
+  images, then push the next real change.
+  Deleting images re-records them too.
+  After an intended visual change, add
+  the `record-snapshots` label to the PR
+  to record all of them again; a failed
+  comparison uploads `snapshot-diffs`.
+  `precision: 0.9999` lets only 0.01% of
+  pixels differ (~130 on a phone image):
+  runners now and then draw up to ~36 a
+  shade off, so 1 and 0.99999 were
+  flaky. Don't loosen it further: at
+  0.99 a changed date format passed.
+  Re-record after Xcode, iOS or snapshot
+  library updates. Nothing animated on a
+  snapshot screen: a `ProgressView`
+  spinner draws a different frame each
+  run, so use a still image there.
+  CI tests on iPhone 17 with the iOS the
+  images were drawn on, saved in
+  `__Snapshots__/iOS.txt` (`run-tests.sh`
+  logs which), so every run matches even
+  while GitHub rolls out a new runner
+  image. `record-snapshots` draws on the
+  newest iOS and saves it; so does the
+  first run without the file (a new app).
+  A newer iOS on the runner only warns on
+  the PR: move to it by adding
+  `record-snapshots`. If the saved iOS is
+  gone, the snapshot tests fail and say
+  to record again (iOS draws system
+  controls, e.g. the date picker's
+  format). On `main`, a newer iOS opens a
+  PR moving to it, assigned to the owner
+  (`docs/IOS-UPDATES.md`). Tests run in
+  US English and UTC whatever the
+  simulator's settings (`project.yml`
+  scheme, `App.start`).
+- Test-only Swift packages are declared in
+  `Packages/TestSupport/Package.swift`
+  (pinned with `exact:`), which tests
+  `import TestSupport` to get. Dependabot
+  opens weekly PRs for them, and for the
+  GitHub Actions and SwiftLint versions:
+  check CI and summarize what changed
+  (release notes); the user merges. If
+  snapshots change, re-record them before
+  merging.
+- CI's `Workflows & scripts` job runs
+  actionlint on `.github/workflows/` and
+  ShellCheck on every `*.sh`. The session
+  start hook installs both (versions in
+  `.github/scripts/checkers.txt`), so run
+  them before pushing workflow or script
+  changes.
+- Periphery (CI step after the build)
+  fails on unused code. Delete it rather
+  than ignore it; no `periphery:ignore`
+  comments. For a real false positive,
+  restructure the code or ask the user.
+- Saved data (SwiftData) must never be
+  lost. The models are in
+  `Models/Schema.swift` (`SchemaV1`, used
+  through aliases such as `Item`), frozen
+  from the first release on: never edit a
+  released schema. To change a stored
+  model, follow the steps in that file: a
+  new schema version, a migration stage,
+  and a test that the previous version's
+  data opens (`StoreTests`). `AppStore`
+  opens the store (in memory for UI and
+  snapshot tests); if it can't,
+  `StoreErrorView` shows instead.
+- Seed data (`SeedData`) fills the
+  screens that need it in UI tests,
+  snapshots and App Store screenshots
+  (`ScreenID.isSeeded`, or launching with
+  `-seedData`). Its text stands for
+  what a user typed, so
+  `LocalizationTests` lets it through.
+- Notifications go through a `Notifier`
+  that `AppLaunch` passes in: the phone's
+  notification center normally,
+  `SilentNotifier` in UI tests (no
+  permission prompt, nothing scheduled),
+  and `RecordingNotifier` in unit tests to
+  check what's scheduled. One UI test
+  launches with `-notifications` to see
+  the real permission prompt. What to
+  schedule is decided in `Models/` (e.g.
+  `Reminder`) and unit tested.
+- Settings use `@AppStorage` with the
+  `UserDefaults` `AppLaunch` passes in (an
+  emptied suite in UI tests, set up per
+  screen by `ScreenID.prepare`).
+- The Xcode project is generated from
+  `project.yml` by XcodeGen. Never add a
+  `.xcodeproj`; put new source files under
+  `Novarena/` (picked up automatically) and
+  build settings in `project.yml`.
+  Info.plist is generated from
+  `INFOPLIST_KEY_*` settings there. Add
+  permission strings the same way.
+- After pushing, check CI with the GitHub
+  MCP tools (`actions_list`,
+  `get_job_logs`) and fix failures before
+  calling the work done. Re-read Swift
+  changes carefully first, since each CI
+  round trip takes a few minutes.
+
+## Shipping to the phone (TestFlight)
+- `.github/workflows/testflight.yml`
+  (manual, `workflow_dispatch`) archives,
+  cloud-signs with an App Store Connect
+  API key, uploads to TestFlight, and tags
+  the commit (e.g. `v0.4.6-build12`).
+- One-time setup (bundle ID, App Store
+  Connect app, an API key, and the repo
+  secrets `APPLE_TEAM_ID`,
+  `ASC_ISSUER_ID`, `ASC_KEY_ID` and
+  `ASC_KEY_P8`): the steps are in
+  `docs/NEW-APP.md`; walk the user through
+  them. Never print, log, or ask for the
+  secrets.
+- When asked to ship or test on the
+  phone, trigger it with
+  `actions_run_trigger` (`run_workflow`,
+  `workflow_id: testflight.yml`,
+  `ref: main`). Verify the log shows
+  "Upload succeeded". The build shows in
+  TestFlight about 5–15 min later.
+- Version scheme (`MARKETING_VERSION` in
+  `project.yml`; Apple allows only three
+  numbers): before 1.0, `0.<step>.0` when
+  a planned step lands, patch for fixes
+  between steps, bumped in the same PR.
+  1.0.0 is the first App Store release;
+  after that, patch for bug fixes, minor
+  for new features. Build number =
+  workflow run number (automatic).
+- iOS 17+, iPhone only, portrait.
+  `ITSAppUsesNonExemptEncryption` is NO;
+  keep it that way unless adding real
+  encryption.
+- Capabilities that need entitlements
+  (HealthKit, push, iCloud, App Groups)
+  need extra signing setup: a
+  `.entitlements` file via `project.yml`,
+  the capability enabled on the App ID,
+  and changes to the TestFlight workflow
+  (it archives with
+  `CODE_SIGNING_ALLOWED=NO`). iCloud sync
+  step by step, with what was learned
+  building it: `docs/ICLOUD.md`.
+- Keep the privacy manifest
+  (`Novarena/PrivacyInfo.xcprivacy`) and
+  the privacy page (`site/privacy.html`)
+  true to what the app does: update both
+  when adding tracking, collected data, or
+  APIs Apple requires a reason for (e.g.
+  `UserDefaults` / `@AppStorage`: reason
+  `CA92.1`). `PrivacyInfoTests` checks the
+  manifest.
+- `site/` holds the App Store support and
+  privacy pages; `pages.yml` publishes
+  them to GitHub Pages on each push to
+  `main` that changes them, at
+  `https://<owner>.github.io/<repo>/` and
+  `.../privacy.html` (the URLs App Store
+  Connect asks for). Keep the support page
+  true to the app's features.
+- App Store screenshots: `AppStoreTests`
+  draws them with `AppStoreShots` from the
+  same screens as the snapshots, framed
+  and captioned, at the sizes App Store
+  Connect takes; the images to upload are
+  in
+  `NovarenaTests/__Snapshots__/AppStoreTests/`.
+  Update the shots and captions when a
+  pictured screen or a listed feature
+  changes.
+- The app icon comes from
+  `.github/scripts/app-icon.sh <mark>
+  <color> <color>` (a letter or two on a
+  gradient, in light, dark and tinted),
+  and the product page header from
+  `.github/scripts/app-header.sh`. Both
+  run in the cloud session (ImageMagick).
+  Use the same colors in `AppStoreTests`.
