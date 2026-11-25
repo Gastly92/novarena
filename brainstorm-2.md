@@ -4,7 +4,7 @@ Working notes from the second design
 conversation. The game has pivoted from the
 sleeper ship ([brainstorm.md](brainstorm.md))
 to an **endless, turn-based tactics game with
-roguelike runs**: a clan of named heroes
+roguelike runs**: a party of named units
 fights gladiator-style against random teams
 of foes. Nothing here is final.
 
@@ -48,7 +48,7 @@ Changed:
   The "cozy, nobody dies, no rivals" pillar
   is dropped.
 - **Leveling is in.** Brainstorm 1 ruled out
-  levels and XP; here, collecting heroes,
+  levels and XP; here, collecting units,
   leveling them and unlocking their upgrades
   is part of the fun.
 
@@ -84,11 +84,11 @@ rules at once:
 - **Why arenas, weather and hazards change**:
   the entity reshapes its pocket world on a
   whim.
-- **Why a fallen hero can come back**: the
+- **Why a fallen unit can come back**: the
   entity puts its toys back together, unless
   it decides a fight is to the death.
 - **Why there's a home base**: it's the
-  heroes' corner of the pocket world.
+  units' corner of the pocket world.
 - **Why cosmetics and shinies**: the entity
   likes its collection to look good.
 - **The commander actions** could be the
@@ -96,19 +96,24 @@ rules at once:
 
 Open: who the player is. The entity itself, a
 favourite it lets play, or a captive champion
-who runs the clan. Similar premises exist
+who runs the party. Similar premises exist
 (Marvel's *Contest of Champions*, *Dissidia*,
 Star Trek's Q), so the entity and its world
 need their own character, and the game should
 borrow no names from the album or from those.
 
-## Heroes and the clan
+## Units and the party
 
-- **Like FFTA's clan.** You build up a roster
-  of fighters over time, not a deck.
+- **Words.** A **unit** is any character in a
+  fight, on either side (not all of them
+  fight). The player's group is the
+  **party**. Not "hero", "fighter", "clan" or
+  "roster".
+- **Like FFTA's clans.** You build up a party
+  over time, not a deck.
 - **No cards.** No card frames, no deck, no
-  draw. Heroes are clan members.
-- **Every hero is named.** Not "Mouse Knight"
+  draw. Units are party members.
+- **Every unit is named.** Not "Mouse Knight"
   but *Gerald*, a mouse knight. There can be
   other mouse knights, each their own person
   with their own name (and presumably their
@@ -116,7 +121,7 @@ borrow no names from the album or from those.
 - **Collecting them all** is a goal in
   itself.
 - **Traits stack.** Like the fork's innate
-  abilities, a hero can have any number of
+  abilities, a unit can have any number of
   always-on traits on top of their kit:
   Gerald might be *Small*, *Brave* and
   *Fire-wary* at once. Traits are pure
@@ -126,28 +131,28 @@ borrow no names from the album or from those.
   replacing "innate" (which autocorrects to
   "inmate"); others to consider: *boon*,
   *gift*, *mark*.
-- **Hand-made, one of a kind.** Every hero is
+- **Hand-made, one of a kind.** Every unit is
   designed by hand: name, look, kit. No
-  generated heroes or name variants. A fixed
-  roster to collect, which makes each one
-  worth having (and makes art and writing the
-  main cost).
-- **Two ways to gain heroes:**
+  generated units or name variants. A fixed
+  set to collect, which makes each one worth
+  having (and makes art and writing the main
+  cost).
+- **Two ways to gain units:**
   - **Recruit from teams you beat**, the
     Battle Factory swap.
   - **Buy with currency.**
 
 ## The fight
 
-- **Everyone fights.** Every fighter you
-  bring enters the arena. No bench, no
-  sitting out: games that don't let you use
-  everyone are less fun.
+- **Everyone fights.** Every unit you bring
+  enters the arena. No bench, no sitting out:
+  games that don't let you use everyone are
+  less fun.
 - **Fight size isn't capped by the screen.**
   The battlefield can be panned, so large
   fights are fine on a phone.
-- **You command everyone.** Every hero's turn
-  is yours to play; no hero runs on
+- **You command everyone.** Every unit's turn
+  is yours to play; no unit runs on
   autopilot.
 - **The player is not on the field.** You
   command from outside, but can still reach
@@ -173,7 +178,7 @@ view, CI does the building). So:
   so nearer ones draw in front. No 3D.
 - **Sprites face left or right only**,
   mirrored. One idle, one move, one attack
-  and one hit animation per hero is a
+  and one hit animation per unit is a
   workable floor. Four or eight facings would
   multiply the art for little gain.
 - **Height is a property of the ground** (a
@@ -186,10 +191,10 @@ view, CI does the building). So:
    arena and the foe team: names, looks and
    any trait that is always visible (see
    [What you can see](#what-you-can-see)).
-2. **Deploy.** Place your heroes anywhere in
+2. **Deploy.** Place your units anywhere in
    your starting zone.
-3. **Fight.** Heroes act one at a time in
-   timeline order (below). On a hero's turn
+3. **Fight.** Units act one at a time in
+   timeline order (below). On a unit's turn
    it can **move up to its Move distance and
    take one action**, in either order, and
    may split its movement around the action.
@@ -199,20 +204,20 @@ view, CI does the building). So:
 ### Speed and the timeline
 
 Speed is a stat, and it decides both turn
-order and **how often** a hero acts: faster
-heroes get slightly more turns. This is the
+order and **how often** a unit acts: faster
+units get slightly more turns. This is the
 "charge time" family (FFT, FFX), and it makes
 time magic one of the most important kinds of
 ability.
 
-- **Every hero has a next-turn time** on a
+- **Every unit has a next-turn time** on a
   shared clock measured in ticks.
-- **After acting, a hero's next turn is
+- **After acting, a unit's next turn is
   `10000 ÷ Speed` ticks later** (whole
   numbers, rounded down). Speed 100 waits 100
-  ticks, Speed 125 waits 80, Speed 80 waits
-  125. Over 1,000 ticks the Speed 125 hero
-       acts 12 times and the Speed 80 hero 8.
+  ticks, Speed 125 waits 80, and Speed 80
+  waits 125. Over 1,000 ticks the Speed 125
+  unit acts 12 times and the Speed 80 unit 8.
 - **Actions have a weight.** A heavy action
   (a big swing, a long spell) adds to the
   wait; a light one (a quick jab, a buff)
@@ -222,7 +227,7 @@ ability.
 - **The timeline is always on screen**: a
   strip of portraits showing the next ~10
   turns. While planning, it shows where the
-  hero *would* land after the chosen action,
+  unit *would* land after the chosen action,
   and where a haste or a delay would move
   everyone.
 - **Ties are settled by a fixed ladder**,
@@ -238,13 +243,13 @@ ability.
 **Time magic** works on the timeline
 directly:
 
-- **Haste / Slow** change a hero's Speed for
+- **Haste / Slow** change a unit's Speed for
   a while.
 - **Delay** pushes a foe's next turn back a
   fixed number of ticks. **Quicken** pulls an
   ally's forward, even to "now".
 - **Stop** (rare, bosses and legends) removes
-  a hero from the timeline for a fixed time.
+  a unit from the timeline for a fixed time.
 
 **Charged abilities** take time to go off. A
 charged spell is placed on the timeline with
@@ -259,7 +264,7 @@ making every foe announce every move.
 
 | Stat | What it does |
 |---|---|
-| **HP** | Health. At 0 the hero is down. |
+| **HP** | Health. At 0 the unit is down. |
 | **Attack** | Physical damage. |
 | **Magic** | Special damage (spells, beams, psychic, tech). |
 | **Armor** | Reduces physical damage. |
@@ -312,8 +317,8 @@ damage = Power × Offense ÷ (100 + Defense)
   Fireball (Power 120, Magic 150) on Gerald:
   120 × 150 ÷ 140 = 128, about 43%.
 
-**Element modifiers are per hero, not a type
-chart.** Each hero lists its own weaknesses,
+**Element modifiers are per unit, not a type
+chart.** Each unit lists its own weaknesses,
 resistances and immunities as traits:
 
 - **Immune:** 0 damage, whatever the
@@ -322,7 +327,7 @@ resistances and immunities as traits:
 - **Resist:** half. **Weak:** one and a half.
 - **Absorb** (rare): the hit heals instead.
 
-Hand-made heroes make a per-hero list work
+Hand-made units make a per-unit list work
 better than an 18×18 chart: the fire demon is
 immune to fire because it is a fire demon,
 not because of a table.
@@ -331,10 +336,10 @@ not because of a table.
 
 Shields come from **abilities, traits and
 items** (Honkai: Star Rail style). Nobody has
-a shield just from their stats, so many
-heroes have none. But shields are **typed**
-(DOS2 style), and that is where the variety
-comes from:
+a shield just from their stats, so many units
+have none. But shields are **typed** (DOS2
+style), and that is where the variety comes
+from:
 
 - **A shield is a layer on top of HP** that
   absorbs damage of its kind until broken.
@@ -343,12 +348,12 @@ comes from:
   Plate stops a knockdown. So control is
   earned by breaking the shield first, and
   it's predictable.
-- **Layers stack**: a hero can carry several,
+- **Layers stack**: a unit can carry several,
   and each one needs its own answer.
 
 **Protection is passive, not a turn spent.**
 Pokémon's Protect is fun but wastes turns.
-Here, defensive heroes are always ready:
+Here, defensive units are always ready:
 
 - **Shield bearer**, *Bodyguard*: the first
   attack each round on an ally within 2 m is
@@ -398,12 +403,12 @@ which.
 
 ### A full toolbox
 
-**Heroes have as many abilities as suits
+**Units have as many abilities as suits
 them**, not a fixed four like Pokémon. A
 wizard with a dozen spells keeps all twelve.
 Nothing is swapped out before a fight; what
 limits a turn is the resource each ability
-costs (below), so every hero always has their
+costs (below), so every unit always has their
 whole toolbox.
 
 On a phone, a long ability list needs a good
@@ -415,8 +420,8 @@ affordable this turn first.
 The fork's lesson: accuracy became a price
 (fewer uses), not a coin flip. Here every
 attack hits, and the strong ones cost more of
-the hero's resource. Heroes don't all share
-one resource; each kind fits its hero and
+the unit's resource. Units don't all share
+one resource; each kind fits its unit and
 behaves differently:
 
 | Resource | Example | Behaves like |
@@ -426,22 +431,22 @@ behaves differently:
 | Stamina | Knight | Refills fast if the turn was light |
 | Ammo | Gunner, pickups | A fixed count, no refill mid-fight |
 
-- **Some heroes mix them**: a spellblade
-  might spend stamina on sword work and mana
-  on spells.
+- **Some units mix them**: a spellblade might
+  spend stamina on sword work and mana on
+  spells.
 - **Resources give counters too**: an EMP
   drains charge, a silence locks mana,
   exhaustion hits stamina. Another layer of
   the era-against-era matchups.
 - **Cheap, reliable attacks always exist**,
-  so a hero with an empty pool still has a
+  so a unit with an empty pool still has a
   turn (the fork's strong-but-short vs.
   reliable choice).
 
 ### Kinds of status
 
 Borrowed from *Guild Wars 1*: effects on a
-hero come in kinds, each with its own rules,
+unit come in kinds, each with its own rules,
 and abilities can interact with a kind as a
 whole:
 
@@ -449,7 +454,7 @@ whole:
 |---|---|---|
 | Enchantment | A magic boon, can be dispelled | Ward, Haste |
 | Hex | A magic curse, can be cleansed | Weakness, Doom |
-| Stance | A hero's own posture, one at a time | Brace, Berserk |
+| Stance | A unit's own posture, one at a time | Brace, Berserk |
 | Condition | A physical state | Poison, Burn, Paralysis |
 
 - **Abilities key off kinds**: "deals more to
@@ -460,8 +465,8 @@ whole:
   join (a mech's *malfunction*, a spirit's
   *possession*).
 - **The same status can mean different things
-  per hero.** A condition has a default
-  effect, and a hero's traits can change it:
+  per unit.** A condition has a default
+  effect, and a unit's traits can change it:
   a paralysed knight's muscles lock (actions
   get heavier), while a paralysed mech
   short-circuits (its charge drains instead).
@@ -474,17 +479,17 @@ Following the fork's determinism rules:
   no matching shield, no immunity. No
   percentage chance.
 - **Durations are fixed** and counted in the
-  affected hero's own turns ("Frozen: 2
+  affected unit's own turns ("Frozen: 2
   turns").
 - **No locks.** Control never takes away
-  turns forever: a stun **delays** a hero on
+  turns forever: a stun **delays** a unit on
   the timeline by a fixed amount rather than
-  skipping it, and a hero can't be stunned
+  skipping it, and a unit can't be stunned
   again until it has acted (the fork's flinch
   cap).
 - **Some statuses are taxes, not skips**,
   like the fork's paralysis: "Shocked" makes
-  the hero's actions heavier instead of
+  the unit's actions heavier instead of
   cancelling them.
 
 ### Escalation
@@ -505,25 +510,25 @@ maths and the touch controls:
   exact and repeatable. Distances compare
   squared values, so no square roots or
   floating point.
-- **Every hero is a circle.** Size sets the
+- **Every unit is a circle.** Size sets the
   radius: small (a mouse knight), medium (a
   wizard), large (a mech), huge (a dragon).
-  Circles can't overlap, so big heroes block
+  Circles can't overlap, so big units block
   paths and are easier to surround, and area
   attacks catch them more easily.
 - **Pathfinding uses a hidden fine grid**
   (say 10 cm cells) with A*, smoothed into
   straight lines. The player never sees a
   grid. The reachable area is drawn as a
-  shaded region, shrunk by the hero's radius
-  so big heroes can't squeeze through small
+  shaded region, shrunk by the unit's radius
+  so big units can't squeeze through small
   gaps.
 - **Melee reach** is measured edge to edge
   (the attacker's radius plus the weapon's
   reach), so a dragon's bite reaches further
   than Gerald's sword.
 - **Touch controls:** drag a ghost of the
-  hero, with snap points at useful spots
+  unit, with snap points at useful spots
   (cover, the edge of an area, in reach of a
   foe).
 - **Threat overlay:** while placing, show
@@ -564,13 +569,13 @@ random, and can change a fight drastically:
 
 ### Interactions beyond abilities
 
-Heroes can act on each other and the arena in
-ways any hero can try, not only through their
+Units can act on each other and the arena in
+ways any unit can try, not only through their
 own abilities:
 
 - **Shove**: push someone a short way. Off a
   cliff, into lava or a pit, or into another
-  hero.
+  unit.
 - **Knockback** (pushed further, by a hit)
   and **knockdown** (put on the ground,
   delayed on the timeline).
@@ -581,7 +586,7 @@ own abilities:
   someone in reach.
 - **Size and weight decide, not dice**: how
   far a shove goes is a fixed rule of the two
-  heroes' sizes and strength. Gerald can't
+  units' sizes and strength. Gerald can't
   shove a dragon; a dragon can shove Gerald
   across the arena. The preview shows where
   someone will land.
@@ -589,10 +594,10 @@ own abilities:
 ### Items and equipment
 
 - **Equipment** is worn into the fight, with
-  a limit per hero, and comes with the hero's
+  a limit per unit, and comes with the unit's
   upgrades.
 - **Pickups** lie on the arena or drop from
-  downed foes. Any hero can grab one. A
+  downed foes. Any unit can grab one. A
   wizard can pick up an AK-47 and use it: the
   weapon brings its own attack (power, range,
   delivery, element) and uses the holder's
@@ -607,9 +612,9 @@ own abilities:
   charm that puts you first on the timeline
   once.
 
-### Support heroes
+### Support units
 
-Support heroes have three kinds of tools:
+Support units have three kinds of tools:
 
 - **Buffs and healing**: raise stats, add
   shields, heal, cleanse statuses.
@@ -625,7 +630,7 @@ Not every fight has to be to the death:
 
 - **Fights have stakes**: an exhibition bout
   (the loser is knocked out and recovers) vs.
-  a fight to the death (a hero who falls may
+  a fight to the death (a unit who falls may
   be lost). What a fall costs could depend on
   the fight.
 - **Abilities can be lethal or not**: a
@@ -643,7 +648,7 @@ one:
 - **Control**: charm or mind control, so a
   foe fights for you for a fixed time.
 - **Seduction**: a foe that won't attack the
-  hero who charmed it, like the fork's
+  unit who charmed it, like the fork's
   infatuation (which never cancels a turn).
 - **A reason to use them**: foes won over
   this way might be easier to recruit, or pay
@@ -662,20 +667,20 @@ in:
 - **A small set of commander actions**,
   chosen before the run (a healing spell, a
   war chant that hastes everyone for a round,
-  a ward on one hero, a rally that cleanses
+  a ward on one unit, a rally that cleanses
   statuses).
 - **Each is usable once per fight**, like the
   fork's free gimmicks (one Mega, one Z-Move
   per team), so the question is *when* to use
   it.
 - **They act between turns**, at any moment
-  you choose, and don't take a hero's turn.
+  you choose, and don't take a unit's turn.
 
 The fork's **free gimmicks** are the model
 for what the commander can do. Translated:
 
-- **Dynamax → Titan**: a hero's HP doubles
-  for 3 turns. Once per hero per fight.
+- **Dynamax → Titan**: a unit's HP doubles
+  for 3 turns. Once per unit per fight.
 - **Z-Move → Finisher**: one attack does 1.5×
   damage and ignores defences.
 - Possibly **Mega Evolution → a
@@ -712,7 +717,7 @@ carries over:
   action.
 - **Battle log** of every action and its
   damage.
-- **Knowledge is kept**: once a foe hero's
+- **Knowledge is kept**: once a foe unit's
   stats are seen, every later fight against
   them is exact (brainstorm 1's "knowledge is
   the level-up", and the bestiary idea).
@@ -755,7 +760,7 @@ above:
 - **Innates (here: traits) vs. chosen
   abilities.** An innate is a pure upside and
   always visible; a chosen ability can carry
-  a real downside. Heroes could have both:
+  a real downside. Units could have both:
   always-visible traits, plus a kit that has
   trade-offs.
 - **The preview and the AI share one damage
@@ -783,31 +788,31 @@ above:
 
 ## Progression
 
-- **Heroes level up** and **unlock upgrades**
+- **Units level up** and **unlock upgrades**
   (new abilities, passives, evolutions).
 - **Stat upgrades are bought outside
   battle**, like *Fire Emblem: The Sacred
   Stones*' stat boosters, so maximising one
-  hero is something you work on between
+  unit is something you work on between
   fights.
 - **Levels may not raise base stats.** Battle
   experience could do something else instead
   (unlock abilities or traits, a mastery, a
   title); what exactly is open.
 - **Currency** is earned by winning. It buys
-  recruits (heroes on offer), possibly
+  recruits (units on offer), possibly
   upgrades or training, and **cosmetic
-  upgrades** (looks for heroes, the home
+  upgrades** (looks for units, the home
   base).
 - **Flair and shinies**: rare cosmetic
-  variants of heroes and their equipment (a
+  variants of units and their equipment (a
   gilded sword, a shiny palette), like
   Pokémon's shinies.
 - **Losing ends the streak**, but something
-  persists. With a leveling clan, the obvious
-  answer is **the clan itself**: heroes,
-  levels and upgrades stay; only the streak
-  (and maybe in-run gold) resets.
+  persists. With a leveling party, the
+  obvious answer is **the party itself**:
+  units, levels and upgrades stay; only the
+  streak (and maybe in-run gold) resets.
 
 ### Idea: open level vs. fixed level
 
@@ -815,8 +820,8 @@ Battle Facilities in Pokémon offer "Lv. 50"
 and "Open Level" brackets. The same could
 work here:
 
-- **Open bracket:** your heroes' levels
-  count. A stronger clan goes further.
+- **Open bracket:** your units' levels count.
+  A stronger party goes further.
 - **Fixed bracket:** everyone is set to the
   same level. Pure tactics and team-building,
   nothing that grinding can fix.
@@ -833,10 +838,10 @@ converted the Battle Factory and is working
 on the Battle Tower. This game can have more
 than one too. Ideas:
 
-- **Draft**: fight with heroes offered at
+- **Draft**: fight with units offered at
   random, swap in from beaten teams (the
   Factory).
-- **Clan gauntlet**: your own clan, endless
+- **Party gauntlet**: your own party, endless
   (the Tower).
 - **Boss rush**: champions only.
 - **Trials**: hand-made puzzles, such as "win
@@ -847,20 +852,20 @@ than one too. Ideas:
 
 A **bestiary** is a must, like the Pokédex:
 
-- **Every hero and foe you've met**, with
+- **Every unit and foe you've met**, with
   what you've learned about them. Once a
   foe's stats are known, every later preview
   against them is exact ("knowledge is kept",
   from [What you can
   see](#what-you-can-see)).
-- **Heroes you own vs. heroes you've seen**,
-  so collecting them all has a checklist.
+- **Units you own vs. units you've seen**, so
+  collecting them all has a checklist.
 - **Shinies and flair** collected too.
 
 ## Outside of combat
 
 Combat is the primary system. Between fights
-is clan management, FFTA-style: recruiting,
+is party management, FFTA-style: recruiting,
 leveling, choosing upgrades, picking who to
 bring.
 
@@ -878,14 +883,14 @@ A home base, like in some gacha games:
   menus are easier to build.
 - **Places in the base are the game's
   systems**: the arena gate, the barracks
-  (clan), the shop, the training ground, and
+  (party), the shop, the training ground, and
   so on.
 - **Cosmetics** can decorate it.
 
 ## Set aside
 
 - **Cards, decks and draws** (Lost
-  Kingdoms-style summoning). Heroes are clan
+  Kingdoms-style summoning). Units are party
   members instead.
 - **A summoner on the field.** The player
   commands from outside.
@@ -915,10 +920,10 @@ A home base, like in some gacha games:
   main one.
 - **Element list:** which elements exist, and
   how many.
-- **How big fights get**, given every hero
+- **How big fights get**, given every unit
   takes its own turn and you play them all.
-- **Fallen fighters:** knocked out for the
-  fight only, injured for the run, or lost?
+- **Fallen units:** knocked out for the fight
+  only, injured for the run, or lost?
   Possibly decided by the fight's stakes
   (lethal or not).
 - **How bargaining and charm are decided**
@@ -937,7 +942,7 @@ A home base, like in some gacha games:
   join? (Later.)
 - **Difficulty over a streak.** The fork
   draws foes uniformly with no scaling; with
-  a leveling clan, foes probably need to
+  a leveling party, foes probably need to
   scale.
 
 ## Roadmap
@@ -956,14 +961,13 @@ built in the real game and improved as we go.
    coverage gate.
 3. **Repository set-up and TestFlight with a
    "hello world"** build on the phone.
-4. **Basic battle engine with a few heroes.**
+4. **Basic battle engine with a few units.**
    Several pull requests: the rules as a pure
    Swift package (timeline, damage, shields,
    immunities, movement), a first handful of
-   heroes, then a battle screen, until it
-   starts to feel right. Tag **0.0.1**.
-   ("Hero" is a working name; the final word
-   is not chosen.)
+   units, then a battle screen, until it
+   starts to feel right. (0.0.1 went to the
+   hello world, so this is a later 0.0.x.)
 5. **The rest of the game**: battle flow,
-   menus, clan management, drafting, earning
+   menus, party management, drafting, earning
    and spending currency, and so on.
