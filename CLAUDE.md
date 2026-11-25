@@ -346,9 +346,12 @@ uploading) runs in CI.
   TestFlight about 5–15 min later.
 - Version scheme (`MARKETING_VERSION` in
   `project.yml`; Apple allows only three
-  numbers): before 1.0, `0.<step>.0` when
-  a planned step lands, patch for fixes
-  between steps, bumped in the same PR.
+  numbers): early builds are `0.0.x`,
+  starting at 0.0.1 (the hello world),
+  bumped in the PR that changes what
+  reaches the phone. The scheme past that
+  is decided once the battle prototype
+  feels right (roadmap step 4).
   1.0.0 is the first App Store release;
   after that, patch for bug fixes, minor
   for new features. Build number =
