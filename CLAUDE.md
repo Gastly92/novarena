@@ -25,6 +25,8 @@ uploading) runs in CI.
   capital A in the middle (it reads as
   "Nov").
 - Bundle ID `com.gastly92.novarena`.
+- Repo `gastly92/novarena` (first
+  created as `ios-game-01`).
 
 ## Building
 - This container is Linux: nothing
@@ -143,10 +145,7 @@ uploading) runs in CI.
     `.fullWidth(_:)`, `.wrapsText()`
     (`Views/Components/ViewHelpers.swift`);
     in UI tests `App.start`,
-    `app.text/button/bar(_:)`,
-    `app.menuItem(_:on:ifTapped:)`
-    (long-press; see below),
-    `element.appears()`.
+    `app.text(_:)`, `element.appears()`.
   - Long text uses a `"""` literal with
     `\` line breaks (one key, still one
     sentence).
@@ -199,37 +198,23 @@ uploading) runs in CI.
 - UI tests launch the app with
   `App.start`, which passes `-uiTesting`;
   the app then turns off UIKit animations,
-  so a long-press never lands on a screen
-  still sliding in (it turns into a tap).
-  No retries or longer waits in UI tests,
-  with one exception: CI's free runners (3
-  cores, no GPU) stall now and then, and a
-  long-press held during a stall reaches
-  the app as a tap. `menuItem` presses
-  again only on that sign (menu missing
-  and the tap's own screen open, given by
-  `ifTapped`, e.g. `app.pushed(title)`),
-  after closing it, up to twice, and logs
-  "Long-press read as a tap" in the CI log
-  each time. Any other miss fails. 100%
-  coverage stays; retries are allowed only
-  like this one: tied to a detected stall
-  sign, never blind.
-  Likewise `run-tests.sh` runs a shard
+  so a test never acts on a screen still
+  sliding in. No retries or longer waits
+  in UI tests. `run-tests.sh` runs a shard
   once more only when the UI test runner
   failed to start and no UI test ran, or
   the simulator dropped out before any
   test ran; it adds a warning and a
-  summary line. One UI test taps first on
-  purpose, so the stall path runs every
-  time.
+  summary line. (The template's
+  long-press helper, `menuItem`, retried
+  a long-press read as a tap after a
+  runner stall; bring it back from
+  `gastly92/ios-template` when a screen
+  needs a long-press.)
 - In `@MainActor` tests, wait with
   `await fulfillment(of:)`, never
   `wait(for:)`: it blocks the main actor,
-  so work that needs it never runs. Keep
-  a `ModelContainer` alive as long as any
-  context from it: a context whose
-  container was freed crashes.
+  so work that needs it never runs.
 - Read many elements in one accessibility
   snapshot (`app.snapshot()`), not
   element by element: hundreds of separate
@@ -239,9 +224,9 @@ uploading) runs in CI.
   `ScreenID` with `Looks.check` in light,
   dark and large text (on a screen three
   phones tall, so long screens show in
-  full), on a fixed day (`\.now`; views
-  read "today" from it, not `Date()`).
-  Images live in
+  full). Once screens show dates, fix the
+  day too (the template's `\.now`
+  environment value). Images live in
   `NovarenaTests/__Snapshots__/`. CI records
   missing ones and commits them to the PR
   branch (pull before pushing again),
@@ -313,41 +298,16 @@ uploading) runs in CI.
   than ignore it; no `periphery:ignore`
   comments. For a real false positive,
   restructure the code or ask the user.
-- Saved data (SwiftData) must never be
-  lost. The models are in
-  `Models/Schema.swift` (`SchemaV1`, used
-  through aliases such as `Item`), frozen
-  from the first release on: never edit a
-  released schema. To change a stored
-  model, follow the steps in that file: a
-  new schema version, a migration stage,
-  and a test that the previous version's
-  data opens (`StoreTests`). `AppStore`
-  opens the store (in memory for UI and
-  snapshot tests); if it can't,
-  `StoreErrorView` shows instead.
-- Seed data (`SeedData`) fills the
-  screens that need it in UI tests,
-  snapshots and App Store screenshots
-  (`ScreenID.isSeeded`, or launching with
-  `-seedData`). Its text stands for
-  what a user typed, so
-  `LocalizationTests` lets it through.
-- Notifications go through a `Notifier`
-  that `AppLaunch` passes in: the phone's
-  notification center normally,
-  `SilentNotifier` in UI tests (no
-  permission prompt, nothing scheduled),
-  and `RecordingNotifier` in unit tests to
-  check what's scheduled. One UI test
-  launches with `-notifications` to see
-  the real permission prompt. What to
-  schedule is decided in `Models/` (e.g.
-  `Reminder`) and unit tested.
-- Settings use `@AppStorage` with the
-  `UserDefaults` `AppLaunch` passes in (an
-  emptied suite in UI tests, set up per
-  screen by `ScreenID.prepare`).
+- No saved data, notifications or
+  settings yet. When they come, start
+  from the template's versions
+  (`gastly92/ios-template`): SwiftData
+  with a frozen, versioned schema and
+  migration tests (saved data must never
+  be lost); a `Notifier` passed in at
+  launch; `@AppStorage` with test-owned
+  `UserDefaults` (and the privacy
+  manifest's `CA92.1` reason).
 - The Xcode project is generated from
   `project.yml` by XcodeGen. Never add a
   `.xcodeproj`; put new source files under
@@ -386,9 +346,12 @@ uploading) runs in CI.
   TestFlight about 5–15 min later.
 - Version scheme (`MARKETING_VERSION` in
   `project.yml`; Apple allows only three
-  numbers): before 1.0, `0.<step>.0` when
-  a planned step lands, patch for fixes
-  between steps, bumped in the same PR.
+  numbers): early builds are `0.0.x`,
+  starting at 0.0.1 (the hello world),
+  bumped in the PR that changes what
+  reaches the phone. The scheme past that
+  is decided once the battle prototype
+  feels right (roadmap step 4).
   1.0.0 is the first App Store release;
   after that, patch for bug fixes, minor
   for new features. Build number =

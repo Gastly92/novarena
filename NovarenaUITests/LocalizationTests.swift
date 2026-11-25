@@ -9,18 +9,8 @@ final class LocalizationTests: XCTestCase {
 
   @MainActor
   func testEveryScreen() {
-    let check = LocalizationCheck(
-      // The system's own text: a formatted
-      // date and an error description.
-      systemIDs: [
-        "itemDate", "errorDetails",
-      ],
-      // The sample items' names, as if the
-      // user had typed them.
-      userText: [
-        "Groceries", "Books", "Ideas",
-      ]
+    LocalizationCheck().run(
+      ScreenID.allCases
     )
-    check.run(ScreenID.allCases)
   }
 }

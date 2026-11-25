@@ -1,84 +1,22 @@
 @testable import Novarena
-import SwiftData
 import XCTest
 
-@MainActor
 final class AppLaunchTests: XCTestCase {
-  /// An in-memory store, whatever is asked.
-  private let memory: AppLaunch.Opener =
-    { _ in
-      try AppStore.open(inMemory: true)
-    }
-
-  private func launch(
-    _ args: [String]
-  ) -> AppLaunch {
-    AppLaunch(arguments: args, open: memory)
-  }
-
   func testNormalLaunch() {
-    let normal = launch([])
+    let normal = AppLaunch(arguments: [])
     XCTAssertFalse(normal.isUITesting)
-    XCTAssertEqual(normal.screen, .items)
-    XCTAssertTrue(
-      normal.notifier is PhoneNotifier
-    )
-    XCTAssertEqual(
-      normal.defaults, .standard
-    )
+    XCTAssertEqual(normal.screen, .home)
   }
 
   func testUITestsPickAScreen() {
-    let shown = launch([
-      "-uiTesting",
-      "-showScreen",
-      "settingsOn",
+    let shown = AppLaunch(arguments: [
+      "-uiTesting", "-showScreen", "home",
     ])
     XCTAssertTrue(shown.isUITesting)
-    XCTAssertEqual(shown.screen, .settingsOn)
-    XCTAssertTrue(
-      shown.notifier is SilentNotifier
-    )
-    let isOn = shown.defaults.bool(
-      forKey: Reminder.onKey
-    )
-    XCTAssertTrue(isOn)
-    let unknown = launch([
+    XCTAssertEqual(shown.screen, .home)
+    let unknown = AppLaunch(arguments: [
       "-uiTesting", "-showScreen", "nope",
     ])
-    XCTAssertEqual(unknown.screen, .items)
-  }
-
-  func testRealNotificationsOnRequest() {
-    let real = launch([
-      "-uiTesting", "-notifications",
-    ])
-    XCTAssertTrue(
-      real.notifier is PhoneNotifier
-    )
-  }
-
-  func testSeededScreensGetItems()
-    throws {
-    let seeded = launch([
-      "-uiTesting", "-showScreen", "item",
-    ])
-    let container = try seeded.store.get()
-    let items = try container.mainContext
-      .fetch(FetchDescriptor<Item>())
-    XCTAssertEqual(
-      items.count, SeedData.titles.count
-    )
-  }
-
-  func testStoreErrorScreenFails() {
-    let failed = launch([
-      "-uiTesting",
-      "-showScreen",
-      "storeError",
-    ])
-    XCTAssertThrowsError(
-      try failed.store.get()
-    )
+    XCTAssertEqual(unknown.screen, .home)
   }
 }

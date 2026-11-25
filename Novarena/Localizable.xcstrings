@@ -1,29 +1,5 @@
 {
   "sourceLanguage": "en",
-  "strings": {
-    "%lld items": {
-      "comment": "How many items are in the list.",
-      "localizations": {
-        "en": {
-          "variations": {
-            "plural": {
-              "one": {
-                "stringUnit": {
-                  "state": "translated",
-                  "value": "%lld item"
-                }
-              },
-              "other": {
-                "stringUnit": {
-                  "state": "translated",
-                  "value": "%lld items"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
+  "strings": {},
   "version": "1.0"
 }

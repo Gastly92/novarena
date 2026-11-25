@@ -16,18 +16,14 @@ extension XCUIApplication {
 
   /// Launches the app for a UI test with
   /// `-uiTesting` (the app turns off
-  /// animations), and `-seedData` when
-  /// `seeded`.
+  /// animations).
   @MainActor
   static func start(
-    seeded: Bool = false,
     arguments: [String] = []
   ) -> XCUIApplication {
     let app = XCUIApplication()
-    let seed = seeded
-      ? ["-seedData"] : []
     app.launchArguments = ["-uiTesting"]
-      + fixedRegion + seed + arguments
+      + fixedRegion + arguments
     app.launchEnvironment["TZ"] = "UTC"
     app.launch()
     return app
@@ -52,18 +48,6 @@ extension XCUIApplication {
   func text(_ id: String) -> XCUIElement {
     staticTexts[id]
   }
-
-  /// A button, by label or identifier.
-  @MainActor
-  func button(_ id: String) -> XCUIElement {
-    buttons[id]
-  }
-
-  /// A navigation bar, by title.
-  @MainActor
-  func bar(_ id: String) -> XCUIElement {
-    navigationBars[id]
-  }
 }
 
 extension XCUIElement {
@@ -74,14 +58,5 @@ extension XCUIElement {
     within seconds: TimeInterval = 5
   ) -> Bool {
     waitForExistence(timeout: seconds)
-  }
-
-  /// Waits up to `seconds` for the element
-  /// to go away.
-  @MainActor
-  func disappears(
-    within seconds: TimeInterval = 5
-  ) -> Bool {
-    waitForNonExistence(timeout: seconds)
   }
 }
