@@ -6,3 +6,13 @@
 # its lines (indented, as trimmed text),
 # with a # comment saying why. Lines of
 # only brackets or quotes are skipped.
+
+# Taps: open the battle (pictured as its own
+# screens), pick an ability, tap a foe, and
+# start again.
+HomeView.swift
+  BattleView(fight: Fight())
+BattleView.swift
+  fight.target(foe.id)
+  fight.restart()
+  fight.choose(index)

@@ -7,4 +7,12 @@ final class HomeTests: XCTestCase {
     let name = app.text("Novarena")
     XCTAssertTrue(name.appears())
   }
+
+  @MainActor
+  func testOpensTheBattle() {
+    let app = App.start()
+    app.buttons["Fight"].tap()
+    let bar = app.navigationBars["Battle"]
+    XCTAssertTrue(bar.appears())
+  }
 }

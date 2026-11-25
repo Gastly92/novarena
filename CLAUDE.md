@@ -33,8 +33,17 @@ uploading) runs in CI.
   UI: units, the timeline, damage,
   shields, resources and a battle played
   turn by turn. The design is in
-  `brainstorm-2.md`; the app will import
-  the package when a screen needs it.
+  `brainstorm-2.md`. The app imports it
+  (`project.yml`); `Models/Fight.swift`
+  runs a battle for the screen, so view
+  code never decides a rule.
+- Text from the rules (unit and ability
+  names, the log) isn't translated yet:
+  views show it with `Text(verbatim:)`
+  and a `data-` identifier, which
+  `LocalizationTests` lets through. When
+  the rules get translations, drop the
+  prefix there.
 - Words: a **unit** is any character in a
   fight, either side (not all fight); the
   player's group is the **party**. Not

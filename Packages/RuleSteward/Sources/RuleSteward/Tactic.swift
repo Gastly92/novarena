@@ -15,11 +15,10 @@ public extension Battle {
     let foes = units.filter {
       $0.isUp && $0.side != mover.side
     }
-    var ready = mover
-    ready.startTurn()
-    for (index, ability)
-      in mover.unit.abilities.enumerated()
-      where ready.affords(ability) {
+    let abilities = mover.unit.abilities
+    for index in abilities.indices
+    where canUse(index) {
+      let ability = abilities[index]
       for foe in foes {
         let amount = Rules.damage(
           ability,

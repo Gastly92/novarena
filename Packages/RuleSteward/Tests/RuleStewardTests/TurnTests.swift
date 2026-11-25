@@ -133,4 +133,47 @@ final class TurnTests: XCTestCase {
     XCTAssertNil(battle.winner)
     XCTAssertEqual(battle.log.count, 3)
   }
+
+  /// The queue lists everyone up in turn
+  /// order; `next` is its first.
+  func testQueueIsTheTurnOrder() throws {
+    var battle = Battle(
+      party: [.gerald, .oswin],
+      foes: [.ashka, .kestrel]
+    )
+    let start = battle.queue
+    XCTAssertEqual(start, [0, 2, 3, 1])
+    try battle.act(0, on: 2)
+    let after = battle.queue
+    XCTAssertEqual(after, [2, 3, 1, 0])
+    XCTAssertEqual(battle.next, 2)
+  }
+
+  /// What the unit on turn can pay for,
+  /// counting the refill its turn brings.
+  func testCanUseCountsTheRefill() throws {
+    var battle = Battle(
+      party: [.gerald],
+      foes: [Fixtures.unit("Wall", speed: 1)]
+    )
+    XCTAssertTrue(battle.canUse(1))
+    XCTAssertFalse(battle.canUse(2))
+    for _ in 0..<5 {
+      try battle.act(1, on: 1)
+    }
+    // 0 stamina, +25 at the turn's start:
+    // not enough for a 40-stamina Lunge.
+    XCTAssertTrue(battle.canUse(0))
+    XCTAssertFalse(battle.canUse(1))
+  }
+
+  func testNothingIsUsableOnceOver() {
+    var battle = Battle(
+      party: [.gerald],
+      foes: [Fixtures.unit("B", health: 1)]
+    )
+    battle.playPlainly()
+    XCTAssertEqual(battle.queue, [])
+    XCTAssertFalse(battle.canUse(0))
+  }
 }

@@ -25,12 +25,20 @@ final class AppStoreTests: XCTestCase {
       return
     }
     let home = TestScreens.page(.home)
+    let battle = TestScreens.page(
+      .battleMiddle
+    )
     try AppStoreShots.check(
       [
         Shot(
           name: "1-home",
           caption: "Heroes from every era",
           view: home
+        ),
+        Shot(
+          name: "2-battle",
+          caption: "No dice, just tactics",
+          view: battle
         ),
       ],
       colors: Self.colors
