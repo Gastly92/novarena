@@ -178,6 +178,7 @@ final class FightTests: XCTestCase {
       await Task.yield()
     }
     fight.press(.east)
+    fight.press(.east)
     await fulfillment(of: [ticks])
     fight.press(nil)
     let x = fight.ghost?.x ?? 0

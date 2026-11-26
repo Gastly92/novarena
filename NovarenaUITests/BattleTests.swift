@@ -57,6 +57,34 @@ final class BattleTests: XCTestCase {
     XCTAssertEqual(first.label, "Oswin")
   }
 
+  /// Undo forgets a planned move.
+  @MainActor
+  func testUndoes() {
+    let app = App.start(
+      screen: .battleMoving
+    )
+    let commit = app.buttons["Commit move"]
+    XCTAssertTrue(commit.isEnabled)
+    app.buttons["Undo"].tap()
+    XCTAssertFalse(commit.isEnabled)
+  }
+
+  /// Pick Lunge, then tap Ashka, out of
+  /// reach: nothing happens, and the skills
+  /// stay open.
+  @MainActor
+  func testOutOfReachDoesNothing() {
+    let app = App.start(
+      screen: .battlePlanned
+    )
+    app.buttons["data-ability-1"].tap()
+    app.buttons["data-foe-2"].tap()
+    let end = app.buttons["End turn"]
+    XCTAssertFalse(end.exists)
+    let lunge = app.buttons["data-ability-1"]
+    XCTAssertTrue(lunge.exists)
+  }
+
   @MainActor
   func testFightsAgain() {
     let app = App.start(screen: .battleEnd)

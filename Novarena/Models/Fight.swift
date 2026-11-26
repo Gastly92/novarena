@@ -59,6 +59,8 @@ final class Fight {
   @ObservationIgnored private let wait: Pause
   /// Nudges while an arrow is held.
   @ObservationIgnored private var hold: Hold?
+  /// The arrow held, if any.
+  @ObservationIgnored private var way: Nudge?
 
   /// Waits a while, for a held arrow.
   typealias Pause = @Sendable (Duration)
@@ -293,8 +295,13 @@ final class Fight {
 
   /// An arrow pressed (nudging now, then
   /// faster and faster while held), or
-  /// released (`nil`).
+  /// released (`nil`). Pressing the arrow
+  /// already held changes nothing.
   func press(_ way: Nudge?) {
+    guard way != self.way else {
+      return
+    }
+    self.way = way
     hold?.cancel()
     hold = nil
     guard let way else {

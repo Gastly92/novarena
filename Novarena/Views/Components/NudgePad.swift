@@ -53,14 +53,14 @@ struct NudgePad: View {
           .fill(Color(.tertiarySystemFill))
       )
       .contentShape(Rectangle())
-      .onLongPressGesture(
-        minimumDuration: .infinity,
-        perform: {
-          // Pressing does the work.
-        },
-        onPressingChanged: {
-          fight.press($0 ? way : nil)
-        }
+      .gesture(
+        DragGesture(minimumDistance: 0)
+          .onChanged { _ in
+            fight.press(way)
+          }
+          .onEnded { _ in
+            fight.press(nil)
+          }
       )
       .accessibilityElement()
       .accessibilityLabel(way.label)

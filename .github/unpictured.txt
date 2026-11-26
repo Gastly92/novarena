@@ -22,8 +22,8 @@ MovePanel.swift
 
 # Pressing and letting go of an arrow.
 NudgePad.swift
-  fight.press($0 ? way : nil)
-  // Pressing does the work.
+  fight.press(way)
+  fight.press(nil)
 
 # Touches on the arena, as they move and
 # when they lift.
