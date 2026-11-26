@@ -80,7 +80,16 @@ uploading) runs in CI.
   compiler.
 - `.github/workflows/ios-build.yml` runs
   on every PR and push to `main` (macOS
-  runner). It generates the project and
+  runners: GitHub's `xcode-27` image, as
+  App Store Connect refuses builds from
+  an older SDK from April 2027, and
+  `macos-26` jobs sat queued until GitHub
+  cancelled them; for the next Xcode,
+  change every `runs-on` in both
+  workflows, list the label in
+  `.github/actionlint.yaml` if actionlint
+  doesn't know it, and re-record the
+  snapshots). It generates the project and
   builds the tests once, then runs them in
   two shards on separate runners in
   parallel (`.github/scripts/run-tests.sh`;
@@ -327,7 +336,8 @@ uploading) runs in CI.
   (pinned with `exact:`), which tests
   `import TestSupport` to get. Dependabot
   opens weekly PRs for them, and for the
-  GitHub Actions and SwiftLint versions:
+  GitHub Actions, SwiftLint and the
+  workflow checkers' versions:
   check CI and summarize what changed
   (release notes); the user merges. If
   snapshots change, re-record them before
@@ -336,9 +346,14 @@ uploading) runs in CI.
   actionlint on `.github/workflows/` and
   ShellCheck on every `*.sh`. The session
   start hook installs both (versions in
-  `.github/scripts/checkers.txt`), so run
-  them before pushing workflow or script
-  changes.
+  `.github/checkers/requirements.txt`,
+  which Dependabot bumps), so run them
+  before pushing workflow or script
+  changes. Runner labels actionlint
+  doesn't know yet go in
+  `.github/actionlint.yaml`;
+  `runner-labels.sh` fails once it knows
+  one, so the entry gets dropped.
 - Periphery (CI step after the build)
   fails on unused code. Delete it rather
   than ignore it; no `periphery:ignore`
