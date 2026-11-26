@@ -6,6 +6,8 @@
 public enum Event: Sendable, Equatable {
   /// A unit's turn begins at a tick.
   case turn(String, tick: Int)
+  /// A unit moves to a spot.
+  case moves(String, Point)
   /// A unit uses an ability on a target.
   case uses(String, String, target: String)
   /// A bodyguard takes a hit for an ally.
@@ -28,6 +30,8 @@ extension Event: CustomStringConvertible {
     switch self {
     case let .turn(name, tick):
       "[\(tick)] \(name)"
+    case let .moves(name, spot):
+      "  \(name) moves to \(spot)"
     case let .uses(name, ability, target):
       "  \(name): \(ability) → \(target)"
     case let .guards(name, ally):

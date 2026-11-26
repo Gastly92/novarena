@@ -7,29 +7,36 @@ extension Forecast {
     for target: Int,
     in battle: Battle
   ) -> [String] {
-    guard !immune else {
+    guard let strike else {
+      let walks = String(localized: """
+        Out of reach: walks toward it
+        """)
+      return [walks]
+    }
+    guard !strike.immune else {
       return [String(localized: "Immune")]
     }
     var lines: [String] = []
-    if hit != target {
-      let name = battle.units[hit].unit.name
+    if strike.hit != target {
+      let name = battle.units[strike.hit]
+        .unit.name
       lines.append(String(
         localized: "\(name) takes it instead"
       ))
     }
-    if shieldLost > 0 {
+    if strike.shieldLost > 0 {
       lines.append(String(localized: """
-        Shield −\(shieldLost), \
-        \(shieldLeft) left
+        Shield −\(strike.shieldLost), \
+        \(strike.shieldLeft) left
         """))
     }
-    if healthLost > 0 {
+    if strike.healthLost > 0 {
       lines.append(String(localized: """
-        Health −\(healthLost), \
-        \(healthLeft) left
+        Health −\(strike.healthLost), \
+        \(strike.healthLeft) left
         """))
     }
-    if healthLeft == 0 {
+    if strike.healthLeft == 0 {
       lines.append(
         String(localized: "Goes down")
       )

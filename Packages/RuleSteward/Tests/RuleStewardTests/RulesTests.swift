@@ -41,7 +41,8 @@ final class RulesTests: XCTestCase {
       magic: 0,
       armor: 0,
       resistance: 0,
-      speed: 1
+      speed: 1,
+      move: 1
     )
     let chop = Ability(
       "Axe Chop",

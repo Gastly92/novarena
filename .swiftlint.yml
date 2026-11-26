@@ -94,6 +94,9 @@ indentation_width:
 identifier_name:
   excluded:
     - id
+    # Coordinates in the arena.
+    - x
+    - y
 
 # Diffs get read in the GitHub iPhone app; 45
 # fits a portrait line without wrapping. Long

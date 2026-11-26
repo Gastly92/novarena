@@ -9,6 +9,15 @@ public enum Mistake: Error, Equatable {
   /// The target is an ally, down, or
   /// missing.
   case badTarget
+  /// The target is out of the ability's
+  /// reach.
+  case outOfReach
+  /// The moves add up to more than the
+  /// unit's Move.
+  case tooFar
+  /// A spot it moves to is taken, or
+  /// outside the arena.
+  case blocked
 }
 
 /// A battle between the party and its foes,
@@ -18,15 +27,29 @@ public enum Mistake: Error, Equatable {
 public struct Battle: Sendable {
   /// Everyone in it, party first.
   public private(set) var units: [BattleUnit]
+  /// Where it's fought.
+  public let arena: Arena
   /// What has happened so far.
   public private(set) var log: [Event] = []
   /// The time, in ticks (100 a round).
   public private(set) var tick = 0
 
-  /// A battle between `party` and `foes`.
+  /// A battle between `party` and `foes`
+  /// in `arena`, each unit starting at its
+  /// spot in `places` (party first), or
+  /// where the arena deploys it.
   /// Everyone's first turn comes after one
   /// usual wait.
-  public init(party: [Unit], foes: [Unit]) {
+  public init(
+    party: [Unit],
+    foes: [Unit],
+    arena: Arena = .open,
+    places: [Point]? = nil
+  ) {
+    self.arena = arena
+    let spots = places ?? arena.deploy(
+      party: party.count, foes: foes.count
+    )
     let sides =
       party.map { (Side.party, $0) }
       + foes.map { (Side.foes, $0) }
@@ -34,7 +57,8 @@ public struct Battle: Sendable {
       BattleUnit(
         id: $0.offset,
         side: $0.element.0,
-        unit: $0.element.1
+        unit: $0.element.1,
+        place: spots[$0.offset]
       )
     }
   }
@@ -52,9 +76,10 @@ public struct Battle: Sendable {
   /// Everyone up, in the order their next
   /// turns come: the earliest tick first,
   /// ties broken by a fixed ladder (higher
-  /// base Speed, then higher health
-  /// percent, then the party, then list
-  /// order), never by chance. Empty once
+  /// base Speed, then smaller size, then
+  /// higher health percent, then the
+  /// party, then list order), never by
+  /// chance. Empty once
   /// the battle is over.
   public var queue: [Int] {
     guard winner == nil else {
@@ -100,61 +125,108 @@ public struct Battle: Sendable {
     [
       unit.nextTurn,
       -unit.unit.stats.speed,
+      unit.unit.size.radius,
       -unit.percent,
       unit.side == .party ? 0 : 1,
       unit.id,
     ]
   }
 
-  /// Plays the next unit's turn: `ability`
-  /// (its index in the unit's list) on
-  /// `target` (an id).
+  /// Plays the next unit's `turn`, or
+  /// throws, changing nothing, if it can't
+  /// be taken.
   public mutating func act(
-    _ ability: Int,
-    on target: Int
+    _ turn: Turn
   ) throws(Mistake) {
     guard let actor = next else {
       throw .over
     }
-    let abilities = units[actor].unit
-      .abilities
-    guard abilities.indices
-      .contains(ability)
-    else { throw .noAbility }
-    let chosen = abilities[ability]
-    guard units.indices.contains(target),
-      units[target].isUp,
-      units[target].side
-        != units[actor].side
-    else { throw .badTarget }
     var mover = units[actor]
     mover.startTurn()
-    guard mover.affords(chosen) else {
-      throw .cantAfford
-    }
+    let stop = turn.before ?? mover.place
+    let chosen = try check(
+      turn.action, by: mover, at: stop
+    )
+    try check(
+      turn.before,
+      then: turn.after,
+      by: mover
+    )
     units[actor] = mover
     tick = mover.nextTurn
     log.append(.turn(
-      units[actor].unit.name, tick: tick
+      mover.unit.name, tick: tick
     ))
-    units[actor].pool -= chosen.cost
-    log.append(.uses(
-      units[actor].unit.name,
-      chosen.name,
-      target: units[target].unit.name
-    ))
-    hit(
-      units[target],
-      with: chosen,
-      from: actor
-    )
+    move(actor, to: turn.before)
+    if let chosen, let action = turn.action {
+      units[actor].pool -= chosen.cost
+      log.append(.uses(
+        mover.unit.name,
+        chosen.name,
+        target: units[action.target]
+          .unit.name
+      ))
+      hit(
+        units[action.target],
+        with: chosen,
+        from: actor
+      )
+    }
+    move(actor, to: turn.after)
     units[actor].nextTurn += Rules.wait(
-      speed: units[actor].unit.stats.speed,
-      weight: chosen.weight
+      speed: mover.unit.stats.speed,
+      weight: chosen?.weight ?? .normal
     )
     if let side = winner {
       log.append(.wins(side))
     }
+  }
+
+  /// The ability `action` uses, if `mover`
+  /// can use it from `spot`.
+  private func check(
+    _ action: Action?,
+    by mover: BattleUnit,
+    at spot: Point
+  ) throws(Mistake) -> Ability? {
+    guard let action else {
+      return nil
+    }
+    let all = mover.unit.abilities
+    guard all.indices
+      .contains(action.ability)
+    else { throw .noAbility }
+    let chosen = all[action.ability]
+    let target = action.target
+    guard units.indices.contains(target),
+      units[target].isUp,
+      units[target].side != mover.side
+    else { throw .badTarget }
+    guard mover.affords(chosen) else {
+      throw .cantAfford
+    }
+    guard reaches(
+      chosen,
+      from: spot,
+      by: mover,
+      to: units[target]
+    ) else { throw .outOfReach }
+    return chosen
+  }
+
+  /// Moves unit `id` to `spot`, if it's
+  /// going anywhere.
+  private mutating func move(
+    _ id: Int,
+    to spot: Point?
+  ) {
+    guard let spot else {
+      return
+    }
+    units[id].place = spot
+    log.append(.moves(
+      units[id].unit.name, spot
+    ))
   }
 
   /// The ally who takes this hit for

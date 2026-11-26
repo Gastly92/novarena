@@ -13,6 +13,9 @@ public struct Stats: Sendable {
   public var resistance: Int
   /// How often the unit acts.
   public var speed: Int
+  /// How far it can go in a turn, in
+  /// centimetres.
+  public var move: Int
 
   /// A unit's stats.
   public init(
@@ -21,7 +24,8 @@ public struct Stats: Sendable {
     magic: Int,
     armor: Int,
     resistance: Int,
-    speed: Int
+    speed: Int,
+    move: Int
   ) {
     self.health = health
     self.attack = attack
@@ -29,5 +33,6 @@ public struct Stats: Sendable {
     self.armor = armor
     self.resistance = resistance
     self.speed = speed
+    self.move = move
   }
 }
