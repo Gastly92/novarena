@@ -110,13 +110,38 @@ felt like, and what's next.
   - Open: Oswin still guards from across
     the arena. A bodyguard should probably
     have to be near.
+- **The arena screen, first cut** (PR B):
+  - The turn order row and the arena stay
+    on top; abilities, both sides and the
+    log scroll under them.
+  - Tap the arena to pick a spot (a dashed
+    ghost); tap the unit to clear it. Then
+    an ability: foes it reaches from there
+    are ringed and show their preview.
+    Tap one, in the arena or the list.
+  - With no spot picked, tapping a foe out
+    of reach still walks toward it.
+  - "Wait" or "Move and end turn" ends the
+    turn without acting.
+  - The shaded range is a plain circle of
+    Move; it doesn't yet leave out spots
+    the unit can't stop on.
+  - Moving after acting is in the rules
+    but not on the screen yet.
+  - No ticks on screen: the row shows the
+    order after the planned move, with the
+    unit on turn circled where it lands.
+  - Ability rows say only "Light" or
+    "Heavy" for weight; the row shows what
+    it does. A downed unit's row keeps its
+    empty gauges.
 
 ## Next: movement
 
 Free movement, as in `brainstorm-2.md`
 (Movement), in pull requests:
 
-- **A, rules** (in progress).
+- **A, rules** (done, #15).
   Whole-number positions,
   each unit a circle (a size radius) with a
   Move stat, and each ability a reach
@@ -131,12 +156,12 @@ Free movement, as in `brainstorm-2.md`
     long (720 ticks, not 1404): Ashka and
     Kestrel-9 shoot from range while
     Gerald and Oswin spend turns walking.
-- **B, the screen** (0.0.4): a top-down
-  arena of placeholder circles; where the
-  unit on turn can reach; picking a spot,
-  then a foe in reach with its preview; the
-  turn order as a row, showing where the
-  unit lands.
+- **B, the screen** (0.0.4, in progress):
+  a top-down arena of placeholder circles;
+  where the unit on turn can reach;
+  picking a spot, then a foe in reach with
+  its preview; the turn order as a row,
+  showing where the unit lands.
 - **C.** Obstacles and pathfinding (the
   hidden fine grid), then terrain.
 

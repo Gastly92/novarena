@@ -7,9 +7,14 @@
 # with a # comment saying why. Lines of
 # only brackets or quotes are skipped.
 
-# Taps: pick an ability, tap a foe, and start
-# again.
+# Taps: pick an ability, tap a foe, end the
+# turn, and start again.
 BattleView.swift
   fight.target(foe.id)
   fight.restart()
+  fight.endTurn()
   fight.choose(index)
+
+# A tap on the arena.
+ArenaView.swift
+  fight.tap(map.spot(at: $0))

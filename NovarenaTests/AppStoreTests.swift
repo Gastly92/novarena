@@ -26,7 +26,7 @@ final class AppStoreTests: XCTestCase {
     }
     let home = TestScreens.page(.home)
     let battle = TestScreens.page(
-      .battleMiddle
+      .battlePlanned
     )
     try AppStoreShots.check(
       [
