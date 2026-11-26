@@ -31,6 +31,14 @@ final class ArenaMapTests: XCTestCase {
     )
   }
 
+  /// Under 10 points of travel is a tap.
+  func testTapOrDrag() {
+    let tap = CGSize(width: 6, height: 7)
+    let drag = CGSize(width: 6, height: 8)
+    XCTAssertTrue(ArenaMap.isTap(tap))
+    XCTAssertFalse(ArenaMap.isTap(drag))
+  }
+
   func testRatio() {
     XCTAssertEqual(
       ArenaMap.ratio(.open), 1.5

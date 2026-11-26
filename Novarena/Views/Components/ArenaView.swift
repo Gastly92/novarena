@@ -3,11 +3,12 @@ import SwiftUI
 
 /// The arena from above, to scale: each
 /// unit a circle its size, the unit on
-/// turn ringed with how far it can move
-/// shaded, the picked spot as a dashed
-/// ghost, and foes the picked ability
-/// reaches ringed. A tap picks a spot, or
-/// with an ability picked, a foe.
+/// turn ringed with what's left of its
+/// Move shaded, the planned move as a
+/// dashed ghost, and foes the picked skill
+/// reaches ringed. Dragging moves the
+/// ghost; a tap places it, or with a skill
+/// picked, picks a foe.
 /// Initials come from the rules, so they
 /// carry a `data-` identifier.
 struct ArenaView: View {
@@ -35,7 +36,7 @@ struct ArenaView: View {
           token($0, on: map)
         }
         if let actor = fight.actor,
-          let spot = fight.spot {
+          let spot = fight.ghost {
           ghost(of: actor, at: spot, on: map)
         }
       }
@@ -44,9 +45,7 @@ struct ArenaView: View {
       .accessibilityLabel("Arena")
       .accessibilityAddTraits(.isButton)
       .testID("arena")
-      .onTapGesture {
-        fight.tap(map.spot(at: $0))
-      }
+      .gesture(touch(on: map))
     }
     .aspectRatio(
       ArenaMap.ratio(arena),
@@ -57,13 +56,44 @@ struct ArenaView: View {
     )
   }
 
-  /// How far `actor` can move, shaded.
+  /// A drag moves the ghost; a tap, once
+  /// let go, places it or picks a foe.
+  private func touch(
+    on map: ArenaMap
+  ) -> some Gesture {
+    DragGesture(minimumDistance: 0)
+      .onChanged {
+        touched($0, on: map)
+      }
+      .onEnded {
+        touched($0, on: map, lifted: true)
+      }
+  }
+
+  /// Passes a touch on to the fight.
+  private func touched(
+    _ touch: DragGesture.Value,
+    on map: ArenaMap,
+    lifted: Bool = false
+  ) {
+    let moved = !ArenaMap.isTap(
+      touch.translation
+    )
+    fight.touch(
+      map.spot(at: touch.location),
+      moved: moved,
+      lifted: lifted
+    )
+  }
+
+  /// How far `actor` can still move,
+  /// shaded.
   private func range(
     of actor: BattleUnit,
     on map: ArenaMap
   ) -> some View {
     let across = map.points(
-      2 * actor.unit.stats.move
+      2 * fight.moveLeft
     )
     return Circle()
       .fill(.tint.opacity(0.12))

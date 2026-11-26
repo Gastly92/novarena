@@ -211,7 +211,8 @@ Free movement, as in `brainstorm-2.md`
   picking a spot, then a foe in reach with
   its preview; the turn order as a row,
   showing where the unit lands.
-- **B2, turns in steps** (0.0.5): the
+- **B2, turns in steps** (0.0.5, in
+  progress): the
   rules take a turn a step at a time:
   move (any number of legs, up to Move
   in all), one action, end. The screen

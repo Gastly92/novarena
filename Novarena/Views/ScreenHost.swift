@@ -17,10 +17,14 @@ struct ScreenHost: View {
         HomeView()
       case .battle:
         battle(.start)
+      case .battleMoving:
+        battle(.moving)
       case .battleAiming:
         battle(.aiming)
       case .battlePlanned:
         battle(.planned)
+      case .battleActed:
+        battle(.acted)
       case .battleMiddle:
         battle(.middle)
       case .battleEnd:

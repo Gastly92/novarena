@@ -1,0 +1,35 @@
+@testable import Novarena
+import XCTest
+
+/// The move pad's arrows, and how a held
+/// one speeds up.
+final class NudgeTests: XCTestCase {
+  func testOffsets() {
+    let offsets = Nudge.allCases.map {
+      [$0.offset.x, $0.offset.y]
+    }
+    XCTAssertEqual(
+      offsets,
+      [[0, -1], [-1, 0], [1, 0], [0, 1]]
+    )
+  }
+
+  /// 1 cm for the first ticks, then
+  /// smoothly more, up to 20.
+  func testSteps() {
+    let steps = [0, 6, 7, 20, 28, 100]
+      .map(Nudge.step)
+    XCTAssertEqual(
+      steps, [1, 1, 2, 11, 20, 20]
+    )
+  }
+
+  /// A pause after the first nudge, so a
+  /// tap moves 1 cm; then quick repeats.
+  func testDelays() {
+    let first = Nudge.delay(after: 0)
+    let next = Nudge.delay(after: 1)
+    XCTAssertEqual(first, .milliseconds(400))
+    XCTAssertEqual(next, .milliseconds(30))
+  }
+}

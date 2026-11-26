@@ -57,19 +57,6 @@ final class PreviewTests: XCTestCase {
       .lines(for: target, in: battle)
   }
 
-  /// The lines for walking toward `target`
-  /// with the first ability.
-  private func lines(
-    _ battle: Battle,
-    walking target: Int
-  ) throws -> [String] {
-    let turn = try XCTUnwrap(
-      battle.approach(0, on: target)
-    )
-    return try battle.forecast(turn)
-      .lines(for: target, in: battle)
-  }
-
   func testHealthAndShield() throws {
     let battle = together(
       party: [.gerald, .oswin],
@@ -139,15 +126,16 @@ final class PreviewTests: XCTestCase {
   }
 
   /// Too far to reach this turn: it walks.
-  func testOutOfReach() throws {
+  /// A turn with no action says nothing
+  /// about a foe.
+  func testNoAction() throws {
     let battle = Battle(
       party: [.gerald],
       foes: [.ashka]
     )
-    XCTAssertEqual(
-      try lines(battle, walking: 1),
-      ["Out of reach: walks toward it"]
-    )
+    let lines = try battle.forecast(Turn())
+      .lines(for: 1, in: battle)
+    XCTAssertTrue(lines.isEmpty)
   }
 
   func testReachLabels() {
@@ -179,7 +167,7 @@ final class PreviewTests: XCTestCase {
     let aiming = Fight(stage: .aiming)
     XCTAssertEqual(
       aiming.preview(of: 2),
-      ["Out of reach: walks toward it"]
+      ["Out of reach"]
     )
     XCTAssertEqual(
       aiming.queueAfter.map(\.unit.name),

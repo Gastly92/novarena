@@ -8,10 +8,7 @@ extension Forecast {
     in battle: Battle
   ) -> [String] {
     guard let strike else {
-      let walks = String(localized: """
-        Out of reach: walks toward it
-        """)
-      return [walks]
+      return []
     }
     guard !strike.immune else {
       return [String(localized: "Immune")]

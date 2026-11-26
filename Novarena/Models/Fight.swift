@@ -2,11 +2,14 @@ import Foundation
 import Observation
 import RuleSteward
 
-/// A battle on screen: the player picks a
-/// spot to move to, then an ability and a
-/// foe in reach from there (or a foe out of
-/// reach, to walk toward it); foes take
-/// their plain choice
+/// A battle on screen, a step at a time.
+/// On the party's turn the player plans a
+/// move (dragging or nudging a ghost,
+/// which can be moved and undone freely),
+/// commits it, picks a skill and a foe in
+/// reach, and ends the turn; acting or
+/// ending the turn commits a planned move.
+/// Foes take their plain choice
 /// (`Battle.plainChoice`) until it's the
 /// party's turn again.
 @MainActor
@@ -18,35 +21,61 @@ final class Fight {
   enum Stage {
     /// Gerald's first turn.
     case start
-    /// The same, with Sword Cut picked and
-    /// a foe still to tap.
+    /// The same, with a move planned to
+    /// (300, 200).
+    case moving
+    /// The same, skills open, Sword Cut
+    /// picked: no foe in reach.
     case aiming
-    /// Gerald's second turn, with a spot
-    /// picked that puts Kestrel-9 in Sword
+    /// Gerald's second turn, with a move
+    /// planned that puts Kestrel-9 in Sword
     /// Cut's reach, but not Ashka.
     case planned
+    /// The same, after Sword Cut on
+    /// Kestrel-9: the turn still to end.
+    case acted
     /// Six turns in.
     case middle
     /// Played to the end.
     case end
   }
 
+  /// The parts of a turn, one shown at a
+  /// time.
+  enum Panel {
+    case move, skills, actions
+  }
+
   private(set) var battle: Battle
-  /// The ability picked for the unit on
+  /// The skill picked for the unit on
   /// turn, waiting for a target.
   private(set) var chosen: Int?
-  /// Where the unit on turn will move
-  /// first, if it's picked one.
-  private(set) var spot: Point?
+  /// Where the unit on turn plans to move,
+  /// until it's committed.
+  private(set) var ghost: Point?
+  /// The part of the turn on show.
+  var panel = Panel.move
+  /// Waits between nudges of a held arrow.
+  @ObservationIgnored private let wait: Pause
+  /// Nudges while an arrow is held.
+  @ObservationIgnored private var hold: Hold?
 
-  init(stage: Stage = .start) {
+  /// Waits a while, for a held arrow.
+  typealias Pause = @Sendable (Duration)
+    async -> Void
+  /// Nudging while an arrow is held.
+  typealias Hold = Task<Void, Never>
+
+  init(
+    stage: Stage = .start,
+    pause: @escaping Pause = Fight.sleep
+  ) {
+    wait = pause
     battle = Self.sample()
     switch stage {
-    case .start:
+    case .start, .moving, .aiming:
       break
-    case .aiming:
-      chosen = 0
-    case .planned:
+    case .planned, .acted:
       battle.playPlainly(turns: 4)
     case .middle:
       battle.playPlainly(turns: 6)
@@ -54,11 +83,14 @@ final class Fight {
       battle.playPlainly()
     }
     foesAct()
-    if stage == .planned {
-      chosen = 0
-      spot = battle.approach(0, on: 3)?
-        .before
-    }
+    stage.setUp(self)
+  }
+
+  /// Waits for `time`, really.
+  nonisolated static func sleep(
+    _ time: Duration
+  ) async {
+    _ = try? await Task.sleep(for: time)
   }
 
   /// Gerald and Oswin against Ashka and
@@ -103,9 +135,22 @@ final class Fight {
     }
   }
 
-  /// What the picked ability would do to
-  /// `foe`, a line each; none until one is
-  /// picked, or if `foe` is down.
+  /// What the planned move would cost, in
+  /// centimetres, if one is planned.
+  var planned: Int? {
+    ghost.map { battle.cost(to: $0) }
+  }
+
+  /// What's left of the unit on turn's
+  /// Move, before the planned move.
+  var moveLeft: Int {
+    battle.moveLeft
+  }
+
+  /// What the picked skill would do to
+  /// `foe`, from the planned spot, a line
+  /// each; none until one is picked, or if
+  /// `foe` is down.
   func preview(of foe: Int) -> [String] {
     guard let turn = plan(on: foe) else {
       return []
@@ -114,17 +159,16 @@ final class Fight {
       return try battle.forecast(turn)
         .lines(for: foe, in: battle)
     } catch .outOfReach {
-      let out = String(localized: """
-        Out of reach from there
-        """)
-      return [out]
+      return [
+        String(localized: "Out of reach"),
+      ]
     } catch {
       return []
     }
   }
 
-  /// Whether the picked ability, from the
-  /// picked spot, reaches `foe`.
+  /// Whether the picked skill, from the
+  /// planned spot, reaches `foe`.
   func inReach(_ foe: Int) -> Bool {
     let forecast = plan(on: foe).flatMap {
       try? battle.forecast($0)
@@ -132,57 +176,81 @@ final class Fight {
     return forecast?.strike != nil
   }
 
-  /// The turn order after the planned move
-  /// (the picked ability on the first foe
-  /// it reaches, or just the move), showing
+  /// The turn order once this turn ends
+  /// (with the picked skill on the first
+  /// foe it reaches, if any), showing
   /// where the unit on turn lands; none
-  /// until an ability or a spot is picked,
+  /// until something is planned or done,
   /// or if it would end the battle.
   var queueAfter: [BattleUnit] {
-    guard chosen != nil || spot != nil else {
-      return []
-    }
+    guard chosen != nil || ghost != nil
+      || battle.hasActed
+    else { return [] }
     let turns = units(.foes)
       .compactMap { plan(on: $0.id) }
-      + [Turn(before: spot)]
+      + [Turn(before: ghost)]
     let forecasts = turns.compactMap {
       try? battle.forecast($0)
     }
-    let planned = forecasts.first {
+    let after = forecasts.first {
       $0.strike != nil
     } ?? forecasts.last
-    return (planned?.queue ?? []).map {
+    return (after?.queue ?? []).map {
       battle.units[$0]
     }
   }
 
-  /// The turn using the picked ability on
-  /// `foe` takes: from the picked spot, or
-  /// walking toward it if none is picked;
-  /// none until an ability is picked.
+  /// The rest of the turn using the picked
+  /// skill on `foe` from the planned spot;
+  /// none until a skill is picked.
   private func plan(on foe: Int) -> Turn? {
-    guard let chosen else {
-      return nil
+    chosen.map {
+      Turn(
+        before: ghost,
+        action: Action($0, on: foe)
+      )
     }
-    guard let spot else {
-      return battle.approach(chosen, on: foe)
-    }
-    return Turn(
-      before: spot,
-      action: Action(chosen, on: foe)
-    )
   }
 
-  /// Picks the unit on turn's ability.
+  /// Picks a skill for the unit on turn.
   func choose(_ ability: Int) {
     chosen = ability
   }
 
-  /// A tap on the arena at `point`: with an
-  /// ability picked, a foe there is its
+  /// Plans a move to `point`, if the unit
+  /// on turn can get there; its own spot
+  /// clears the plan.
+  func place(_ point: Point) {
+    if point == actor?.place {
+      ghost = nil
+    } else if (try? battle.forecast(
+      Turn(before: point)
+    )) != nil {
+      ghost = point
+    }
+  }
+
+  /// A touch on the arena at `point`: a
+  /// drag (once it has `moved`) moves the
+  /// plan there; a tap counts once
+  /// `lifted`.
+  func touch(
+    _ point: Point,
+    moved: Bool,
+    lifted: Bool
+  ) {
+    if moved {
+      place(point)
+    } else if lifted {
+      tap(point)
+    }
+  }
+
+  /// A tap on the arena at `point`: with a
+  /// skill picked, a foe there is its
   /// target; the unit on turn itself clears
-  /// the spot; anywhere else it can move to
-  /// becomes the spot.
+  /// the plan; anywhere else it can reach
+  /// is planned.
   func tap(_ point: Point) {
     guard let actor else {
       return
@@ -193,11 +261,9 @@ final class Fight {
       }) {
       target(foe.id)
     } else if Self.covers(actor, point) {
-      spot = nil
-    } else if (try? battle.forecast(
-      Turn(before: point)
-    )) != nil {
-      spot = point
+      ghost = nil
+    } else {
+      place(point)
     }
   }
 
@@ -213,36 +279,80 @@ final class Fight {
       <= radius * radius
   }
 
-  /// Uses the picked ability on `target`,
-  /// then lets the foes act. Nothing
-  /// happens if it can't be done.
-  func target(_ target: Int) {
-    guard let turn = plan(on: target),
-      (try? battle.act(turn)) != nil
+  /// Moves the planned spot (or, with none,
+  /// the unit's own) `step` centimetres
+  /// `way`, if it can go there.
+  func nudge(_ way: Nudge, by step: Int) {
+    guard let from = ghost ?? actor?.place
     else { return }
-    nextTurn()
+    place(Point(
+      x: from.x + way.offset.x * step,
+      y: from.y + way.offset.y * step
+    ))
   }
 
-  /// Moves to the picked spot, if any, and
-  /// ends the turn there without acting.
+  /// An arrow pressed (nudging now, then
+  /// faster and faster while held), or
+  /// released (`nil`).
+  func press(_ way: Nudge?) {
+    hold?.cancel()
+    hold = nil
+    guard let way else {
+      return
+    }
+    hold = Task { [self, wait] in
+      var tick = 0
+      while !Task.isCancelled {
+        nudge(way, by: Nudge.step(tick))
+        await wait(Nudge.delay(after: tick))
+        tick += 1
+      }
+    }
+  }
+
+  /// Forgets the planned move.
+  func undo() {
+    ghost = nil
+  }
+
+  /// Walks the planned move. It can't be
+  /// undone after.
+  func commit() {
+    if let ghost {
+      try? battle.move(to: ghost)
+    }
+    ghost = nil
+  }
+
+  /// Uses the picked skill on `target`,
+  /// walking the planned move first.
+  /// Nothing happens if it can't reach.
+  func target(_ target: Int) {
+    guard let chosen, inReach(target) else {
+      return
+    }
+    commit()
+    try? battle.use(chosen, on: target)
+    self.chosen = nil
+    panel = .actions
+  }
+
+  /// Walks the planned move, if any, and
+  /// ends the turn; then the foes act.
   func endTurn() {
-    try? battle.act(Turn(before: spot))
-    nextTurn()
+    try? battle.act(Turn(before: ghost))
+    ghost = nil
+    chosen = nil
+    panel = .move
+    foesAct()
   }
 
   /// The same battle, from the start.
   func restart() {
     battle = Self.sample()
     chosen = nil
-    spot = nil
-    foesAct()
-  }
-
-  /// Clears the picks and lets the foes
-  /// act.
-  private func nextTurn() {
-    chosen = nil
-    spot = nil
+    ghost = nil
+    panel = .move
     foesAct()
   }
 
@@ -252,6 +362,31 @@ final class Fight {
     while actor?.side == .foes,
       let turn = battle.plainChoice {
       try? battle.act(turn)
+    }
+  }
+}
+
+private extension Fight.Stage {
+  /// The plans and picks this stage starts
+  /// with, once the foes have acted.
+  @MainActor
+  func setUp(_ fight: Fight) {
+    switch self {
+    case .start, .middle, .end:
+      break
+    case .moving:
+      fight.place(Point(x: 300, y: 200))
+    case .aiming:
+      fight.panel = .skills
+      fight.choose(0)
+    case .planned:
+      fight.panel = .skills
+      fight.place(Point(x: 767, y: 394))
+      fight.choose(0)
+    case .acted:
+      fight.place(Point(x: 767, y: 394))
+      fight.choose(0)
+      fight.target(3)
     }
   }
 }
