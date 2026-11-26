@@ -40,7 +40,11 @@ struct BattleView: View {
       Button {
         fight.target(foe.id)
       } label: {
-        row(foe)
+        UnitRow(
+          unit: foe,
+          onTurn: foe.id == fight.actor?.id,
+          preview: fight.preview(of: foe.id)
+        )
       }
       .disabled(
         fight.chosen == nil || !foe.isUp
@@ -81,14 +85,24 @@ private struct TurnOrder: View {
       Text("Tick \(fight.battle.tick)")
         .font(.caption)
         .foregroundStyle(.secondary)
-      Text(verbatim: names)
+      Text(verbatim: names(fight.queue))
         .testID("data-queue")
+      let after = fight.queueAfter
+      if !after.isEmpty {
+        Text("After this move")
+          .font(.caption)
+          .foregroundStyle(.secondary)
+        Text(verbatim: names(after))
+          .testID("data-queue-after")
+      }
     }
   }
 
-  /// The queue's names, the next first.
-  private var names: String {
-    fight.queue.map(\.unit.name)
+  /// The units' names, the next first.
+  private func names(
+    _ units: [BattleUnit]
+  ) -> String {
+    units.map(\.unit.name)
       .joined(separator: " · ")
   }
 }
@@ -108,14 +122,18 @@ private struct Controls: View {
     } else if let actor = fight.actor {
       abilities(of: actor)
       if fight.chosen != nil {
-        Text("Now tap a foe.")
+        Text("""
+          Each foe shows what it would do. \
+          Tap one to use it.
+          """)
           .foregroundStyle(.secondary)
       }
     }
   }
 
-  /// One button per ability, with its cost;
-  /// the picked one is checked.
+  /// One button per ability, with its
+  /// power, cost and weight; the picked one
+  /// is checked.
   private func abilities(
     of actor: BattleUnit
   ) -> some View {
@@ -127,13 +145,8 @@ private struct Controls: View {
         fight.choose(index)
       } label: {
         HStack {
-          Text(verbatim: all[index].name)
-            .testID("data-ability-name")
+          details(all[index])
           Spacer()
-          if all[index].cost > 0 {
-            Text("Costs \(all[index].cost)")
-              .foregroundStyle(.secondary)
-          }
           if fight.chosen == index {
             Image(systemName: "checkmark")
               .accessibilityHidden(true)
@@ -142,6 +155,30 @@ private struct Controls: View {
       }
       .disabled(!fight.battle.canUse(index))
       .testID("data-ability-\(index)")
+    }
+  }
+
+  /// An ability's name, then its power and
+  /// cost, then what it does to the next
+  /// turn.
+  private func details(
+    _ ability: Ability
+  ) -> some View {
+    VStack(alignment: .leading, spacing: 2) {
+      Text(verbatim: ability.name)
+        .testID("data-ability-name")
+      HStack {
+        Text("Power \(ability.power)")
+        if ability.cost > 0 {
+          Text("Costs \(ability.cost)")
+        }
+      }
+      .font(.caption)
+      .foregroundStyle(.secondary)
+      Text(ability.weight.label)
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .wrapsText()
     }
   }
 }

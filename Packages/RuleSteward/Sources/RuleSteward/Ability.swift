@@ -10,7 +10,7 @@ public enum Weight: Sendable {
   case heavy
 
   /// The wait, in percent of the usual.
-  var percent: Int {
+  public var percent: Int {
     switch self {
     case .light:
       75

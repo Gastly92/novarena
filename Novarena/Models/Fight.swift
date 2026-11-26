@@ -86,6 +86,39 @@ final class Fight {
     }
   }
 
+  /// What the picked ability would do to
+  /// `foe`, a line each; none until one is
+  /// picked, or if `foe` is down.
+  func preview(of foe: Int) -> [String] {
+    guard let chosen,
+      let forecast = try? battle.forecast(
+        chosen, on: foe
+      )
+    else { return [] }
+    return forecast.lines(
+      for: foe, in: battle
+    )
+  }
+
+  /// The turn order after the picked
+  /// ability (aimed at the first foe up),
+  /// showing where the unit on turn lands;
+  /// none until one is picked, or if it
+  /// would end the battle.
+  var queueAfter: [BattleUnit] {
+    let foe = units(.foes).first(
+      where: \.isUp
+    )
+    guard let chosen, let foe,
+      let forecast = try? battle.forecast(
+        chosen, on: foe.id
+      )
+    else { return [] }
+    return forecast.queue.map {
+      battle.units[$0]
+    }
+  }
+
   /// Picks the unit on turn's ability.
   func choose(_ ability: Int) {
     chosen = ability
