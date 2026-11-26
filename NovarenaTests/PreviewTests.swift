@@ -150,6 +150,15 @@ final class PreviewTests: XCTestCase {
     )
   }
 
+  func testReachLabels() {
+    XCTAssertEqual(
+      Reach.melee(50).label, "Melee, 50 cm"
+    )
+    XCTAssertEqual(
+      Reach.ranged(500).label, "Range 500 cm"
+    )
+  }
+
   func testWeightLabels() {
     let labels = [
       Weight.light, .normal, .heavy,

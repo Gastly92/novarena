@@ -71,3 +71,16 @@ extension Weight {
     }
   }
 }
+
+extension Reach {
+  /// How far it reaches, for the ability's
+  /// row.
+  var label: String {
+    switch self {
+    case let .melee(reach):
+      String(localized: "Melee, \(reach) cm")
+    case let .ranged(reach):
+      String(localized: "Range \(reach) cm")
+    }
+  }
+}
