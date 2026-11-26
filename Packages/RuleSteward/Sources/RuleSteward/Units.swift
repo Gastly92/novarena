@@ -12,7 +12,8 @@ public extension Unit {
       magic: 20,
       armor: 110,
       resistance: 40,
-      speed: 95
+      speed: 95,
+      move: 350
     ),
     abilities: [
       Ability(
@@ -28,6 +29,7 @@ public extension Unit {
         weight: .heavy
       ),
     ],
+    size: .small,
     resource: Resource(
       "stamina", maximum: 100, refill: 25
     )
@@ -44,7 +46,8 @@ public extension Unit {
       magic: 150,
       armor: 60,
       resistance: 90,
-      speed: 90
+      speed: 90,
+      move: 300
     ),
     abilities: [
       Ability(
@@ -58,7 +61,8 @@ public extension Unit {
         delivery: .special,
         element: .fire,
         cost: 40,
-        weight: .heavy
+        weight: .heavy,
+        reach: .ranged(500)
       ),
     ],
     affinities: [
@@ -80,7 +84,8 @@ public extension Unit {
       magic: 20,
       armor: 160,
       resistance: 70,
-      speed: 80
+      speed: 80,
+      move: 250
     ),
     abilities: [
       Ability(
@@ -107,7 +112,8 @@ public extension Unit {
       magic: 90,
       armor: 130,
       resistance: 50,
-      speed: 85
+      speed: 85,
+      move: 250
     ),
     abilities: [
       Ability(
@@ -120,9 +126,11 @@ public extension Unit {
         power: 100,
         delivery: .special,
         element: .shock,
-        cost: 50
+        cost: 50,
+        reach: .ranged(450)
       ),
     ],
+    size: .large,
     affinities: [.shock: .weak],
     resource: Resource(
       "charge", maximum: 100, refill: 25

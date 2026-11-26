@@ -19,8 +19,10 @@ final class FightTests: XCTestCase {
     XCTAssertEqual(foes.map(\.id), [2, 3])
   }
 
-  /// A turn: pick, tap a foe, and the foes
-  /// act until it's the party's turn again.
+  /// A turn: pick, tap a foe (out of reach,
+  /// so Gerald walks toward it), and the
+  /// foes act until it's the party's turn
+  /// again.
   func testATurnLetsTheFoesAct() {
     let fight = Fight()
     fight.choose(0)
@@ -29,7 +31,7 @@ final class FightTests: XCTestCase {
     XCTAssertNil(fight.chosen)
     XCTAssertEqual(fight.actor?.side, .party)
     let lines = fight.latest
-    let hit = "Gerald: Sword Cut → Ashka"
+    let hit = "Gerald moves to (500, 200)"
     XCTAssertEqual(
       lines.last, "[105] Gerald"
     )

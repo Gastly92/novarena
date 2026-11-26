@@ -3,11 +3,13 @@ import XCTest
 
 final class ForecastTests: XCTestCase {
   /// Gerald (0) and Oswin (1) against Ashka
-  /// (2) and Kestrel-9 (3); Gerald's turn.
+  /// (2) and Kestrel-9 (3), all in reach;
+  /// Gerald's turn.
   private func sample() -> Battle {
     Battle(
       party: [.gerald, .oswin],
-      foes: [.ashka, .kestrel]
+      foes: [.ashka, .kestrel],
+      places: Fixtures.together(4)
     )
   }
 
@@ -21,12 +23,14 @@ final class ForecastTests: XCTestCase {
     XCTAssertEqual(
       forecast,
       Forecast(
-        hit: 2,
-        shieldLost: 0,
-        shieldLeft: 0,
-        healthLost: 44,
-        healthLeft: 276,
-        immune: false,
+        strike: Strike(
+          hit: 2,
+          shieldLost: 0,
+          shieldLeft: 0,
+          healthLost: 44,
+          healthLeft: 276,
+          immune: false
+        ),
         queue: [2, 3, 1, 0],
         winner: nil
       )
@@ -44,12 +48,12 @@ final class ForecastTests: XCTestCase {
 
   /// Against a shield, the shield's loss.
   func testShield() throws {
-    let forecast = try sample()
-      .forecast(0, on: 3)
-    XCTAssertEqual(forecast.hit, 3)
-    XCTAssertEqual(forecast.shieldLost, 30)
-    XCTAssertEqual(forecast.shieldLeft, 120)
-    XCTAssertEqual(forecast.healthLost, 0)
+    let strike = try sample()
+      .forecast(0, on: 3).strike
+    XCTAssertEqual(strike?.hit, 3)
+    XCTAssertEqual(strike?.shieldLost, 30)
+    XCTAssertEqual(strike?.shieldLeft, 120)
+    XCTAssertEqual(strike?.healthLost, 0)
   }
 
   /// A bodyguard who'd step in takes it.
@@ -63,11 +67,11 @@ final class ForecastTests: XCTestCase {
       ],
       foes: [Fixtures.unit("X", speed: 200)]
     )
-    let forecast = try battle.forecast(
+    let strike = try battle.forecast(
       0, on: 0
-    )
-    XCTAssertEqual(forecast.hit, 1)
-    XCTAssertEqual(forecast.healthLost, 9)
+    ).strike
+    XCTAssertEqual(strike?.hit, 1)
+    XCTAssertEqual(strike?.healthLost, 9)
   }
 
   func testImmune() throws {
@@ -75,7 +79,8 @@ final class ForecastTests: XCTestCase {
       "Flame",
       power: 10,
       delivery: .special,
-      element: .fire
+      element: .fire,
+      reach: Fixtures.far
     )
     let battle = Battle(
       party: [
@@ -91,11 +96,11 @@ final class ForecastTests: XCTestCase {
         ),
       ]
     )
-    let forecast = try battle.forecast(
+    let strike = try battle.forecast(
       0, on: 1
-    )
-    XCTAssertTrue(forecast.immune)
-    XCTAssertEqual(forecast.healthLost, 0)
+    ).strike
+    XCTAssertEqual(strike?.immune, true)
+    XCTAssertEqual(strike?.healthLost, 0)
   }
 
   /// A finishing blow ends the battle: no
@@ -112,7 +117,9 @@ final class ForecastTests: XCTestCase {
     let forecast = try battle.forecast(
       0, on: 1
     )
-    XCTAssertEqual(forecast.healthLeft, 0)
+    XCTAssertEqual(
+      forecast.strike?.healthLeft, 0
+    )
     XCTAssertEqual(forecast.winner, .party)
     XCTAssertTrue(forecast.queue.isEmpty)
   }

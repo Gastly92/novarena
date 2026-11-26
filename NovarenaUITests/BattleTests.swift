@@ -1,10 +1,11 @@
 import XCTest
 
 final class BattleTests: XCTestCase {
-  /// Pick Sword Cut, tap Ashka: she drops
-  /// from 320 to 276 (60 × 130 ÷ 160 = 48,
-  /// at 93% intensity 44). The log is at
-  /// the bottom, off screen, so its rows
+  /// Pick Sword Cut, tap Ashka: she's out
+  /// of reach, so Gerald walks toward her,
+  /// and the foes act: Kestrel-9's Arc Beam
+  /// takes him from 300 to 241. The log is
+  /// at the bottom, off screen, so its rows
   /// don't exist to check; `FightTests`
   /// checks the log instead.
   @MainActor
@@ -12,8 +13,10 @@ final class BattleTests: XCTestCase {
     let app = App.start(screen: .battle)
     app.buttons["data-ability-0"].tap()
     app.buttons["data-foe-2"].tap()
-    let ashka = app.text("Health 276 of 320")
-    XCTAssertTrue(ashka.appears())
+    let gerald = app.text(
+      "Health 241 of 300"
+    )
+    XCTAssertTrue(gerald.appears())
   }
 
   @MainActor

@@ -12,7 +12,10 @@ final class ShieldTests: XCTestCase {
 
   private func mech() -> BattleUnit {
     BattleUnit(
-      id: 0, side: .foes, unit: .kestrel
+      id: 0,
+      side: .foes,
+      unit: .kestrel,
+      place: Point(x: 0, y: 0)
     )
   }
 
@@ -45,7 +48,8 @@ final class ShieldTests: XCTestCase {
     var unit = BattleUnit(
       id: 0,
       side: .party,
-      unit: Fixtures.unit("W", shield: ward)
+      unit: Fixtures.unit("W", shield: ward),
+      place: Point(x: 0, y: 0)
     )
     let taken = unit.take(40, from: poke)
     XCTAssertEqual(taken.shield, 0)

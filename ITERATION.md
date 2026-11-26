@@ -75,13 +75,49 @@ felt like, and what's next.
   everything. So ranges narrow over a run,
   and an unrecruited foe can still hold a
   surprise.
+- **Movement, first cut** (PR A):
+  - Centimetres, in an open 12 × 8 m
+    arena; the sides start in two columns
+    9 m apart.
+  - Sizes are radii: small 25, medium 40,
+    large 70, huge 120.
+  - Melee reaches edge to edge (half a
+    metre unless an ability says).
+    Ranged reaches from the unit's middle
+    to the target's edge, so a big target
+    is easier to hit but a big caster
+    doesn't shoot further.
+  - Moves are straight lines. Two legs
+    (before and after the action) add up
+    exactly, with no rounding. Only where
+    a unit stops has to be clear; walking
+    through others waits for pathfinding
+    (C).
+  - A turn of only moving, or waiting,
+    takes the usual wait.
+  - Move: Gerald 350, Ashka 300, Oswin
+    and Kestrel-9 250.
+  - Smaller size joins the tie ladder,
+    after Speed, as `brainstorm-2.md` has
+    it.
+  - The stand-in AI takes the biggest hit
+    it can reach this turn, walking just
+    into reach; if none, it walks toward
+    the biggest hit.
+  - Until B, the screen walks the unit
+    toward a foe that's out of reach, and
+    its preview says so.
+  - Open: Oswin still guards from across
+    the arena. A bodyguard should probably
+    have to be near.
 
 ## Next: movement
 
 Free movement, as in `brainstorm-2.md`
 (Movement), in pull requests:
 
-- **A, rules.** Whole-number positions,
+- **A, rules** (in progress).
+  Whole-number positions,
   each unit a circle (a size radius) with a
   Move stat, and each ability a reach
   (melee, edge to edge) or a range. A turn
@@ -91,6 +127,10 @@ Free movement, as in `brainstorm-2.md`
   An open arena (no obstacles yet). The
   forecast covers moves, and its turn order
   replaces tick talk.
+  - With it, the sample battle is half as
+    long (720 ticks, not 1404): Ashka and
+    Kestrel-9 shoot from range while
+    Gerald and Oswin spend turns walking.
 - **B, the screen** (0.0.4): a top-down
   arena of placeholder circles; where the
   unit on turn can reach; picking a spot,

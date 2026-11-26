@@ -13,6 +13,8 @@ enum Fixtures {
   static func unit(
     _ name: String,
     speed: Int = 100,
+    move: Int = 300,
+    size: Size = .medium,
     health: Int = 1000,
     affinities: [Element: Affinity] = [:],
     shield: Shield? = nil,
@@ -28,19 +30,41 @@ enum Fixtures {
         magic: 100,
         armor: 0,
         resistance: 0,
-        speed: speed
+        speed: speed,
+        move: move
       ),
       abilities: abilities,
+      size: size,
       affinities: affinities,
       shield: shield,
       passives: passives
     )
   }
 
-  /// A small physical hit.
+  /// A small physical hit that reaches
+  /// across any arena.
   static let poke = Ability(
-    "Poke", power: 10, delivery: .physical
+    "Poke",
+    power: 10,
+    delivery: .physical,
+    reach: far
   )
+
+  /// Further than any arena is wide.
+  static let far = Reach.ranged(10_000)
+
+  /// One spot for each of `count` units,
+  /// all the same, so everyone reaches
+  /// everyone and rules other than
+  /// movement can be tested alone.
+  static func together(
+    _ count: Int
+  ) -> [Point] {
+    Array(
+      repeating: Point(x: 600, y: 400),
+      count: count
+    )
+  }
 
   /// Checks `work` fails with `mistake`.
   static func expect(

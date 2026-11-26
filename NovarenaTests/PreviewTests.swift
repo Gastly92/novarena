@@ -23,10 +23,27 @@ final class PreviewTests: XCTestCase {
         magic: 100,
         armor: 0,
         resistance: 0,
-        speed: speed
+        speed: speed,
+        move: 300
       ),
       abilities: abilities,
       affinities: affinities
+    )
+  }
+
+  /// A battle with everyone on one spot, so
+  /// everyone is in reach.
+  private func together(
+    party: [RuleSteward.Unit],
+    foes: [RuleSteward.Unit]
+  ) -> Battle {
+    Battle(
+      party: party,
+      foes: foes,
+      places: Array(
+        repeating: Point(x: 600, y: 400),
+        count: party.count + foes.count
+      )
     )
   }
 
@@ -40,8 +57,21 @@ final class PreviewTests: XCTestCase {
       .lines(for: target, in: battle)
   }
 
+  /// The lines for walking toward `target`
+  /// with the first ability.
+  private func lines(
+    _ battle: Battle,
+    walking target: Int
+  ) throws -> [String] {
+    let turn = try XCTUnwrap(
+      battle.approach(0, on: target)
+    )
+    return try battle.forecast(turn)
+      .lines(for: target, in: battle)
+  }
+
   func testHealthAndShield() throws {
-    let battle = Battle(
+    let battle = together(
       party: [.gerald, .oswin],
       foes: [.ashka, .kestrel]
     )
@@ -56,7 +86,7 @@ final class PreviewTests: XCTestCase {
   }
 
   func testBodyguardTakesIt() throws {
-    let battle = Battle(
+    let battle = together(
       party: [.gerald],
       foes: [.ashka, .oswin]
     )
@@ -76,7 +106,7 @@ final class PreviewTests: XCTestCase {
       delivery: .special,
       element: .fire
     )
-    let battle = Battle(
+    let battle = together(
       party: [
         Self.unit(
           "Caster", abilities: [flame]
@@ -90,7 +120,7 @@ final class PreviewTests: XCTestCase {
   }
 
   func testFinishingBlow() throws {
-    let battle = Battle(
+    let battle = together(
       party: [.gerald],
       foes: [
         Self.unit(
@@ -108,6 +138,18 @@ final class PreviewTests: XCTestCase {
     )
   }
 
+  /// Too far to reach this turn: it walks.
+  func testOutOfReach() throws {
+    let battle = Battle(
+      party: [.gerald],
+      foes: [.ashka]
+    )
+    XCTAssertEqual(
+      try lines(battle, walking: 1),
+      ["Out of reach: walks toward it"]
+    )
+  }
+
   func testWeightLabels() {
     let labels = [
       Weight.light, .normal, .heavy,
@@ -119,7 +161,8 @@ final class PreviewTests: XCTestCase {
   }
 
   /// The screen's previews: none until an
-  /// ability is picked.
+  /// ability is picked. At the start, every
+  /// foe is out of Gerald's reach.
   func testFightPreviews() {
     let start = Fight()
     let none = start.preview(of: 2)
@@ -128,7 +171,7 @@ final class PreviewTests: XCTestCase {
     let aiming = Fight(stage: .aiming)
     XCTAssertEqual(
       aiming.preview(of: 2),
-      ["Health −44, 276 left"]
+      ["Out of reach: walks toward it"]
     )
     XCTAssertEqual(
       aiming.queueAfter.map(\.unit.name),

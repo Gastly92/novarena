@@ -3,9 +3,10 @@ import Observation
 import RuleSteward
 
 /// A battle on screen: the player picks the
-/// party's moves, and foes take their plain
-/// choice (`Battle.plainChoice`) until it's
-/// the party's turn again.
+/// party's moves (walking up to the foe if
+/// it's out of reach), and foes take their
+/// plain choice (`Battle.plainChoice`)
+/// until it's the party's turn again.
 @MainActor
 @Observable
 final class Fight {
@@ -90,9 +91,9 @@ final class Fight {
   /// `foe`, a line each; none until one is
   /// picked, or if `foe` is down.
   func preview(of foe: Int) -> [String] {
-    guard let chosen,
+    guard let turn = plan(on: foe),
       let forecast = try? battle.forecast(
-        chosen, on: foe
+        turn
       )
     else { return [] }
     return forecast.lines(
@@ -109,13 +110,24 @@ final class Fight {
     let foe = units(.foes).first(
       where: \.isUp
     )
-    guard let chosen, let foe,
+    guard let foe,
+      let turn = plan(on: foe.id),
       let forecast = try? battle.forecast(
-        chosen, on: foe.id
+        turn
       )
     else { return [] }
     return forecast.queue.map {
       battle.units[$0]
+    }
+  }
+
+  /// The turn using the picked ability on
+  /// `foe` takes, walking up first if it's
+  /// out of reach; none until one is
+  /// picked.
+  private func plan(on foe: Int) -> Turn? {
+    chosen.flatMap {
+      battle.approach($0, on: foe)
     }
   }
 
@@ -127,11 +139,11 @@ final class Fight {
   /// Uses the picked ability on `target`,
   /// then lets the foes act.
   func target(_ target: Int) {
-    guard let ability = chosen else {
+    guard let turn = plan(on: target) else {
       return
     }
     chosen = nil
-    try? battle.act(ability, on: target)
+    try? battle.act(turn)
     foesAct()
   }
 
@@ -146,9 +158,8 @@ final class Fight {
   /// the end).
   private func foesAct() {
     while actor?.side == .foes,
-      let (ability, target)
-        = battle.plainChoice {
-      try? battle.act(ability, on: target)
+      let turn = battle.plainChoice {
+      try? battle.act(turn)
     }
   }
 }

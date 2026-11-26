@@ -1,34 +1,101 @@
 public extension Battle {
-  /// The next unit's plain choice: the
-  /// affordable ability and foe that deal
-  /// the most damage (shields and
-  /// bodyguards aside), the first on a tie.
-  /// A stand-in for real tactics, so whole
-  /// battles can be played and read.
-  var plainChoice: (Int, on: Int)? {
+  /// The next unit's turn for using
+  /// `ability` on `target`: straight there,
+  /// just far enough to reach, then the
+  /// ability if it reaches by then. If the
+  /// spot is taken, it stays put. Nil once
+  /// the battle is over.
+  func approach(
+    _ ability: Int,
+    on target: Int
+  ) -> Turn? {
+    next.map {
+      approach(
+        ability, on: target, by: units[$0]
+      )
+    }
+  }
+
+  /// `approach(ability, on: target)`, for
+  /// `mover`.
+  private func approach(
+    _ ability: Int,
+    on target: Int,
+    by mover: BattleUnit
+  ) -> Turn {
+    let foe = units[target]
+    let chosen = mover.unit
+      .abilities[ability]
+    let action = Action(ability, on: target)
+    let start = mover.place
+    if reaches(
+      chosen, from: start, by: mover, to: foe
+    ) {
+      return Turn(action: action)
+    }
+    let limit = chosen.reach.limit(
+      from: mover.unit.size.radius,
+      to: foe.unit.size.radius
+    )
+    // 2 more than the gap, so the rounding
+    // in `toward` still ends in reach.
+    let gap = Geometry.rootUp(
+      start.squared(to: foe.place)
+    ) - limit + 2
+    let spot = start.toward(
+      foe.place,
+      by: min(gap, mover.unit.stats.move)
+    )
+    guard fits(mover, at: spot) else {
+      return Turn()
+    }
+    let near = reaches(
+      chosen, from: spot, by: mover, to: foe
+    )
+    return Turn(
+      before: spot,
+      action: near ? action : nil
+    )
+  }
+
+  /// The next unit's plain choice: of the
+  /// affordable abilities and foes, the one
+  /// that deals the most damage (shields
+  /// and bodyguards aside) among those it
+  /// can reach this turn, walking up to it;
+  /// if none, it walks toward the one that
+  /// would. The first on a tie. A stand-in
+  /// for real tactics, so whole battles can
+  /// be played and read.
+  var plainChoice: Turn? {
     guard let actor = next else {
       return nil
     }
     let mover = units[actor]
-    var best: (Int, on: Int)?
-    var most = -1
+    var best: Turn?
+    var most = (0, -1)
     let foes = units.filter {
       $0.isUp && $0.side != mover.side
     }
     let abilities = mover.unit.abilities
     for index in abilities.indices
     where canUse(index) {
-      let ability = abilities[index]
       for foe in foes {
+        let turn = approach(
+          index, on: foe.id, by: mover
+        )
         let amount = Rules.damage(
-          ability,
+          abilities[index],
           from: mover.unit.stats,
           to: foe.unit,
           intensity: 100
         )
-        if amount > most {
-          most = amount
-          best = (index, on: foe.id)
+        let score = (
+          turn.action == nil ? 0 : 1, amount
+        )
+        if score > most {
+          most = score
+          best = turn
         }
       }
     }
@@ -42,10 +109,10 @@ public extension Battle {
     turns: Int = 200
   ) {
     for _ in 0..<turns {
-      guard let (ability, target)
-        = plainChoice
-      else { return }
-      try? act(ability, on: target)
+      guard let turn = plainChoice else {
+        return
+      }
+      try? act(turn)
     }
   }
 }

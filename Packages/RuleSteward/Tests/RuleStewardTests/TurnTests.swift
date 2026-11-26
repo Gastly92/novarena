@@ -29,7 +29,10 @@ final class TurnTests: XCTestCase {
   func testAbilitiesCostResource() throws {
     var battle = Battle(
       party: [.gerald],
-      foes: [Fixtures.unit("Wall", speed: 1)]
+      foes: [
+        Fixtures.unit("Wall", speed: 1),
+      ],
+      places: Fixtures.together(2)
     )
     for _ in 0..<5 {
       try battle.act(1, on: 1)
@@ -50,7 +53,8 @@ final class TurnTests: XCTestCase {
     let strong = Ability(
       "Smash",
       power: 2000,
-      delivery: .physical
+      delivery: .physical,
+      reach: Fixtures.far
     )
     var battle = Battle(
       party: [
@@ -94,7 +98,8 @@ final class TurnTests: XCTestCase {
               "Flame",
               power: 50,
               delivery: .special,
-              element: .fire
+              element: .fire,
+              reach: Fixtures.far
             ),
           ]
         ),
@@ -114,7 +119,8 @@ final class TurnTests: XCTestCase {
   func testPlayPlainlyStopsAtTheEnd() {
     var battle = Battle(
       party: [.gerald],
-      foes: [Fixtures.unit("B", health: 10)]
+      foes: [Fixtures.unit("B", health: 10)],
+      places: Fixtures.together(2)
     )
     battle.playPlainly(turns: 50)
     XCTAssertEqual(battle.winner, .party)
@@ -127,7 +133,8 @@ final class TurnTests: XCTestCase {
   func testPlayPlainlyStopsAfterTurns() {
     var battle = Battle(
       party: [.gerald],
-      foes: [.oswin]
+      foes: [.oswin],
+      places: Fixtures.together(2)
     )
     battle.playPlainly(turns: 1)
     XCTAssertNil(battle.winner)
@@ -139,7 +146,8 @@ final class TurnTests: XCTestCase {
   func testQueueIsTheTurnOrder() throws {
     var battle = Battle(
       party: [.gerald, .oswin],
-      foes: [.ashka, .kestrel]
+      foes: [.ashka, .kestrel],
+      places: Fixtures.together(4)
     )
     let start = battle.queue
     XCTAssertEqual(start, [0, 2, 3, 1])
@@ -154,7 +162,10 @@ final class TurnTests: XCTestCase {
   func testCanUseCountsTheRefill() throws {
     var battle = Battle(
       party: [.gerald],
-      foes: [Fixtures.unit("Wall", speed: 1)]
+      foes: [
+        Fixtures.unit("Wall", speed: 1),
+      ],
+      places: Fixtures.together(2)
     )
     XCTAssertTrue(battle.canUse(1))
     XCTAssertFalse(battle.canUse(2))

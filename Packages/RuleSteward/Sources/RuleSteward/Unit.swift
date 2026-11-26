@@ -8,6 +8,8 @@ public struct Unit: Sendable {
   public let kind: String
   /// Its numbers.
   public let stats: Stats
+  /// How big it is.
+  public let size: Size
   /// How it takes each element; elements
   /// missing here hit normally.
   public let affinities: [Element: Affinity]
@@ -28,6 +30,7 @@ public struct Unit: Sendable {
     kind: String,
     stats: Stats,
     abilities: [Ability],
+    size: Size = .medium,
     affinities: [Element: Affinity] = [:],
     resource: Resource? = nil,
     shield: Shield? = nil,
@@ -36,6 +39,7 @@ public struct Unit: Sendable {
     self.name = name
     self.kind = kind
     self.stats = stats
+    self.size = size
     self.affinities = affinities
     self.resource = resource
     self.shield = shield

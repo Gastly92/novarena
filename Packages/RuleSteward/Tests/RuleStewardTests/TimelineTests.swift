@@ -93,7 +93,8 @@ final class TimelineTests: XCTestCase {
       "Slam",
       power: 10,
       delivery: .physical,
-      weight: .heavy
+      weight: .heavy,
+      reach: Fixtures.far
     )
     var battle = Battle(
       party: [

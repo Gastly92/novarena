@@ -7,8 +7,8 @@ public enum Side: Sendable {
 }
 
 /// A unit during a battle: its health,
-/// shield, resource and place on the
-/// timeline.
+/// shield, resource, place on the
+/// timeline and spot in the arena.
 public struct BattleUnit: Sendable,
   Identifiable {
   /// Its place in the battle's list.
@@ -25,6 +25,8 @@ public struct BattleUnit: Sendable,
   public internal(set) var pool: Int
   /// The tick its next turn comes at.
   public internal(set) var nextTurn: Int
+  /// Where it stands.
+  public internal(set) var place: Point
   /// Whether it took any damage since its
   /// last turn (a recharging shield waits).
   var wasHit = false
@@ -35,10 +37,16 @@ public struct BattleUnit: Sendable,
   /// Still in the fight.
   public var isUp: Bool { health > 0 }
 
-  init(id: Int, side: Side, unit: Unit) {
+  init(
+    id: Int,
+    side: Side,
+    unit: Unit,
+    place: Point
+  ) {
     self.id = id
     self.side = side
     self.unit = unit
+    self.place = place
     health = unit.stats.health
     shield = unit.shield?.points ?? 0
     pool = unit.resource?.maximum ?? 0
