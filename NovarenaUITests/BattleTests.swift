@@ -17,19 +17,18 @@ final class BattleTests: XCTestCase {
     XCTAssertEqual(first.label, "Oswin")
   }
 
-  /// Tap the arena a little right of
-  /// Gerald to pick a spot, then end the
-  /// turn there: Oswin is next.
+  /// Tap the arena at (300, 200) cm, 1.5 m
+  /// right of Gerald, to pick a spot, then
+  /// end the turn there: Oswin is next.
   @MainActor
   func testMovesAndEndsTheTurn() {
     let app = App.start(screen: .battle)
-    app.text("data-token-0")
+    app.buttons["arena"]
       .coordinate(
         withNormalizedOffset: CGVector(
-          dx: 0.5, dy: 0.5
+          dx: 0.25, dy: 0.25
         )
       )
-      .withOffset(CGVector(dx: 50, dy: 0))
       .tap()
     let end = app.buttons[
       "Move and end turn"

@@ -7,9 +7,8 @@ import SwiftUI
 /// shaded, the picked spot as a dashed
 /// ghost, and foes the picked ability
 /// reaches ringed. A tap picks a spot, or
-/// with an ability picked, a foe.
-/// Initials come from the rules, so they
-/// carry a `data-` identifier.
+/// with an ability picked, a foe. For
+/// now it's one button to VoiceOver.
 struct ArenaView: View {
   let fight: Fight
 
@@ -38,7 +37,10 @@ struct ArenaView: View {
         }
       }
       .contentShape(Rectangle())
+      .accessibilityElement()
+      .accessibilityLabel("Arena")
       .accessibilityAddTraits(.isButton)
+      .testID("arena")
       .onTapGesture {
         fight.tap(map.spot(at: $0))
       }
@@ -88,7 +90,6 @@ struct ArenaView: View {
           .font(.caption2.bold())
           .foregroundStyle(.white)
           .fixedSize()
-          .testID("data-token-\(unit.id)")
       }
       .position(map.location(of: unit.place))
   }
