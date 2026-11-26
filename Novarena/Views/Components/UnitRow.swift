@@ -2,17 +2,27 @@ import RuleSteward
 import SwiftUI
 
 /// One unit in a battle: its name and kind,
-/// health, shield and resource, and whether
-/// it's on turn or down. Text from the
-/// rules (names, kinds) isn't translated
-/// yet, so it carries a `data-` identifier.
+/// health, shield and resource, whether
+/// it's on turn or down, and what the
+/// picked ability would do to it. Text
+/// from the rules (names, kinds) isn't
+/// translated yet, so it carries a `data-`
+/// identifier.
 struct UnitRow: View {
   let unit: BattleUnit
   let onTurn: Bool
+  /// What the picked ability would do, a
+  /// line each.
+  let preview: [String]
 
-  init(unit: BattleUnit, onTurn: Bool) {
+  init(
+    unit: BattleUnit,
+    onTurn: Bool,
+    preview: [String] = []
+  ) {
     self.unit = unit
     self.onTurn = onTurn
+    self.preview = preview
   }
 
   var body: some View {
@@ -32,6 +42,11 @@ struct UnitRow: View {
       }
       if unit.isUp {
         gauges
+        ForEach(preview, id: \.self) {
+          Text($0)
+            .font(.caption.bold())
+            .foregroundStyle(.tint)
+        }
       } else {
         Text("Down")
           .foregroundStyle(.secondary)
