@@ -33,8 +33,8 @@ public struct Forecast: Sendable, Equatable {
 }
 
 public extension Battle {
-  /// What `act(ability, on: target)` would
-  /// do, without doing it.
+  /// What using `ability` on `target`
+  /// from where the unit stands would do.
   func forecast(
     _ ability: Int,
     on target: Int

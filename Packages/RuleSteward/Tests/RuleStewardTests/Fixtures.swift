@@ -94,3 +94,18 @@ enum Fixtures {
     battle.log.map(\.description)
   }
 }
+
+extension Battle {
+  /// Plays the next unit's turn: `ability`
+  /// (its index in the unit's list) on
+  /// `target` (an id), from where it
+  /// stands.
+  mutating func act(
+    _ ability: Int,
+    on target: Int
+  ) throws(Mistake) {
+    try act(Turn(
+      action: Action(ability, on: target)
+    ))
+  }
+}
