@@ -18,6 +18,8 @@ public enum Mistake: Error, Equatable {
   /// A spot it moves to is taken, or
   /// outside the arena.
   case blocked
+  /// It has already acted this turn.
+  case acted
 }
 
 /// A battle between the party and its foes,
@@ -26,13 +28,17 @@ public enum Mistake: Error, Equatable {
 /// choices always give the same battle.
 public struct Battle: Sendable {
   /// Everyone in it, party first.
-  public private(set) var units: [BattleUnit]
+  public internal(set) var units:
+    [BattleUnit]
   /// Where it's fought.
   public let arena: Arena
   /// What has happened so far.
-  public private(set) var log: [Event] = []
+  public internal(set) var log: [Event] = []
   /// The time, in ticks (100 a round).
-  public private(set) var tick = 0
+  public internal(set) var tick = 0
+  /// How far the unit on turn is through
+  /// it, once it has begun.
+  var progress: Progress?
 
   /// A battle between `party` and `foes`
   /// in `arena`, each unit starting at its
@@ -101,18 +107,17 @@ public struct Battle: Sendable {
     queue.first
   }
 
-  /// Whether the next unit can pay for its
-  /// ability at this index, counting what
-  /// its resource refills as its turn
-  /// starts.
+  /// Whether the next unit can use its
+  /// ability at this index: it hasn't
+  /// acted yet, and can pay for it,
+  /// counting what its resource refills as
+  /// its turn starts.
   public func canUse(
     _ ability: Int
   ) -> Bool {
-    guard let actor = next else {
-      return false
-    }
-    var ready = units[actor]
-    ready.startTurn()
+    guard let ready = try? ready(),
+      !hasActed
+    else { return false }
     let all = ready.unit.abilities
     return all.indices.contains(ability)
       && ready.affords(all[ability])
@@ -132,66 +137,13 @@ public struct Battle: Sendable {
     ]
   }
 
-  /// Plays the next unit's `turn`, or
-  /// throws, changing nothing, if it can't
-  /// be taken.
-  public mutating func act(
-    _ turn: Turn
-  ) throws(Mistake) {
-    guard let actor = next else {
-      throw .over
-    }
-    var mover = units[actor]
-    mover.startTurn()
-    let stop = turn.before ?? mover.place
-    let chosen = try check(
-      turn.action, by: mover, at: stop
-    )
-    try check(
-      turn.before,
-      then: turn.after,
-      by: mover
-    )
-    units[actor] = mover
-    tick = mover.nextTurn
-    log.append(.turn(
-      mover.unit.name, tick: tick
-    ))
-    move(actor, to: turn.before)
-    if let chosen, let action = turn.action {
-      units[actor].pool -= chosen.cost
-      log.append(.uses(
-        mover.unit.name,
-        chosen.name,
-        target: units[action.target]
-          .unit.name
-      ))
-      hit(
-        units[action.target],
-        with: chosen,
-        from: actor
-      )
-    }
-    move(actor, to: turn.after)
-    units[actor].nextTurn += Rules.wait(
-      speed: mover.unit.stats.speed,
-      weight: chosen?.weight ?? .normal
-    )
-    if let side = winner {
-      log.append(.wins(side))
-    }
-  }
-
   /// The ability `action` uses, if `mover`
   /// can use it from `spot`.
-  private func check(
-    _ action: Action?,
+  func check(
+    _ action: Action,
     by mover: BattleUnit,
     at spot: Point
-  ) throws(Mistake) -> Ability? {
-    guard let action else {
-      return nil
-    }
+  ) throws(Mistake) -> Ability {
     let all = mover.unit.abilities
     guard all.indices
       .contains(action.ability)
@@ -214,21 +166,6 @@ public struct Battle: Sendable {
     return chosen
   }
 
-  /// Moves unit `id` to `spot`, if it's
-  /// going anywhere.
-  private mutating func move(
-    _ id: Int,
-    to spot: Point?
-  ) {
-    guard let spot else {
-      return
-    }
-    units[id].place = spot
-    log.append(.moves(
-      units[id].unit.name, spot
-    ))
-  }
-
   /// The ally who takes this hit for
   /// `target`, if one can this round.
   private func guardian(
@@ -246,7 +183,7 @@ public struct Battle: Sendable {
 
   /// Resolves `ability` from `actor` on
   /// `aimed`, or on its bodyguard.
-  private mutating func hit(
+  mutating func hit(
     _ aimed: BattleUnit,
     with ability: Ability,
     from actor: Int

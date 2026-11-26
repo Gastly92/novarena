@@ -160,19 +160,4 @@ enum Geometry {
     let low = root(value)
     return low * low < value ? low + 1 : low
   }
-
-  /// Whether two legs, `first` and
-  /// `second` long squared, add up to at
-  /// most `limit`: √a + √b ≤ m exactly,
-  /// squared twice to stay whole.
-  static func legs(
-    _ first: Int,
-    _ second: Int,
-    within limit: Int
-  ) -> Bool {
-    let left = limit * limit - first
-      - second
-    return left >= 0
-      && 4 * first * second <= left * left
-  }
 }

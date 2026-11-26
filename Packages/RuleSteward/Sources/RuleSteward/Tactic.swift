@@ -1,24 +1,10 @@
-public extension Battle {
-  /// The next unit's turn for using
-  /// `ability` on `target`: straight there,
-  /// just far enough to reach, then the
-  /// ability if it reaches by then. If the
-  /// spot is taken, it stays put. Nil once
-  /// the battle is over.
+extension Battle {
+  /// `mover`'s turn for using `ability` on
+  /// `target`: straight there, just far
+  /// enough to reach, then the ability if
+  /// it reaches by then. If the spot is
+  /// taken, it stays put.
   func approach(
-    _ ability: Int,
-    on target: Int
-  ) -> Turn? {
-    next.map {
-      approach(
-        ability, on: target, by: units[$0]
-      )
-    }
-  }
-
-  /// `approach(ability, on: target)`, for
-  /// `mover`.
-  private func approach(
     _ ability: Int,
     on target: Int,
     by mover: BattleUnit
@@ -57,7 +43,9 @@ public extension Battle {
       action: near ? action : nil
     )
   }
+}
 
+public extension Battle {
   /// The next unit's plain choice: of the
   /// affordable abilities and foes, the one
   /// that deals the most damage (shields
