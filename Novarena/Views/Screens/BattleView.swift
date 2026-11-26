@@ -25,7 +25,7 @@ struct BattleView: View {
         Section("Foes") { foes }
         Section("Party") {
           ForEach(fight.units(.party)) {
-            row($0)
+            UnitRow(unit: $0)
           }
         }
         Section("Log") { log }
@@ -44,6 +44,7 @@ struct BattleView: View {
     VStack(spacing: 8) {
       TurnRow(fight: fight)
       ArenaView(fight: fight)
+        .frame(maxHeight: 200)
     }
     .padding(.horizontal)
     .padding(.top, 8)
@@ -58,7 +59,6 @@ struct BattleView: View {
       } label: {
         UnitRow(
           unit: foe,
-          onTurn: foe.id == fight.actor?.id,
           preview: fight.preview(of: foe.id)
         )
       }
@@ -80,16 +80,6 @@ struct BattleView: View {
         .testID("data-log")
     }
   }
-
-  /// A unit, marked if it's on turn.
-  private func row(
-    _ unit: BattleUnit
-  ) -> some View {
-    UnitRow(
-      unit: unit,
-      onTurn: unit.id == fight.actor?.id
-    )
-  }
 }
 
 /// The unit on turn's abilities and a
@@ -106,11 +96,6 @@ private struct Controls: View {
         fight.restart()
       }
     } else if let actor = fight.actor {
-      Text("""
-        Tap the arena to move, then pick an \
-        ability and a foe.
-        """)
-        .foregroundStyle(.secondary)
       abilities(of: actor)
       Button {
         fight.endTurn()
@@ -152,8 +137,7 @@ private struct Controls: View {
   }
 
   /// An ability's name, then its power,
-  /// cost and reach, then what it does to
-  /// the next turn.
+  /// cost, reach and weight.
   private func details(
     _ ability: Ability
   ) -> some View {
@@ -166,13 +150,12 @@ private struct Controls: View {
           Text("Costs \(ability.cost)")
         }
         Text(ability.reach.label)
+        if let note = ability.weight.label {
+          Text(note)
+        }
       }
       .font(.caption)
       .foregroundStyle(.secondary)
-      Text(ability.weight.label)
-        .font(.caption)
-        .foregroundStyle(.secondary)
-        .wrapsText()
     }
   }
 }

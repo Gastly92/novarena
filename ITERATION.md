@@ -131,6 +131,10 @@ felt like, and what's next.
   - No ticks on screen: the row shows the
     order after the planned move, with the
     unit on turn circled where it lands.
+  - Ability rows say only "Light" or
+    "Heavy" for weight; the row shows what
+    it does. A downed unit's row keeps its
+    empty gauges.
 
 ## Next: movement
 

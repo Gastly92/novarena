@@ -163,9 +163,8 @@ final class PreviewTests: XCTestCase {
     let labels = [
       Weight.light, .normal, .heavy,
     ].map(\.label)
-    XCTAssertEqual(Set(labels).count, 3)
-    XCTAssertTrue(
-      labels[2].hasPrefix("Heavy")
+    XCTAssertEqual(
+      labels, ["Light", nil, "Heavy"]
     )
   }
 

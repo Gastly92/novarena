@@ -51,23 +51,16 @@ extension Forecast {
 }
 
 extension Weight {
-  /// What it does to the unit's next turn.
-  var label: String {
+  /// What it does to the unit's next turn,
+  /// shown when it isn't the usual wait.
+  var label: String? {
     switch self {
     case .light:
-      String(localized: """
-        Light: next turn after ¾ of the \
-        usual wait
-        """)
+      String(localized: "Light")
     case .normal:
-      String(localized: """
-        Next turn after the usual wait
-        """)
+      nil
     case .heavy:
-      String(localized: """
-        Heavy: next turn after 1½ times \
-        the usual wait
-        """)
+      String(localized: "Heavy")
     }
   }
 }
