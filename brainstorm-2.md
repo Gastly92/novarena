@@ -721,14 +721,6 @@ carries over:
   stats are seen, every later fight against
   them is exact (brainstorm 1's "knowledge is
   the level-up", and the bestiary idea).
-- **Fighting reveals some, recruiting
-  reveals all.** Every battle can bring
-  foes you haven't met. Fighting one shows
-  part of it (what it used on you, what you
-  saw hit it); recruiting it shows
-  everything. So the ranges narrow over a
-  run, and an unrecruited foe can still
-  hold a surprise.
 
 ## Lessons from the fork
 
@@ -976,79 +968,6 @@ built in the real game and improved as we go.
    units, then a battle screen, until it
    starts to feel right. (0.0.1 went to the
    hello world, so this is a later 0.0.x.)
-   See [Step 4 so far](#step-4-so-far).
 5. **The rest of the game**: battle flow,
    menus, party management, drafting, earning
    and spending currency, and so on.
-
-## Step 4 so far
-
-How the battle is being iterated: one pull
-request at a time, each sent to TestFlight
-and played on the phone, the next chosen by
-what the last one felt like.
-
-**The screen is a placeholder** until the
-sprites. How it looks, or how readable the
-text is, doesn't matter yet; what the
-player can know and decide does.
-
-Done:
-
-- **Rules package** (`RuleSteward`): the
-  timeline, damage, shields, resources, a
-  bodyguard, four sample units, a stand-in
-  AI.
-- **0.0.2, a battle screen**: the sample
-  battle, played by picking an ability then
-  a foe.
-- **0.0.3, previews**: each ability's power,
-  cost and weight; once one is picked, each
-  foe's exact result
-  (`Battle.forecast`), and the turn order
-  after the move.
-
-What 0.0.3 felt like:
-
-- Without movement and positions it's
-  watching numbers go down: the tactics are
-  missing.
-- Lunge vs. Sword Cut only matters if the
-  choice shows **where in the line you end
-  up**: the timeline is a row of portraits,
-  and picking a move shows your next turn's
-  place in it. Not ticks, and not written
-  out as "you go 3rd".
-- The fork's previews were fun as ranges.
-  Here a range comes from what you don't
-  know yet (see [What you can
-  see](#what-you-can-see)), not from dice.
-
-Next, movement ([Movement](#movement)), in
-pull requests:
-
-- **A, rules.** Whole-number positions,
-  each unit a circle (a size radius) with a
-  Move stat, and each ability a reach
-  (melee, edge to edge) or a range. A turn
-  is moving up to Move and one action,
-  either order, movement split around it.
-  The stand-in AI walks toward its target.
-  An open arena (no obstacles yet). The
-  forecast includes moves. The turn order
-  in the forecast replaces tick talk.
-- **B, the screen** (0.0.4): a top-down
-  arena of placeholder circles, where the
-  unit on turn can reach, picking a spot,
-  then a foe in reach with its preview; the
-  turn order as a row, showing where the
-  unit lands.
-- **C.** Obstacles and pathfinding (the
-  hidden fine grid), then terrain.
-
-After movement, roughly: ranges from
-unknown stats and the bestiary (knowledge);
-a better AI; status effects; commander
-actions. Feedback from each build can
-reorder these.
-

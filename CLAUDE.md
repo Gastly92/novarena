@@ -18,15 +18,18 @@ uploading) runs in CI.
   `brainstorm-2.md` (current) and
   `brainstorm.md` (the earlier ship idea).
   The roadmap is at the end of
-  `brainstorm-2.md`, and "Step 4 so far"
-  says what's done, how the last build
-  felt, and the next pull requests.
-- How the owner works: one pull request at
-  a time per repo; after one that changes
-  the game merges, send it to TestFlight
-  and ask how it felt, and let that choose
-  the next. Record new decisions in
-  `brainstorm-2.md` as they're made.
+  `brainstorm-2.md`, which is left as
+  written.
+- Now: iterating on the battle until it's
+  good, then building the game from there
+  (`ITERATION.md`: how it works, each
+  build and how it felt, decisions, and
+  the next pull requests). One pull
+  request at a time; after one that
+  changes the game merges, send it to
+  TestFlight and ask how it felt, and let
+  that choose the next. Record decisions
+  and feedback in `ITERATION.md`.
 - The name: nova (a new star) and arena
   (Latin for sand, the fighting floor).
   Written as one word, never with a
