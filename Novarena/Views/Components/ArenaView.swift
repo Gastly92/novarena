@@ -25,7 +25,9 @@ struct ArenaView: View {
       )
       ZStack(alignment: .topLeading) {
         Rectangle()
-          .fill(.background)
+          .fill(Color(
+            .secondarySystemGroupedBackground
+          ))
         if let actor = fight.actor {
           range(of: actor, on: map)
         }
