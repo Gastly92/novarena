@@ -98,9 +98,10 @@ final class BattleTests: XCTestCase {
     let app = App.start(
       screen: .battleHealing
     )
-    // The list, not the arena (a drag
-    // there moves the ghost).
-    app.collectionViews.firstMatch.swipeUp()
+    // The short actions panel brings the
+    // party's rows into view; Mend Wounds
+    // stays picked.
+    app.buttons["Actions"].tap()
     let gerald = app.buttons["data-unit-0"]
     XCTAssertTrue(gerald.appears())
     gerald.tap()
