@@ -2,7 +2,8 @@ import RuleSteward
 import SwiftUI
 
 /// One unit in a battle: its name and kind,
-/// its layers and resource, and what
+/// its layers and pools (movement aside),
+/// and what
 /// the picked ability would do to it. Text
 /// from the rules (names, kinds) isn't
 /// translated yet, so it carries a `data-`
@@ -63,8 +64,18 @@ struct UnitRow: View {
         Text("Exposed")
           .font(.caption.bold())
       }
-      if let pool = unit.unit.resource {
-        Text("\(pool.name) \(unit.pool)")
+      ForEach(
+        Array(unit.unit.pools.enumerated())
+          .filter {
+            $0.element.kind != .movement
+          },
+        id: \.offset
+      ) {
+        Text("""
+          \($0.element.kind.name) \
+          \(unit.pools[$0.offset]) of \
+          \($0.element.maximum)
+          """)
           .font(.caption)
       }
     }

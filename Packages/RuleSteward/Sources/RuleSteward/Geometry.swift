@@ -1,23 +1,31 @@
 /// A spot in the arena, in whole
-/// centimetres from its top left corner.
+/// centimetres from its top left corner,
+/// and its height above the ground.
 public struct Point: Sendable, Equatable {
   /// Across, left to right.
   public var x: Int
   /// Down, top to bottom.
   public var y: Int
+  /// Up from the ground.
+  public var z: Int
 
-  /// A spot.
-  public init(x: Int, y: Int) {
+  /// A spot; on the ground unless `z`
+  /// says.
+  public init(x: Int, y: Int, z: Int = 0) {
     self.x = x
     self.y = y
+    self.z = z
   }
 
-  /// The distance to `other`, squared, so
-  /// it stays a whole number.
+  /// The distance to `other`, in three
+  /// dimensions, squared, so it stays a
+  /// whole number.
   func squared(to other: Self) -> Int {
     let across = other.x - x
     let down = other.y - y
+    let rise = other.z - z
     return across * across + down * down
+      + rise * rise
   }
 
   /// `steps` centimetres of the way to
@@ -36,15 +44,18 @@ public struct Point: Sendable, Equatable {
     }
     return Self(
       x: x + (goal.x - x) * steps / length,
-      y: y + (goal.y - y) * steps / length
+      y: y + (goal.y - y) * steps / length,
+      z: z + (goal.z - z) * steps / length
     )
   }
 }
 
 extension Point: CustomStringConvertible {
-  /// "(x, y)", for the log.
+  /// "(x, y)", or "(x, y, z)" off the
+  /// ground, for the log.
   public var description: String {
-    "(\(x), \(y))"
+    z == 0 ? "(\(x), \(y))"
+      : "(\(x), \(y), \(z))"
   }
 }
 

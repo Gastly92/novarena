@@ -15,13 +15,15 @@ public struct Unit: Sendable {
   /// discipline; 1 where missing.
   public let expertise: [Discipline: Int]
   /// What it can do on its turn. The first
-  /// should cost nothing, so a unit with an
-  /// empty pool still has a move.
+  /// should cost nothing, so a unit with
+  /// empty pools still has a move.
   public let abilities: [Ability]
   /// How big it is.
   public let size: Size
-  /// What its abilities spend, if anything.
-  public let resource: Resource?
+  /// What it spends: movement, stamina,
+  /// mana… A unit without a movement pool
+  /// can't move.
+  public let pools: [Pool]
   /// Its always-on effects.
   public let passives: [Passive]
 
@@ -34,7 +36,7 @@ public struct Unit: Sendable {
     expertise: [Discipline: Int],
     abilities: [Ability],
     size: Size = .medium,
-    resource: Resource? = nil,
+    pools: [Pool] = [],
     passives: [Passive] = []
   ) {
     self.name = name
@@ -44,7 +46,7 @@ public struct Unit: Sendable {
     self.expertise = expertise
     self.abilities = abilities
     self.size = size
-    self.resource = resource
+    self.pools = pools
     self.passives = passives
   }
 

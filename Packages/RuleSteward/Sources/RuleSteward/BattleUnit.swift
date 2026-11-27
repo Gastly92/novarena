@@ -7,7 +7,7 @@ public enum Side: Sendable {
 }
 
 /// A unit during a battle: what's left of
-/// its layers, its resource, its place on
+/// its layers, its pools, its place on
 /// the timeline and its spot in the arena.
 public struct BattleUnit: Sendable,
   Identifiable {
@@ -22,8 +22,9 @@ public struct BattleUnit: Sendable,
   public internal(set) var layers: [Int]
   /// Knocked out: out of the fight.
   public internal(set) var isOut = false
-  /// Resource left.
-  public internal(set) var pool: Int
+  /// What's in each of its pools, in the
+  /// unit's order.
+  public internal(set) var pools: [Int]
   /// The tick its next turn comes at.
   public internal(set) var nextTurn: Int
   /// Where it stands.
@@ -56,7 +57,7 @@ public struct BattleUnit: Sendable,
     self.unit = unit
     self.place = place
     layers = unit.layers.map(\.points)
-    pool = unit.resource?.maximum ?? 0
+    pools = unit.pools.map(\.maximum)
     nextTurn = Rules.wait(
       speed: unit.stats.speed,
       weight: .normal
@@ -72,21 +73,52 @@ public struct BattleUnit: Sendable,
       : layers.reduce(0, +) * 100 / whole
   }
 
-  /// Whether it can pay for `ability`.
+  /// Whether it can pay for `ability`
+  /// from its pools.
   func affords(_ ability: Ability) -> Bool {
-    ability.cost <= pool
+    ability.costs.allSatisfy {
+      amount(in: $0.key) >= $0.value
+    }
   }
 
-  /// The start of its turn: its resource
-  /// refills, recharging layers fill if it
+  /// What's in its pool of `kind`; 0 if it
+  /// has none.
+  public func amount(
+    in kind: PoolKind
+  ) -> Int {
+    unit.pools.firstIndex { $0.kind == kind }
+      .map { pools[$0] } ?? 0
+  }
+
+  /// Takes what `ability` costs from its
+  /// pools.
+  mutating func pay(for ability: Ability) {
+    for (index, pool) in unit.pools
+      .enumerated() {
+      let cost = ability.costs[pool.kind]
+      pools[index] -= cost ?? 0
+    }
+  }
+
+  /// Takes `amount` from its pool of
+  /// `kind`.
+  mutating func spend(
+    _ amount: Int,
+    from kind: PoolKind
+  ) {
+    for (index, pool) in unit.pools
+      .enumerated() where pool.kind == kind {
+      pools[index] -= amount
+    }
+  }
+
+  /// The start of its turn: its pools
+  /// refill, recharging layers fill if it
   /// wasn't hit since its last turn, and
   /// layers that regrow do, unless broken.
   mutating func startTurn() {
-    if let resource = unit.resource {
-      pool = min(
-        resource.maximum,
-        pool + resource.refill
-      )
+    pools = zip(unit.pools, pools).map {
+      $0.refilled($1)
     }
     for (index, layer) in unit.layers
       .enumerated() {

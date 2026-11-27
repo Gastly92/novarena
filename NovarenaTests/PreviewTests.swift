@@ -17,7 +17,7 @@ final class PreviewTests: XCTestCase {
     RuleSteward.Unit(
       name,
       kind: "test",
-      stats: Stats(speed: speed, move: 300),
+      stats: Stats(speed: speed),
       layers: layers,
       expertise: [.unarmed: 3],
       abilities: abilities
@@ -148,12 +148,20 @@ final class PreviewTests: XCTestCase {
     XCTAssertTrue(lines.isEmpty)
   }
 
+  /// Reach in each skill's own measure.
   func testReachLabels() {
+    typealias Unit = RuleSteward.Unit
+    let cut = Unit.gerald.abilities[0]
     XCTAssertEqual(
-      Reach.melee(50).label, "Melee, 50 cm"
+      cut.reachLabel, "Melee, 1 reach"
     )
+    let fireball = Unit.ashka.abilities[1]
     XCTAssertEqual(
-      Reach.ranged(500).label, "Range 500 cm"
+      fireball.reachLabel, "Range 10 casts"
+    )
+    let beam = Unit.kestrel.abilities[1]
+    XCTAssertEqual(
+      beam.reachLabel, "Range 9 arcs"
     )
   }
 

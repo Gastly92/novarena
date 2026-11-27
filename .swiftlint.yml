@@ -97,6 +97,7 @@ identifier_name:
     # Coordinates in the arena.
     - x
     - y
+    - z
 
 # Diffs get read in the GitHub iPhone app; 45
 # fits a portrait line without wrapping. Long

@@ -62,15 +62,34 @@ extension Weight {
   }
 }
 
-extension Reach {
-  /// How far it reaches, for the ability's
-  /// row.
-  var label: String {
-    switch self {
+extension Measure {
+  /// `centimetres` in this measure, to a
+  /// tenth: "7 steps", "1.5 casts".
+  func says(_ centimetres: Int) -> String {
+    let tenths = centimetres * 10
+      / self.centimetres
+    let amount = (Double(tenths) / 10)
+      .formatted()
+    let name = tenths == 10 ? one : many
+    return String(
+      localized: "\(amount) \(name)"
+    )
+  }
+}
+
+extension Ability {
+  /// How far it reaches, in its own
+  /// measure, for its row.
+  var reachLabel: String {
+    switch reach {
     case let .melee(reach):
-      String(localized: "Melee, \(reach) cm")
+      String(localized: """
+        Melee, \(measure.says(reach))
+        """)
     case let .ranged(reach):
-      String(localized: "Range \(reach) cm")
+      String(localized: """
+        Range \(measure.says(reach))
+        """)
     }
   }
 }

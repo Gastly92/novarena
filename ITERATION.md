@@ -79,6 +79,20 @@ felt like, and what's next.
   - Moving, general actions and skills as
     separate things.
 
+- **0.0.5, turns in steps**: move,
+  skills and actions apart; drag and
+  nudge a ghost, commit the walk.
+  - Wanted: waiting should be worth
+    something (now: saving pools for a
+    later turn, see Pools).
+  - Hard to move the full distance in
+    one direction: the ghost should snap
+    to the edge of the range.
+  - Show a skill's reach, not just the
+    move's.
+  - Centimetres don't read well as a
+    unit.
+
 ## Decisions
 
 - **The turn order is a row of
@@ -237,6 +251,53 @@ felt like, and what's next.
     more than damage later.
   - Stats left: Speed and Move.
 
+- **Pools** (from 0.0.5):
+  - A unit has any number of pools
+    (movement, stamina, mana, charge,
+    fuel…), each with a maximum and a
+    refill each turn. Some reset each
+    turn (movement: standing still
+    doesn't let you sprint later);
+    others carry over up to the maximum,
+    so a unit can save up for a bigger
+    turn (charge over three turns for a
+    big attack).
+  - Moving spends the movement pool; a
+    unit without one can't move. A skill
+    can cost from several pools.
+  - One main action a turn, plus bonus
+    actions: each bonus skill is in a
+    group with a number of uses a turn
+    (a wizard's cantrips share one; a
+    rogue's dagger throw and jump each
+    have their own).
+  - The timeline stays: Speed, and the
+    main action's weight.
+- **Measures, not centimetres**: the
+  rules keep whole centimetres, but the
+  screen shows named measures, each a
+  name and a length: a unit's movement
+  in its own (steps for walkers, fuel
+  for a mech), a skill's reach in its
+  own. Names are placeholders until
+  better ones come.
+- **Height** (z): every spot has a
+  height as well as x and y, and reach
+  is measured in three dimensions, so a
+  flier above is out of a sword's reach
+  but not a spear's. Everyone is on the
+  ground for now. With terrain (C):
+  hills and walls give height; moving
+  up costs by how a unit gets around
+  (walkers pay to climb, climbers scale
+  walls, heavy units can't, fliers
+  change altitude freely and pass over
+  ground obstacles); high ground
+  lengthens ranged reach, and paths
+  curve around what's in the way (the
+  ghost's snap to the edge then follows
+  the path).
+
 ## Next: movement
 
 Free movement, as in `brainstorm-2.md`
@@ -272,13 +333,20 @@ Free movement, as in `brainstorm-2.md`
   hold and drag a ghost, nudge it with a
   directional pad, commit the walk. A
   skill only targets foes in reach.
-- **B2b, layers** (0.0.6, in progress):
+- **B2b, layers** (done, #18, 0.0.6):
   layers,
   damage kinds, materials and expertise
   in the rules, the sample units remade
   and balanced, layer bars and previews
   on screen.
-- **B3, the danger zone** (0.0.7): the
+- **B2c, pools** (0.0.7, in progress):
+  pools,
+  bonus actions, named measures and
+  height in the rules; on screen, pool
+  bars, measures, the picked skill's
+  reach as a ring, and the ghost
+  snapping to the edge of the range.
+- **B3, the danger zone** (0.0.8): the
   rules record what each side has seen
   of the other (furthest move, abilities
   used); the screen shades the danger

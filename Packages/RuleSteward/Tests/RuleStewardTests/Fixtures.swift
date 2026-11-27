@@ -30,12 +30,15 @@ enum Fixtures {
     return Unit(
       name,
       kind: "test",
-      stats: Stats(speed: speed, move: move),
+      stats: Stats(speed: speed),
       layers: layers
         ?? (hide > 0 ? [skin] : []),
       expertise: [.unarmed: 3],
       abilities: abilities,
       size: size,
+      pools: [
+        Pool(.movement, maximum: move),
+      ],
       passives: passives
     )
   }
@@ -128,10 +131,8 @@ extension Battle {
     _ ability: Int,
     on target: Int
   ) -> Turn? {
-    next.map {
-      approach(
-        ability, on: target, by: units[$0]
-      )
+    (try? ready()).map {
+      approach(ability, on: target, by: $0)
     }
   }
 }

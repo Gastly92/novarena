@@ -30,7 +30,9 @@ extension Battle {
     ) - limit + 2
     let spot = start.toward(
       foe.place,
-      by: min(gap, mover.unit.stats.move)
+      by: min(
+        gap, mover.amount(in: .movement)
+      )
     )
     guard fits(mover, at: spot) else {
       return Turn()
@@ -56,10 +58,9 @@ public extension Battle {
   /// stand-in for real tactics, so whole
   /// battles can be played and read.
   var plainChoice: Turn? {
-    guard let actor = next else {
+    guard let mover = try? ready() else {
       return nil
     }
-    let mover = units[actor]
     var best: Turn?
     var most = (0, -1)
     let foes = units.filter {

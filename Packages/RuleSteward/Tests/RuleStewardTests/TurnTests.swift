@@ -37,15 +37,24 @@ final class TurnTests: XCTestCase {
     for _ in 0..<5 {
       try battle.act(1, on: 1)
     }
-    XCTAssertEqual(battle.units[0].pool, 0)
+    XCTAssertEqual(
+      battle.units[0].amount(in: .stamina),
+      0
+    )
     let before = battle.log.count
     Fixtures.expect(.cantAfford) {
       try battle.act(1, on: 1)
     }
     XCTAssertEqual(battle.log.count, before)
-    XCTAssertEqual(battle.units[0].pool, 0)
+    XCTAssertEqual(
+      battle.units[0].amount(in: .stamina),
+      0
+    )
     try battle.act(0, on: 1)
-    XCTAssertEqual(battle.units[0].pool, 25)
+    XCTAssertEqual(
+      battle.units[0].amount(in: .stamina),
+      25
+    )
   }
 
   func testDownedUnitsLeaveTheFight()

@@ -144,7 +144,7 @@ final class Fight {
   }
 
   /// What's left of the unit on turn's
-  /// Move, before the planned move.
+  /// movement, before the planned move.
   var moveLeft: Int {
     battle.moveLeft
   }
@@ -219,16 +219,17 @@ final class Fight {
     chosen = ability
   }
 
-  /// Plans a move to `point`, if the unit
-  /// on turn can get there; its own spot
-  /// clears the plan.
+  /// Plans a move to `point`, or as far
+  /// toward it as the unit on turn can go
+  /// (to the edge of its range); its own
+  /// spot clears the plan.
   func place(_ point: Point) {
     if point == actor?.place {
       ghost = nil
-    } else if (try? battle.forecast(
-      Turn(before: point)
-    )) != nil {
-      ghost = point
+    } else if let spot = battle.reachable(
+      toward: point
+    ) {
+      ghost = spot
     }
   }
 

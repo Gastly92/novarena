@@ -1,27 +1,3 @@
-/// A pool spent on abilities: a wizard's
-/// mana, a mech's charge, a knight's
-/// stamina. It refills a little at the
-/// start of each of the unit's turns.
-public struct Resource: Sendable {
-  /// What kind it is, for display.
-  public let name: String
-  /// The most it holds; units start full.
-  public let maximum: Int
-  /// What it refills each turn.
-  public let refill: Int
-
-  /// A resource.
-  public init(
-    _ name: String,
-    maximum: Int,
-    refill: Int
-  ) {
-    self.name = name
-    self.maximum = maximum
-    self.refill = refill
-  }
-}
-
 /// Something a unit wears, or is, that
 /// hits wear down: plate, a shield, its
 /// own hide. A unit's last layer is its
