@@ -35,19 +35,7 @@ struct MovePanel: View {
 
   /// The planned move and what's left
   /// after, or how to plan one.
-  @ViewBuilder
   private var status: some View {
-    let left = fight.moveLeft
-    if let planned = fight.planned {
-      Text("""
-        Moves \(planned) cm, then \
-        \(left - planned) cm left
-        """)
-    } else {
-      Text("""
-        \(left) cm of Move left. Drag in \
-        the arena, or use the arrows.
-        """)
-    }
+    Text(fight.moveStatus)
   }
 }

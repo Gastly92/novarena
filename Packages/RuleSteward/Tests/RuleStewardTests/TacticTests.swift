@@ -63,4 +63,22 @@ final class TacticTests: XCTestCase {
       Action(0, on: 2)
     )
   }
+
+  /// After its main action, a unit adds
+  /// the bonus actions it can: Gerald's
+  /// Sword Cut, then his Pommel Strike.
+  func testUsesBonuses() {
+    let battle = Battle(
+      party: [.gerald],
+      foes: [Fixtures.unit("B", speed: 50)],
+      places: Fixtures.together(2)
+    )
+    let choice = battle.plainChoice
+    XCTAssertEqual(
+      choice?.action, Action(0, on: 1)
+    )
+    XCTAssertEqual(
+      choice?.bonuses, [Action(2, on: 1)]
+    )
+  }
 }

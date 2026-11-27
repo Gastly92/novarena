@@ -39,6 +39,9 @@ struct ArenaView: View {
           let spot = fight.ghost {
           ghost(of: actor, at: spot, on: map)
         }
+        if let reach = fight.reach {
+          ring(reach, on: map)
+        }
       }
       .contentShape(Rectangle())
       .accessibilityElement()
@@ -100,6 +103,28 @@ struct ArenaView: View {
       .frame(width: across, height: across)
       .position(
         map.location(of: actor.place)
+      )
+  }
+
+  /// How far the picked skill reaches, a
+  /// dashed ring.
+  private func ring(
+    _ reach: (center: Point, radius: Int),
+    on map: ArenaMap
+  ) -> some View {
+    let across = map.points(
+      2 * reach.radius
+    )
+    return Circle()
+      .stroke(
+        .orange,
+        style: StrokeStyle(
+          lineWidth: 1.5, dash: [6, 4]
+        )
+      )
+      .frame(width: across, height: across)
+      .position(
+        map.location(of: reach.center)
       )
   }
 

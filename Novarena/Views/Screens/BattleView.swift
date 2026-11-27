@@ -151,35 +151,59 @@ private struct Controls: View {
     }
   }
 
-  /// A skill's name, then its power, cost,
-  /// reach and weight, then its kind of
-  /// damage and discipline (from the
-  /// rules, so a `data-` identifier).
+  /// A skill's name, then its power, reach
+  /// and weight, then its kind of damage
+  /// and discipline (from the rules, so a
+  /// `data-` identifier) and what it costs
+  /// from which pools.
   private func details(
     _ ability: Ability
   ) -> some View {
     VStack(alignment: .leading, spacing: 2) {
       Text(verbatim: ability.name)
         .testID("data-ability-name")
-      HStack {
-        Text("Power \(ability.power)")
-        if ability.cost > 0 {
-          Text("Costs \(ability.cost)")
-        }
-        Text(ability.reach.label)
-        if let note = ability.weight.label {
-          Text(note)
-        }
+      Group {
+        numbers(ability)
+        sources(ability)
       }
       .font(.caption)
       .foregroundStyle(.secondary)
+    }
+  }
+
+  /// Its power, reach and weight, and
+  /// whether it's a bonus.
+  private func numbers(
+    _ ability: Ability
+  ) -> some View {
+    HStack {
+      Text("Power \(ability.power)")
+      Text(ability.reachLabel)
+      if let note = ability.weight.label {
+        Text(note)
+      }
+      if ability.bonus != nil {
+        Text("Bonus")
+      }
+    }
+  }
+
+  /// Its kind of damage and discipline,
+  /// then what it costs from which pools.
+  private func sources(
+    _ ability: Ability
+  ) -> some View {
+    HStack {
       Text(verbatim: """
         \(ability.kind.name) · \
         \(ability.discipline.name)
         """)
-        .font(.caption)
-        .foregroundStyle(.secondary)
         .testID("data-ability-kind")
+      ForEach(
+        ability.costLines, id: \.self
+      ) {
+        Text($0)
+      }
     }
   }
 }

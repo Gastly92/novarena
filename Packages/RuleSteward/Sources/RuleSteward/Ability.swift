@@ -36,7 +36,7 @@ public enum Reach: Sendable {
   /// The furthest apart the middles of a
   /// unit and its target can be, given
   /// their radii.
-  func limit(
+  public func limit(
     from radius: Int,
     to target: Int
   ) -> Int {
@@ -60,13 +60,17 @@ public struct Ability: Sendable {
   public let kind: Kind
   /// The skill it takes.
   public let discipline: Discipline
-  /// What it takes from the unit's
-  /// resource.
-  public let cost: Int
+  /// What it takes from the unit's pools.
+  public let costs: [PoolKind: Int]
+  /// Its group, if it's a bonus action
+  /// rather than the turn's main one.
+  public let bonus: Bonus?
   /// How long it holds the unit up.
   public let weight: Weight
   /// How far it reaches.
   public let reach: Reach
+  /// How a screen says its reach.
+  public let measure: Measure
   /// Whether what's left of a hit that
   /// breaks a layer always goes on to the
   /// next.
@@ -81,9 +85,11 @@ public struct Ability: Sendable {
     power: Int,
     kind: Kind,
     discipline: Discipline,
-    cost: Int = 0,
+    costs: [PoolKind: Int] = [:],
+    bonus: Bonus? = nil,
     weight: Weight = .normal,
     reach: Reach = .melee(50),
+    measure: Measure = .reach,
     pierces: Bool = false,
     ignores: Set<Material> = []
   ) {
@@ -91,9 +97,11 @@ public struct Ability: Sendable {
     self.power = power
     self.kind = kind
     self.discipline = discipline
-    self.cost = cost
+    self.costs = costs
+    self.bonus = bonus
     self.weight = weight
     self.reach = reach
+    self.measure = measure
     self.pierces = pierces
     self.ignores = ignores
   }

@@ -4,7 +4,7 @@ public enum Mistake: Error, Equatable {
   case over
   /// The unit has no such ability.
   case noAbility
-  /// Its resource can't pay for it.
+  /// Its pools can't pay for it.
   case cantAfford
   /// The target is an ally, down, or
   /// missing.
@@ -18,7 +18,8 @@ public enum Mistake: Error, Equatable {
   /// A spot it moves to is taken, or
   /// outside the arena.
   case blocked
-  /// It has already acted this turn.
+  /// It has already taken its main action
+  /// this turn, or the bonus group's uses.
   case acted
 }
 
@@ -108,18 +109,20 @@ public struct Battle: Sendable {
   }
 
   /// Whether the next unit can use its
-  /// ability at this index: it hasn't
-  /// acted yet, and can pay for it,
-  /// counting what its resource refills as
-  /// its turn starts.
+  /// ability at this index: its main
+  /// action not yet taken (or, for a bonus,
+  /// its group's uses not spent), and its
+  /// pools can pay, counting what they
+  /// refill as its turn starts.
   public func canUse(
     _ ability: Int
   ) -> Bool {
-    guard let ready = try? ready(),
-      !hasActed
-    else { return false }
+    guard let ready = try? ready() else {
+      return false
+    }
     let all = ready.unit.abilities
     return all.indices.contains(ability)
+      && isFree(all[ability])
       && ready.affords(all[ability])
   }
 

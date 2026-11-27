@@ -37,15 +37,24 @@ final class TurnTests: XCTestCase {
     for _ in 0..<5 {
       try battle.act(1, on: 1)
     }
-    XCTAssertEqual(battle.units[0].pool, 0)
+    XCTAssertEqual(
+      battle.units[0].amount(in: .stamina),
+      0
+    )
     let before = battle.log.count
     Fixtures.expect(.cantAfford) {
       try battle.act(1, on: 1)
     }
     XCTAssertEqual(battle.log.count, before)
-    XCTAssertEqual(battle.units[0].pool, 0)
+    XCTAssertEqual(
+      battle.units[0].amount(in: .stamina),
+      0
+    )
     try battle.act(0, on: 1)
-    XCTAssertEqual(battle.units[0].pool, 25)
+    XCTAssertEqual(
+      battle.units[0].amount(in: .stamina),
+      25
+    )
   }
 
   func testDownedUnitsLeaveTheFight()
@@ -116,7 +125,7 @@ final class TurnTests: XCTestCase {
       "  Ashka is immune"
     )
     let hide = battle.units[0].layers
-    XCTAssertEqual(hide, [240])
+    XCTAssertEqual(hide, [250])
   }
 
   /// Plain choices stop once there's a
@@ -143,7 +152,9 @@ final class TurnTests: XCTestCase {
     )
     battle.playPlainly(turns: 1)
     XCTAssertNil(battle.winner)
-    XCTAssertEqual(battle.log.count, 3)
+    // Gerald's turn: his cut and its hit,
+    // then his pommel strike and its hit.
+    XCTAssertEqual(battle.log.count, 5)
   }
 
   /// The queue lists everyone up in turn
@@ -173,7 +184,7 @@ final class TurnTests: XCTestCase {
       places: Fixtures.together(2)
     )
     XCTAssertTrue(battle.canUse(1))
-    XCTAssertFalse(battle.canUse(2))
+    XCTAssertFalse(battle.canUse(3))
     for _ in 0..<5 {
       try battle.act(1, on: 1)
     }

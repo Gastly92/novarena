@@ -5,16 +5,17 @@
 public extension Unit {
   /// A mouse knight: small and quick, in
   /// plate over a thin body; an expert
-  /// with his sword.
+  /// with his sword, and quick enough to
+  /// add a pommel strike to any turn.
   static let gerald = Unit(
     "Gerald",
     kind: "mouse knight",
-    stats: Stats(speed: 105, move: 350),
+    stats: Stats(speed: 105),
     layers: [
       Layer(
         "Plate",
         material: .metal,
-        points: 240
+        points: 190
       ),
       Layer(
         "Body",
@@ -35,14 +36,30 @@ public extension Unit {
         power: 100,
         kind: .pierce,
         discipline: .blades,
-        cost: 40,
+        costs: [.stamina: 40],
         weight: .heavy
+      ),
+      Ability(
+        "Pommel Strike",
+        power: 12,
+        kind: .crush,
+        discipline: .blades,
+        bonus: Bonus("pommel")
       ),
     ],
     size: .small,
-    resource: Resource(
-      "stamina", maximum: 100, refill: 25
-    )
+    pools: [
+      Pool(
+        .movement,
+        maximum: 350,
+        measure: .step
+      ),
+      Pool(
+        .stamina,
+        maximum: 100,
+        refill: 25
+      ),
+    ],
   )
 
   /// A fire demon: no armor, but a thick
@@ -51,12 +68,12 @@ public extension Unit {
   static let ashka = Unit(
     "Ashka",
     kind: "fire demon",
-    stats: Stats(speed: 90, move: 300),
+    stats: Stats(speed: 90),
     layers: [
       Layer(
         "Ember Hide",
         material: .ember,
-        points: 240,
+        points: 250,
         regrows: 15,
         matchups: [.burn: .immune]
       ),
@@ -74,14 +91,24 @@ public extension Unit {
         power: 90,
         kind: .burn,
         discipline: .fire,
-        cost: 40,
+        costs: [.mana: 40],
         weight: .heavy,
-        reach: .ranged(500)
+        reach: .ranged(500),
+        measure: .cast
       ),
     ],
-    resource: Resource(
-      "mana", maximum: 100, refill: 10
-    )
+    pools: [
+      Pool(
+        .movement,
+        maximum: 300,
+        measure: .stride
+      ),
+      Pool(
+        .mana,
+        maximum: 100,
+        refill: 10
+      ),
+    ],
   )
 
   /// A shield bearer: a tower shield over
@@ -90,7 +117,7 @@ public extension Unit {
   static let oswin = Unit(
     "Oswin",
     kind: "shield bearer",
-    stats: Stats(speed: 80, move: 300),
+    stats: Stats(speed: 80),
     layers: [
       Layer(
         "Tower Shield",
@@ -118,9 +145,18 @@ public extension Unit {
         weight: .light
       ),
     ],
-    resource: Resource(
-      "stamina", maximum: 100, refill: 25
-    ),
+    pools: [
+      Pool(
+        .movement,
+        maximum: 300,
+        measure: .step
+      ),
+      Pool(
+        .stamina,
+        maximum: 100,
+        refill: 25
+      ),
+    ],
     passives: [.bodyguard]
   )
 
@@ -130,7 +166,7 @@ public extension Unit {
   static let kestrel = Unit(
     "Kestrel-9",
     kind: "war mech",
-    stats: Stats(speed: 82, move: 300),
+    stats: Stats(speed: 82),
     layers: [
       Layer(
         "Energy Shield",
@@ -162,13 +198,23 @@ public extension Unit {
         power: 60,
         kind: .shock,
         discipline: .lightning,
-        cost: 50,
-        reach: .ranged(450)
+        costs: [.charge: 50],
+        reach: .ranged(450),
+        measure: .arc
       ),
     ],
     size: .large,
-    resource: Resource(
-      "charge", maximum: 100, refill: 25
-    )
+    pools: [
+      Pool(
+        .movement,
+        maximum: 300,
+        measure: .fuel
+      ),
+      Pool(
+        .charge,
+        maximum: 100,
+        refill: 25
+      ),
+    ],
   )
 }

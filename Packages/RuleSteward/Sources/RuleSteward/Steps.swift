@@ -1,39 +1,38 @@
 /// How far the unit on turn is through its
 /// turn.
 struct Progress: Sendable {
-  /// What its moves so far cost, in
-  /// centimetres of its Move.
-  var moved = 0
-  /// Its action's weight, once it has
-  /// acted.
+  /// Its main action's weight, once it has
+  /// taken it.
   var weight: Weight?
+  /// Bonus uses so far, by group.
+  var bonuses: [String: Int] = [:]
 }
 
 /// A turn, a step at a time: the unit on
 /// turn moves (in as many straight legs as
-/// it likes, up to its Move in all), takes
-/// at most one action, and ends its turn.
-/// The turn begins with its first step. A
-/// step that can't be taken throws and
-/// changes nothing.
+/// its movement pool pays for), takes at
+/// most one main action and the bonus
+/// actions its groups allow, and ends its
+/// turn. The turn begins with its first
+/// step. A step that can't be taken throws
+/// and changes nothing.
 public extension Battle {
   /// What's left of the unit on turn's
-  /// Move, in centimetres.
+  /// movement, in centimetres; 0 if it
+  /// can't move.
   var moveLeft: Int {
-    guard let actor = next else {
-      return 0
-    }
-    let move = units[actor].unit.stats.move
-    return move - (progress?.moved ?? 0)
+    (try? ready())?.amount(in: .movement)
+      ?? 0
   }
 
-  /// Whether the unit on turn has acted.
+  /// Whether the unit on turn has taken its
+  /// main action.
   var hasActed: Bool {
     progress?.weight != nil
   }
 
   /// What moving the unit on turn straight
-  /// to `spot` costs of its Move: the
+  /// to `spot` costs of its movement: the
   /// distance, rounded up to whole
   /// centimetres, so legs never add up to
   /// more than they walk.
@@ -46,9 +45,27 @@ public extension Battle {
     )
   }
 
+  /// The furthest spot toward `spot` the
+  /// unit on turn can move to: `spot`
+  /// itself if it's in range, else the
+  /// edge of its range on the way, if it
+  /// fits there.
+  func reachable(
+    toward spot: Point
+  ) -> Point? {
+    guard let mover = try? ready() else {
+      return nil
+    }
+    let left = moveLeft
+    let stop = cost(to: spot) <= left
+      ? spot
+      : mover.place.toward(spot, by: left)
+    return fits(mover, at: stop) ? stop : nil
+  }
+
   /// Moves the unit on turn straight to
   /// `spot`, if it fits there and has the
-  /// Move left.
+  /// movement left.
   mutating func move(
     to spot: Point
   ) throws(Mistake) {
@@ -61,30 +78,41 @@ public extension Battle {
       throw .tooFar
     }
     begin(mover)
-    progress?.moved += cost
+    units[mover.id].spend(
+      cost, from: .movement
+    )
     units[mover.id].place = spot
     log.append(.moves(mover.unit.name, spot))
   }
 
   /// The unit on turn uses `ability` (its
   /// index in the unit's list) on `target`
-  /// (an id), from where it stands.
+  /// (an id), from where it stands: its
+  /// main action, or a bonus one if its
+  /// group has uses left this turn.
   mutating func use(
     _ ability: Int,
     on target: Int
   ) throws(Mistake) {
     let mover = try ready()
-    guard !hasActed else {
-      throw .acted
-    }
     let chosen = try check(
       Action(ability, on: target),
       by: mover,
       at: mover.place
     )
+    guard isFree(chosen) else {
+      throw .acted
+    }
     begin(mover)
-    progress?.weight = chosen.weight
-    units[mover.id].pool -= chosen.cost
+    if let bonus = chosen.bonus {
+      let group = bonus.group
+      let used = progress?.bonuses[group]
+        ?? 0
+      progress?.bonuses[group] = used + 1
+    } else {
+      progress?.weight = chosen.weight
+    }
+    units[mover.id].pay(for: chosen)
     log.append(.uses(
       mover.unit.name,
       chosen.name,
@@ -103,7 +131,7 @@ public extension Battle {
 
   /// Ends the unit on turn's turn: its
   /// next comes after the usual wait,
-  /// scaled by its action's weight.
+  /// scaled by its main action's weight.
   mutating func endTurn() throws(Mistake) {
     let mover = try ready()
     begin(mover)
@@ -115,8 +143,9 @@ public extension Battle {
   }
 
   /// Plays the rest of the unit on turn's
-  /// turn: a move, an action, another move
-  /// and the end, each if given. It all
+  /// turn: a move, an action, bonus
+  /// actions, another move and the end,
+  /// each if given. It all
   /// happens or, if a step can't be taken,
   /// none of it.
   mutating func act(
@@ -129,6 +158,12 @@ public extension Battle {
     if let action = turn.action {
       try after.use(
         action.ability, on: action.target
+      )
+    }
+    for bonus in turn.bonuses
+    where after.winner == nil {
+      try after.use(
+        bonus.ability, on: bonus.target
       )
     }
     if after.winner == nil {
@@ -155,6 +190,19 @@ extension Battle {
       unit.startTurn()
     }
     return unit
+  }
+
+  /// Whether the unit on turn may still use
+  /// `ability` this turn: the main action
+  /// if it hasn't taken it, a bonus while
+  /// its group has uses left.
+  func isFree(_ ability: Ability) -> Bool {
+    guard let bonus = ability.bonus else {
+      return !hasActed
+    }
+    let used = progress?.bonuses[bonus.group]
+      ?? 0
+    return used < bonus.perTurn
   }
 
   /// Begins `mover`'s turn, if it hasn't

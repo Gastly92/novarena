@@ -24,8 +24,9 @@ final class FightTests: XCTestCase {
 
   /// A planned move can go anywhere Gerald
   /// can reach, be nudged, and be undone;
-  /// his own spot, or out of reach, doesn't
-  /// plan anything.
+  /// a spot out of reach plans the edge of
+  /// his range on the way; his own spot
+  /// clears the plan.
   func testPlansAMove() {
     let fight = Fight(stage: .moving)
     let spot = Point(x: 300, y: 200)
@@ -38,8 +39,9 @@ final class FightTests: XCTestCase {
     )
     fight.place(Point(x: 1000, y: 700))
     XCTAssertEqual(
-      fight.ghost, Point(x: 301, y: 200)
+      fight.ghost, Point(x: 541, y: 394)
     )
+    XCTAssertEqual(fight.planned, 350)
     fight.place(Point(x: 250, y: 200))
     XCTAssertNil(fight.ghost)
     XCTAssertNil(fight.planned)
@@ -203,7 +205,7 @@ final class FightTests: XCTestCase {
     let side = middle.actor?.side
     XCTAssertEqual(side, .party)
     let end = Fight(stage: .end)
-    let won = "The foes win"
+    let won = "The party wins"
     XCTAssertEqual(end.outcome, won)
     XCTAssertNil(end.actor)
   }
@@ -226,5 +228,62 @@ final class FightTests: XCTestCase {
     XCTAssertTrue(fight.battle.log.isEmpty)
     XCTAssertEqual(fight.actor?.id, 0)
     XCTAssertEqual(fight.panel, .move)
+  }
+
+  /// The move in Gerald's steps (half a
+  /// metre each).
+  func testMoveStatus() {
+    XCTAssertEqual(
+      Fight().moveStatus,
+      """
+      7 steps of movement left. Drag in \
+      the arena, or use the arrows.
+      """
+    )
+    XCTAssertEqual(
+      Fight(stage: .moving).moveStatus,
+      "Moves 1 step, then 6 steps left"
+    )
+    let fuel = Pool(
+      .movement, maximum: 100, measure: .fuel
+    )
+    XCTAssertEqual(
+      Fight.moveStatus(
+        fuel, left: 100, planned: 30
+      ),
+      "Moves 1.2 fuel, then 2.8 fuel left"
+    )
+    let plain = Pool(.movement, maximum: 100)
+    XCTAssertEqual(
+      Fight.moveStatus(
+        plain, left: 75, planned: 25
+      ),
+      "Moves 0.5 steps, then 1 step left"
+    )
+    XCTAssertEqual(
+      Fight.moveStatus(
+        nil, left: 0, planned: nil
+      ),
+      "Can't move"
+    )
+  }
+
+  /// The picked skill's reach, from the
+  /// planned spot or where Gerald stands:
+  /// Sword Cut, half a metre past his
+  /// 25 cm edge.
+  func testReach() {
+    XCTAssertNil(Fight().reach)
+    let aiming = Fight(stage: .aiming)
+    XCTAssertEqual(
+      aiming.reach?.center,
+      Point(x: 250, y: 200)
+    )
+    XCTAssertEqual(aiming.reach?.radius, 75)
+    let planned = Fight(stage: .planned)
+    XCTAssertEqual(
+      planned.reach?.center,
+      Point(x: 817, y: 448)
+    )
   }
 }
