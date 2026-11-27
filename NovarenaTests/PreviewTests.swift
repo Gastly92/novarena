@@ -148,6 +148,24 @@ final class PreviewTests: XCTestCase {
     XCTAssertTrue(lines.isEmpty)
   }
 
+  /// Costs, a line per pool, by name.
+  func testCostLines() {
+    let rush = Ability(
+      "Rush",
+      power: 10,
+      kind: .crush,
+      discipline: .unarmed,
+      costs: [.stamina: 30, .movement: 200]
+    )
+    XCTAssertEqual(
+      rush.costLines,
+      [
+        "Costs 200 movement",
+        "Costs 30 stamina",
+      ]
+    )
+  }
+
   /// Reach in each skill's own measure.
   func testReachLabels() {
     typealias Unit = RuleSteward.Unit

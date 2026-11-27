@@ -200,14 +200,9 @@ private struct Controls: View {
         """)
         .testID("data-ability-kind")
       ForEach(
-        ability.costs.sorted {
-          $0.key.name < $1.key.name
-        },
-        id: \.key.name
+        ability.costLines, id: \.self
       ) {
-        Text("""
-          Costs \($0.value) \($0.key.name)
-          """)
+        Text($0)
       }
     }
   }

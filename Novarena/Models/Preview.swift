@@ -78,6 +78,18 @@ extension Measure {
 }
 
 extension Ability {
+  /// What it costs, a line per pool, by
+  /// the pools' names.
+  var costLines: [String] {
+    costs
+      .sorted { $0.key.name < $1.key.name }
+      .map {
+        String(localized: """
+          Costs \($0.value) \($0.key.name)
+          """)
+      }
+  }
+
   /// How far it reaches, in its own
   /// measure, for its row.
   var reachLabel: String {
