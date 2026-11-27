@@ -134,6 +134,49 @@ starts.
   party's own, foes in percent, the
   battle info sheet.
   - Felt good; on to the units.
+- **0.0.10, healing and the cleric**:
+  Maren (mace, Smite, a bonus heal),
+  heal zones, the picker.
+  - Healing worked well, especially as
+    a bonus. Other effects will target
+    allies too (boons, not just heals).
+  - The arrow pad shifts up as the move
+    text above it changes length; it
+    should stay in one spot.
+  - After only moving, there's no clue
+    where "End turn" lands in the turn
+    order.
+  - Foe turns happen all at once; only
+    the log says what happened. Wanted
+    in pieces (moves, actions), so they
+    can be animated later.
+  - Passives (a hide regrowing) happen
+    silently at the start of a turn;
+    they should be steps of their own
+    too.
+  - At the edge of the range, or against
+    another unit, the arrows should
+    follow the curve, and look curved.
+  - The party's rows before the foes'.
+  - Skills need cooldowns (unusable for
+    some turns).
+  - Area of effect: a fireball hurting
+    those near its target, less the
+    further away.
+  - Not moving should bring the next
+    turn sooner (it doesn't).
+  - Knocked-out units stay where they
+    fell: good, for a necromancer and
+    the like later; targeting should
+    allow for them.
+  - Screens for a unit's conditions,
+    passives and equipment, once those
+    exist.
+  - Items to pick up on the field, as
+    well as terrain.
+  - Knocked-out foes' rows could move to
+    a collapsed section.
+  - A bigger arena, while testing.
 
 ## Decisions
 
@@ -468,6 +511,41 @@ starts.
     +18, now 25"). A picker, from home,
     chooses up to three units a side
     (repeats allowed).
+- **From 0.0.10**:
+  - The arrow pad stays put: the move
+    text above it keeps its room.
+  - The turn order always shows where
+    the unit on turn lands, for any turn
+    (just moving, or waiting) as well as
+    acting.
+  - The party's rows come first;
+    knocked-out units' rows move to a
+    collapsed section; the arena draws
+    bigger.
+  - Turns as events: the rules report a
+    turn as steps (a turn starting, each
+    passive at its start, each move leg,
+    each action and what it did), and
+    the screen plays foe turns step by
+    step, so each can be animated later.
+  - Curved nudges: at the edge of the
+    range or against a unit, an arrow
+    that would go out slides along the
+    curve, and its icon turns curved.
+  - Moving costs time (owner's call): the
+    wait scales with the movement used
+    this turn, smoothly, so a small
+    adjustment barely counts: about 90%
+    for not moving, 100% at half the
+    range, 110% at all of it (to tune
+    with `BalanceTests`). It stacks with
+    the action's weight.
+  - Ally effects are general: heals now,
+    boons (buffs, wards, cleanses) later,
+    all aimed at allies the same way.
+  - Knocked-out units stay on the field,
+    and will be targetable by abilities
+    that use them (a necromancer's).
 - **The commander** (owner's call; the
   name is a placeholder): the player,
   off the field, gets a portrait in the
@@ -590,11 +668,22 @@ Free movement, as in `brainstorm-2.md`
   (done, #22, 0.0.9): per-foe and
   party zones by kind, percentages for
   foes, the battle info sheet.
+- **Usability fixes** (0.0.11, in
+  progress): from 0.0.10, a steady arrow
+  pad, the turn order for any turn, the
+  party first, knocked-out units
+  collapsed, a bigger arena.
+- **Turns as events**: foe turns played
+  step by step on screen, passives at a
+  turn's start their own steps.
+- **Moving and timing**: the wait scaled
+  by movement used; curved nudges.
 - **Units**, in parts:
   - **Healing and the cleric**
-    (0.0.10, in progress): heals in the
-    rules, Maren, heal zones and
-    previews, the picker.
+    (done, #24, 0.0.10): heals in the
+    rules, Maren (mace, Smite, a bonus
+    heal), heal zones and previews, the
+    picker.
   - **The archer, golem and ice mage**,
     with the freeze kind.
   - **The rogue** comes with Reactions
@@ -661,8 +750,22 @@ reordered by how each build feels:
   ice, frost freezes water to floor,
   shock spreads through water; hazards
   on a schedule shown in advance.
+- **Cooldowns** (from 0.0.10): skills
+  unusable for some turns after use.
+- **Area of effect** (from 0.0.10): a
+  fireball hurting those near its
+  target, by a formula that does less
+  the further away; previewed for each
+  unit it would hit.
+- **Unit info and conditions** (from
+  0.0.10): a screen per unit for its
+  passives, equipment and conditions.
+- **Abilities on the fallen**: a
+  necromancer's, aimed at knocked-out
+  units (from 0.0.10).
 - **Pickups**: items on the field with a
-  number of uses; one-time charms.
+  number of uses; one-time charms
+  (asked for again in 0.0.10).
 - **A picker for long ability lists**:
   grouped by kind, what's affordable
   first.

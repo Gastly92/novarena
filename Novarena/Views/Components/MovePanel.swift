@@ -1,8 +1,10 @@
 import SwiftUI
 
-/// Planning a move: how far it goes and
-/// what's left, the arrows to nudge it,
-/// and buttons to commit or undo it.
+/// Planning a move: the arrows to nudge
+/// it and buttons to commit or undo it,
+/// then how far it goes and what's left
+/// (below, so the arrows stay put as it
+/// changes).
 struct MovePanel: View {
   let fight: Fight
 
@@ -12,9 +14,6 @@ struct MovePanel: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 8) {
-      status
-        .foregroundStyle(.secondary)
-        .testID("move-status")
       HStack(spacing: 16) {
         NudgePad(fight: fight)
         VStack(
@@ -30,6 +29,9 @@ struct MovePanel: View {
         .buttonStyle(.borderless)
         .disabled(fight.ghost == nil)
       }
+      status
+        .foregroundStyle(.secondary)
+        .testID("move-status")
     }
   }
 

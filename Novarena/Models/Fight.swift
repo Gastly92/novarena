@@ -144,6 +144,18 @@ final class Fight {
     battle.units.filter { $0.side == side }
   }
 
+  /// One side's units still up.
+  func standing(
+    _ side: Side
+  ) -> [BattleUnit] {
+    units(side).filter(\.isUp)
+  }
+
+  /// Everyone knocked out, party first.
+  var fallen: [BattleUnit] {
+    battle.units.filter { !$0.isUp }
+  }
+
   /// The latest log lines, newest first.
   var latest: [String] {
     battle.log.suffix(12).reversed().map {
