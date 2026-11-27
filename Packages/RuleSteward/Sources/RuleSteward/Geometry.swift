@@ -32,7 +32,7 @@ public struct Point: Sendable, Equatable {
   /// `goal` (or all of it, if that's
   /// nearer), rounded so it never goes
   /// further than `steps`.
-  func toward(
+  public func toward(
     _ goal: Self,
     by steps: Int
   ) -> Self {

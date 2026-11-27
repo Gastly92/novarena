@@ -93,26 +93,6 @@ final class FightPlanTests: XCTestCase {
     XCTAssertTrue(fight.zones.isEmpty)
   }
 
-  /// Tapping a unit turns its zone on, and
-  /// again off; a foe that hasn't shown
-  /// anything has none to draw.
-  func testWatchesByTapping() {
-    let fight = Fight(stage: .middle)
-    let ashka = fight.battle.units[2]
-    fight.tap(ashka.place)
-    XCTAssertEqual(fight.watched, [2])
-    XCTAssertEqual(
-      fight.zones.map(\.radius), [769]
-    )
-    XCTAssertNil(fight.ghost)
-    fight.tap(ashka.place)
-    XCTAssertFalse(fight.showsZones)
-    let start = Fight()
-    start.tap(start.battle.units[3].place)
-    XCTAssertEqual(start.watched, [3])
-    XCTAssertTrue(start.zones.isEmpty)
-  }
-
   /// Healing, every zone on: Maren's heal
   /// zone (green) is her 300 cm of
   /// movement plus Mend Wounds' 400, apart

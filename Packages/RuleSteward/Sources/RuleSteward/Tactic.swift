@@ -48,6 +48,19 @@ extension Battle {
 }
 
 public extension Battle {
+  /// The next unit's turn for using
+  /// `ability` on `target`, walking just
+  /// into reach first (or as far toward
+  /// it as it can); none once it's over.
+  func approach(
+    _ ability: Int,
+    on target: Int
+  ) -> Turn? {
+    (try? ready()).map {
+      approach(ability, on: target, by: $0)
+    }
+  }
+
   /// The next unit's plain choice: of the
   /// affordable abilities and their
   /// targets (foes to hit, allies to

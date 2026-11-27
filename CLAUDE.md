@@ -396,6 +396,13 @@ uploading) runs in CI.
   calling the work done. Re-read Swift
   changes carefully first, since each CI
   round trip takes a few minutes.
+- While watching a PR, tell the user only
+  what's new: a new failure and its fix,
+  a merge, a TestFlight upload. Stay
+  quiet on events that change nothing,
+  such as `CI Gate` failing on a run
+  already looked at, or a check-in that
+  finds CI still running.
 
 ## Shipping to the phone (TestFlight)
 - `.github/workflows/testflight.yml`

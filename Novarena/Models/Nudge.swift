@@ -10,8 +10,14 @@ enum Nudge: CaseIterable {
   case east
   /// Down the screen.
   case south
+  /// Round the unit the planned spot
+  /// touches, clockwise on screen.
+  case clockwise
+  /// The other way round.
+  case counterclockwise
 
-  /// One centimetre this way.
+  /// One centimetre this way; none for
+  /// circling.
   var offset: (x: Int, y: Int) {
     switch self {
     case .north:
@@ -22,7 +28,15 @@ enum Nudge: CaseIterable {
       (1, 0)
     case .south:
       (0, 1)
+    case .clockwise, .counterclockwise:
+      (0, 0)
     }
+  }
+
+  /// Whether it circles round a unit.
+  var circles: Bool {
+    self == .clockwise
+      || self == .counterclockwise
   }
 
   /// How far the `tick`th nudge of a held
@@ -77,6 +91,9 @@ enum Bend: Equatable {
   /// bends.
   func symbol(_ way: Nudge) -> String {
     let name = way.word
+    guard !way.circles else {
+      return "arrow.\(name)"
+    }
     guard case let .toward(side) = self
     else { return "chevron.\(name)" }
     return "arrow.turn.\(name).\(side.word)"
@@ -96,6 +113,10 @@ extension Nudge {
       "right"
     case .south:
       "down"
+    case .clockwise:
+      "clockwise"
+    case .counterclockwise:
+      "counterclockwise"
     }
   }
 }
