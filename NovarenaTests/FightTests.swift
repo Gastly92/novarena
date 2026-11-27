@@ -75,8 +75,9 @@ final class FightTests: XCTestCase {
 
   /// From the planned spot, Sword Cut
   /// reaches Kestrel-9 (80 × 120% = 96, at
-  /// 93% 89, off its 100-point shield) but
-  /// not Ashka; an ally is no target.
+  /// 93% 89, off its 100-point shield,
+  /// shown in percent for a foe) but not
+  /// Ashka; an ally is no target.
   func testPlannedSpot() {
     let fight = Fight(stage: .planned)
     XCTAssertEqual(fight.actor?.id, 0)
@@ -85,7 +86,7 @@ final class FightTests: XCTestCase {
     XCTAssertFalse(fight.inReach(2))
     XCTAssertEqual(
       fight.preview(of: 3),
-      ["Energy Shield −89, 11 left"]
+      ["Energy Shield −89%, 11% left"]
     )
     XCTAssertEqual(
       fight.preview(of: 2), ["Out of reach"]
