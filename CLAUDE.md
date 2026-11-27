@@ -461,16 +461,16 @@ uploading) runs in CI.
   `.../privacy.html` (the URLs App Store
   Connect asks for). Keep the support page
   true to the app's features.
-- App Store screenshots: `AppStoreTests`
-  draws them with `AppStoreShots` from the
+- App Store screenshots: none while the
+  game is changing this fast (owner's
+  call). Before the first App Store
+  release, bring back the template's
+  (`gastly92/ios-template`):
+  `AppStoreTests` draws them with
+  `AppStoreShots` and `Poster` from the
   same screens as the snapshots, framed
   and captioned, at the sizes App Store
-  Connect takes; the images to upload are
-  in
-  `NovarenaTests/__Snapshots__/AppStoreTests/`.
-  Update the shots and captions when a
-  pictured screen or a listed feature
-  changes.
+  Connect takes.
 - The app icon comes from
   `.github/scripts/app-icon.sh <mark>
   <color> <color>` (a letter or two on a
@@ -478,4 +478,5 @@ uploading) runs in CI.
   and the product page header from
   `.github/scripts/app-header.sh`. Both
   run in the cloud session (ImageMagick).
-  Use the same colors in `AppStoreTests`.
+  Use the same colors in the App Store
+  screenshots, once they're back.

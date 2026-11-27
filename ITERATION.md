@@ -546,6 +546,10 @@ starts.
   - Knocked-out units stay on the field,
     and will be targetable by abilities
     that use them (a necromancer's).
+  - No App Store screenshots while
+    iterating (owner's call): they come
+    back from the template before the
+    first App Store release.
 - **The commander** (owner's call; the
   name is a placeholder): the player,
   off the field, gets a portrait in the
