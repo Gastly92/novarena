@@ -163,36 +163,52 @@ private struct Controls: View {
       Text(verbatim: ability.name)
         .testID("data-ability-name")
       Group {
-      HStack {
-        Text("Power \(ability.power)")
-        Text(ability.reachLabel)
-        if let note = ability.weight.label {
-          Text(note)
-        }
-        if ability.bonus != nil {
-          Text("Bonus")
-        }
-      }
-      HStack {
-        Text(verbatim: """
-          \(ability.kind.name) · \
-          \(ability.discipline.name)
-          """)
-          .testID("data-ability-kind")
-        ForEach(
-          ability.costs.sorted {
-            $0.key.name < $1.key.name
-          },
-          id: \.key.name
-        ) {
-          Text("""
-            Costs \($0.value) \($0.key.name)
-            """)
-        }
-      }
+        numbers(ability)
+        sources(ability)
       }
       .font(.caption)
       .foregroundStyle(.secondary)
+    }
+  }
+
+  /// Its power, reach and weight, and
+  /// whether it's a bonus.
+  private func numbers(
+    _ ability: Ability
+  ) -> some View {
+    HStack {
+      Text("Power \(ability.power)")
+      Text(ability.reachLabel)
+      if let note = ability.weight.label {
+        Text(note)
+      }
+      if ability.bonus != nil {
+        Text("Bonus")
+      }
+    }
+  }
+
+  /// Its kind of damage and discipline,
+  /// then what it costs from which pools.
+  private func sources(
+    _ ability: Ability
+  ) -> some View {
+    HStack {
+      Text(verbatim: """
+        \(ability.kind.name) · \
+        \(ability.discipline.name)
+        """)
+        .testID("data-ability-kind")
+      ForEach(
+        ability.costs.sorted {
+          $0.key.name < $1.key.name
+        },
+        id: \.key.name
+      ) {
+        Text("""
+          Costs \($0.value) \($0.key.name)
+          """)
+      }
     }
   }
 }
