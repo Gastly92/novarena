@@ -32,6 +32,7 @@ final class HomeTests: XCTestCase {
     app.buttons["Fight"].tap()
     let row = app.buttons["data-unit-1"]
     XCTAssertTrue(row.appears())
-    XCTAssertTrue(row.label.hasPrefix("Ashka"))
+    let label = row.label
+    XCTAssertTrue(label.hasPrefix("Ashka"))
   }
 }
