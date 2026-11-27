@@ -95,4 +95,32 @@ final class RulesTests: XCTestCase {
       Discipline.shields.name, "shields"
     )
   }
+
+  /// Moving stretches the wait: 90% for
+  /// none, 1% more per twentieth of the
+  /// range, 110% for all; a unit that
+  /// can't move waits as usual.
+  func testPace() {
+    XCTAssertEqual(
+      Rules.pace(moved: 0, of: 300), 90
+    )
+    XCTAssertEqual(
+      Rules.pace(moved: 14, of: 300), 90
+    )
+    XCTAssertEqual(
+      Rules.pace(moved: 150, of: 300), 100
+    )
+    XCTAssertEqual(
+      Rules.pace(moved: 300, of: 300), 110
+    )
+    XCTAssertEqual(
+      Rules.pace(moved: 0, of: 0), 100
+    )
+    XCTAssertEqual(
+      Rules.wait(
+        speed: 100, weight: .heavy, pace: 90
+      ),
+      135
+    )
+  }
 }

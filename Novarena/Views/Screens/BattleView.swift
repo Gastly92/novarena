@@ -151,6 +151,9 @@ private struct Controls: View {
       Button("Fight again") {
         fight.restart()
       }
+    } else if fight.isFoesTurn,
+      let foe = fight.actor {
+      foeTurn(foe)
     } else if let actor = fight.actor {
       Picker(
         "Turn", selection: $fight.panel
@@ -171,6 +174,34 @@ private struct Controls: View {
         Button("End turn") {
           fight.endTurn()
         }
+      }
+    }
+  }
+
+  /// A foe's turn, a step at a time: what
+  /// the last step did, then buttons for
+  /// the next step and to skip to the
+  /// party's turn. The log lines come from
+  /// the rules, so a `data-` identifier.
+  private func foeTurn(
+    _ foe: BattleUnit
+  ) -> some View {
+    Group {
+      Text("\(foe.unit.name)'s turn")
+        .font(.headline)
+      ForEach(
+        Array(fight.shown.enumerated()),
+        id: \.offset
+      ) {
+        Text(verbatim: $0.element)
+          .font(.caption.monospaced())
+          .testID("data-step")
+      }
+      Button("Next") {
+        fight.advance()
+      }
+      Button("Skip to your turn") {
+        fight.skip()
       }
     }
   }

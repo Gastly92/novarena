@@ -45,22 +45,49 @@ public extension Battle {
     )
   }
 
-  /// The furthest spot toward `spot` the
-  /// unit on turn can move to: `spot`
-  /// itself if it's in range, else the
-  /// edge of its range on the way, if it
-  /// fits there.
+  /// The nearest spot to `spot` the unit
+  /// on turn can stop at: `spot` itself if
+  /// it's in range, in the arena and
+  /// clear; else pulled into the arena and
+  /// its range (on the way there), and
+  /// pushed clear of whoever is in the
+  /// way, so a plan slides along those
+  /// edges. None if no spot near is clear
+  /// (`spot` on someone's middle, or
+  /// wedged), or nobody is on turn.
   func reachable(
     toward spot: Point
   ) -> Point? {
     guard let mover = try? ready() else {
       return nil
     }
-    let left = moveLeft
-    let stop = cost(to: spot) <= left
-      ? spot
-      : mover.place.toward(spot, by: left)
-    return fits(mover, at: stop) ? stop : nil
+    let radius = mover.unit.size.radius
+    var stop = spot
+    for _ in 0..<4 {
+      if fits(mover, at: stop),
+        cost(to: stop) <= moveLeft {
+        return stop
+      }
+      stop = arena.clamp(
+        stop, radius: radius
+      )
+      if cost(to: stop) > moveLeft {
+        stop = mover.place.toward(
+          stop, by: moveLeft
+        )
+      }
+      if let other = blocker(
+        of: mover, at: stop
+      ) {
+        let apart = radius
+          + other.unit.size.radius
+        guard let out = stop.away(
+          from: other.place, by: apart
+        ) else { return nil }
+        stop = out
+      }
+    }
+    return nil
   }
 
   /// Moves the unit on turn straight to
@@ -141,15 +168,60 @@ public extension Battle {
     }
   }
 
+  /// What `unit`'s layer at `index` growing
+  /// back from `was` at its turn's start
+  /// logs: a recharge or regrowth.
+  static func restoring(
+    _ unit: BattleUnit,
+    layer index: Int,
+    from was: Int
+  ) -> Event {
+    let layer = unit.unit.layers[index]
+    let now = unit.layers[index]
+    if layer.recharge > 0 {
+      return .recharges(
+        unit.unit.name,
+        layer.name,
+        gained: now - was,
+        now: now
+      )
+    }
+    return .regrows(
+      unit.unit.name,
+      layer.name,
+      gained: now - was,
+      now: now
+    )
+  }
+
+  /// Begins the next unit's turn without
+  /// moving or acting yet: its refill and
+  /// passives take hold (`begin`), as a
+  /// step of its own. Nothing more
+  /// happens if it has begun.
+  mutating func beginTurn() throws(Mistake) {
+    begin(try ready())
+  }
+
   /// Ends the unit on turn's turn: its
   /// next comes after the usual wait,
-  /// scaled by its main action's weight.
+  /// scaled by its main action's weight
+  /// and by how much of its movement it
+  /// used (`Rules.pace`).
   mutating func endTurn() throws(Mistake) {
     let mover = try ready()
     begin(mover)
+    let range = mover.unit.pools.first {
+      $0.kind == .movement
+    }?.maximum ?? 0
+    let pace = Rules.pace(
+      moved: units[mover.id].moving,
+      of: range
+    )
     units[mover.id].nextTurn += Rules.wait(
       speed: mover.unit.stats.speed,
-      weight: progress?.weight ?? .normal
+      weight: progress?.weight ?? .normal,
+      pace: pace
     )
     progress = nil
   }
@@ -219,16 +291,25 @@ extension Battle {
 
   /// Begins `mover`'s turn, if it hasn't
   /// begun: the clock moves to it, and its
-  /// refill takes hold.
+  /// refill and passives take hold, each
+  /// layer that regrows or recharges
+  /// logged.
   mutating func begin(_ mover: BattleUnit) {
     guard progress == nil else {
       return
     }
+    let before = units[mover.id].layers
     units[mover.id] = mover
     tick = mover.nextTurn
     log.append(.turn(
       mover.unit.name, tick: tick
     ))
+    for (index, was) in before.enumerated()
+    where mover.layers[index] > was {
+      log.append(Self.restoring(
+        mover, layer: index, from: was
+      ))
+    }
     progress = Progress()
   }
 }

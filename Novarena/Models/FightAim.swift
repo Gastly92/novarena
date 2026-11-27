@@ -60,9 +60,13 @@ extension Fight {
   /// reaches, if any), showing where the
   /// unit on turn lands, whatever the
   /// turn: acting, only moving or
-  /// waiting; none once it's over, or if
-  /// it would end the battle.
+  /// waiting; none on a foe's turn, once
+  /// it's over, or if it would end the
+  /// battle.
   var queueAfter: [BattleUnit] {
+    guard !isFoesTurn else {
+      return []
+    }
     let turns = battle.units
       .compactMap { plan(on: $0.id) }
       + [Turn(before: ghost)]

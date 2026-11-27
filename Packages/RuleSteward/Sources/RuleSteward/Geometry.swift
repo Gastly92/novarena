@@ -50,6 +50,34 @@ public struct Point: Sendable, Equatable {
   }
 }
 
+extension Point {
+  /// The spot `distance` centimetres from
+  /// `center` in this one's direction,
+  /// rounded outward so it's never nearer;
+  /// none if it is `center`.
+  func away(
+    from center: Self,
+    by distance: Int
+  ) -> Self? {
+    let length = Geometry.rootUp(
+      center.squared(to: self)
+    )
+    guard length > 0 else {
+      return nil
+    }
+    let out = { (part: Int) in
+      Geometry.outward(
+        part * distance, over: length
+      )
+    }
+    return Self(
+      x: center.x + out(x - center.x),
+      y: center.y + out(y - center.y),
+      z: center.z + out(z - center.z)
+    )
+  }
+}
+
 extension Point: CustomStringConvertible {
   /// "(x, y)", or "(x, y, z)" off the
   /// ground, for the log.
@@ -117,6 +145,23 @@ public struct Arena: Sendable {
       && point.y <= height - radius
   }
 
+  /// The nearest spot to `point` where a
+  /// circle of `radius` is wholly inside.
+  func clamp(
+    _ point: Point,
+    radius: Int
+  ) -> Point {
+    Point(
+      x: min(
+        max(point.x, radius), width - radius
+      ),
+      y: min(
+        max(point.y, radius), height - radius
+      ),
+      z: point.z
+    )
+  }
+
   /// Where the sides start: the party in a
   /// column 2.5 m from the left edge, the
   /// foes 2.5 m from the right, each
@@ -163,6 +208,17 @@ enum Geometry {
       }
     }
     return low
+  }
+
+  /// `value` ÷ `divisor` (positive),
+  /// rounded away from zero.
+  static func outward(
+    _ value: Int,
+    over divisor: Int
+  ) -> Int {
+    value < 0
+      ? -((-value + divisor - 1) / divisor)
+      : (value + divisor - 1) / divisor
   }
 
   /// The square root of `value`, rounded

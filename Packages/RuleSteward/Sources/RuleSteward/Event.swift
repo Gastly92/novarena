@@ -18,6 +18,16 @@ public enum Event: Sendable, Equatable {
   case layer(
     String, String, took: Int, left: Int
   )
+  /// A layer regrows at the start of its
+  /// unit's turn.
+  case regrows(
+    String, String, gained: Int, now: Int
+  )
+  /// A layer recharges at the start of its
+  /// unit's turn.
+  case recharges(
+    String, String, gained: Int, now: Int
+  )
   /// A unit's layer is mended.
   case mends(
     String, String, gained: Int, now: Int
@@ -48,6 +58,20 @@ extension Event: CustomStringConvertible {
       """
         \(name)'s \(layer) -\(took) \
       (\(left))
+      """
+    case let .regrows(
+      name, layer, gain, now
+    ):
+      """
+        \(name)'s \(layer) regrows \
+      +\(gain) (\(now))
+      """
+    case let .recharges(
+      name, layer, gain, now
+    ):
+      """
+        \(name)'s \(layer) recharges \
+      +\(gain) (\(now))
       """
     case let .mends(name, layer, gain, now):
       """

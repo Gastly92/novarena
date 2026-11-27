@@ -96,6 +96,27 @@ extension Fight {
     }
   }
 
+  /// How a 10 cm nudge `way` from the
+  /// planned spot (or the unit's own)
+  /// would go: straight, bending as it
+  /// slides along an edge, or nowhere (also
+  /// on a foe's turn, or once it's over).
+  func bend(_ way: Nudge) -> Bend {
+    guard !isFoesTurn,
+      let from = ghost ?? actor?.place
+    else { return .stuck }
+    let goal = Point(
+      x: from.x + way.offset.x * 10,
+      y: from.y + way.offset.y * 10
+    )
+    guard let spot = battle.reachable(
+      toward: goal
+    ), spot != from else { return .stuck }
+    let across = way.offset.x == 0
+      ? spot.x - from.x : spot.y - from.y
+    return Bend(way, across: across)
+  }
+
   /// Turns unit `id`'s zone on or off.
   func watch(_ id: Int) {
     watched.formSymmetricDifference([id])

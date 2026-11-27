@@ -3,7 +3,9 @@ import SwiftUI
 /// Four arrows that nudge the planned
 /// move: a tap moves it 1 cm, holding
 /// repeats, faster and faster
-/// (`Fight.press(_:)`).
+/// (`Fight.press(_:)`). An arrow that
+/// would slide along an edge turns, and
+/// one that can't move dims.
 struct NudgePad: View {
   let fight: Fight
   @ScaledMetric private var size = 40.0
@@ -46,7 +48,10 @@ struct NudgePad: View {
   private func arrow(
     _ way: Nudge
   ) -> some View {
-    Image(systemName: way.symbol)
+    let bend = fight.bend(way)
+    let icon = bend.symbol(way)
+    return Image(systemName: icon)
+      .opacity(bend == .stuck ? 0.3 : 1)
       .frame(width: size, height: size)
       .background(
         RoundedRectangle(cornerRadius: 8)
@@ -70,20 +75,6 @@ struct NudgePad: View {
 }
 
 private extension Nudge {
-  /// Its arrow.
-  var symbol: String {
-    switch self {
-    case .north:
-      "chevron.up"
-    case .west:
-      "chevron.left"
-    case .east:
-      "chevron.right"
-    case .south:
-      "chevron.down"
-    }
-  }
-
   /// What VoiceOver calls it.
   var label: LocalizedStringKey {
     switch self {

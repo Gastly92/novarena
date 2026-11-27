@@ -165,17 +165,22 @@ final class MovementTests: XCTestCase {
     )
   }
 
-  /// A turn of only moving, or only
-  /// waiting, takes the usual wait.
-  func testMovingOnlyTakesTheUsualWait()
-    throws {
+  /// Moving stretches the wait: 200 of 300
+  /// cm, 103% (A's next turn at 100 + 103);
+  /// resting, 90% (+ 90). B, slow, waits
+  /// in between.
+  func testMovingSetsThePace() throws {
     var battle = duel()
     try battle.act(Turn(
       before: Point(x: 300, y: 400)
     ))
+    XCTAssertEqual(
+      battle.units[0].nextTurn, 203
+    )
+    try battle.act(Turn())
     try battle.act(Turn())
     XCTAssertEqual(
-      battle.units[0].nextTurn, 300
+      battle.units[0].nextTurn, 293
     )
     let forecast = try battle.forecast(
       Turn()
@@ -205,6 +210,9 @@ final class MovementTests: XCTestCase {
     )
     var walked = battle
     try walked.act(turn)
+    // All 300 cm: A's next turn (210)
+    // comes after B's (200); B waits.
+    try walked.act(Turn())
     let next = try XCTUnwrap(
       walked.approach(0, on: 1)
     )

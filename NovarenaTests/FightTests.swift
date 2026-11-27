@@ -61,8 +61,9 @@ final class FightTests: XCTestCase {
   }
 
   /// Committing walks the plan, which then
-  /// can't be undone; ending the turn lets
-  /// the foes act until Oswin's turn.
+  /// can't be undone; ending the turn
+  /// brings Ashka's turn, played through
+  /// to Oswin's.
   func testCommitsThenEnds() {
     let fight = Fight(stage: .moving)
     fight.commit()
@@ -75,6 +76,9 @@ final class FightTests: XCTestCase {
     fight.commit()
     XCTAssertEqual(fight.moveLeft, 300)
     fight.endTurn()
+    XCTAssertEqual(fight.actor?.id, 2)
+    XCTAssertTrue(fight.isFoesTurn)
+    fight.skip()
     XCTAssertEqual(fight.actor?.id, 1)
     XCTAssertEqual(fight.panel, .move)
   }
@@ -144,6 +148,8 @@ final class FightTests: XCTestCase {
     XCTAssertFalse(fight.battle.canUse(2))
     XCTAssertTrue(fight.battle.hasActed)
     fight.endTurn()
+    XCTAssertTrue(fight.isFoesTurn)
+    fight.skip()
     XCTAssertEqual(fight.actor?.side, .party)
     XCTAssertFalse(fight.battle.hasActed)
   }

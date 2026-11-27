@@ -75,7 +75,8 @@ final class StepTests: XCTestCase {
   }
 
   /// One action a turn, whose weight sets
-  /// the wait when the turn ends.
+  /// the wait when the turn ends: heavy,
+  /// 150%, without moving, 90%: 135.
   func testOneActionATurn() throws {
     var battle = duel()
     try battle.use(1, on: 1)
@@ -85,7 +86,7 @@ final class StepTests: XCTestCase {
     }
     try battle.endTurn()
     XCTAssertEqual(
-      battle.units[0].nextTurn, 250
+      battle.units[0].nextTurn, 235
     )
   }
 

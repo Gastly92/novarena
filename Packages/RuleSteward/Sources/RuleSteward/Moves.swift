@@ -10,13 +10,24 @@ extension Battle {
   ) -> Bool {
     let radius = mover.unit.size.radius
     return arena.holds(spot, radius: radius)
-      && units.allSatisfy {
-        let apart = radius
-          + $0.unit.size.radius
-        return $0.id == mover.id || !$0.isUp
-          || $0.place.squared(to: spot)
-            >= apart * apart
-      }
+      && blocker(of: mover, at: spot) == nil
+  }
+
+  /// Someone up, other than `mover`, that
+  /// a circle of `mover`'s size at `spot`
+  /// would overlap.
+  func blocker(
+    of mover: BattleUnit,
+    at spot: Point
+  ) -> BattleUnit? {
+    let radius = mover.unit.size.radius
+    return units.first {
+      let apart = radius
+        + $0.unit.size.radius
+      return $0.id != mover.id && $0.isUp
+        && $0.place.squared(to: spot)
+          < apart * apart
+    }
   }
 
   /// Whether `ability`, used by `mover`

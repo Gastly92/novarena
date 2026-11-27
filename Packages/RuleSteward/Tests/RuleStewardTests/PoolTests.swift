@@ -181,8 +181,9 @@ final class PoolTests: XCTestCase {
     )
   }
 
-  /// No movement pool, no moving.
-  func testImmobile() {
+  /// No movement pool, no moving, and no
+  /// quicker turn for staying put.
+  func testImmobile() throws {
     var fight = battle(pools: [])
     XCTAssertEqual(fight.moveLeft, 0)
     Fixtures.expect(.tooFar) {
@@ -190,6 +191,11 @@ final class PoolTests: XCTestCase {
         to: Point(x: 101, y: 400)
       )
     }
+    // Resting gains it nothing: the usual
+    // wait, 100 more.
+    try fight.endTurn()
+    let next = fight.units[0].nextTurn
+    XCTAssertEqual(next, 200)
   }
 
   /// Height counts in distance: a flier
