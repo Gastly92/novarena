@@ -213,6 +213,13 @@ final class FightTests: XCTestCase {
     XCTAssertGreaterThan(tick, 0)
     let side = middle.actor?.side
     XCTAssertEqual(side, .party)
+    let exposed = Fight(stage: .exposed)
+    let bare = exposed.battle.units.filter {
+      $0.isUp && $0.isExposed
+    }
+    let names = bare.map(\.unit.name)
+    XCTAssertEqual(names, ["Oswin", "Ashka"])
+    XCTAssertEqual(exposed.actor?.id, 1)
     let end = Fight(stage: .end)
     let won = "The party wins"
     XCTAssertEqual(end.outcome, won)
@@ -237,5 +244,63 @@ final class FightTests: XCTestCase {
     XCTAssertTrue(fight.battle.log.isEmpty)
     XCTAssertEqual(fight.actor?.id, 0)
     XCTAssertEqual(fight.panel, .move)
+  }
+
+  /// Maren's Mend Wounds (30 × 120% = 36,
+  /// by half on metal) can only go on an
+  /// ally it can mend: Gerald, his plate
+  /// at 7. Tapping him in the arena heals
+  /// him to 25; the skills stay open for
+  /// her Mace Blow.
+  func testHeals() {
+    let fight = Fight(stage: .healing)
+    XCTAssertEqual(fight.actor?.id, 1)
+    XCTAssertEqual(
+      fight.preview(of: 0),
+      ["Plate +18, now 25"]
+    )
+    let foe = fight.preview(of: 2)
+    XCTAssertTrue(foe.isEmpty)
+    XCTAssertTrue(fight.canAim(at: 0))
+    XCTAssertFalse(fight.canAim(at: 1))
+    XCTAssertFalse(fight.canAim(at: 2))
+    XCTAssertTrue(fight.inReach(0))
+    fight.tap(fight.battle.units[0].place)
+    XCTAssertEqual(
+      fight.battle.units[0].layers, [25, 60]
+    )
+    XCTAssertEqual(fight.panel, .skills)
+    XCTAssertNil(fight.chosen)
+  }
+
+  /// An attack can be aimed at a foe out
+  /// of reach, not at an ally; nothing
+  /// can be aimed with no skill picked.
+  func testAims() {
+    let aiming = Fight(stage: .aiming)
+    XCTAssertTrue(aiming.canAim(at: 2))
+    XCTAssertFalse(aiming.inReach(2))
+    XCTAssertFalse(aiming.canAim(at: 1))
+    XCTAssertFalse(Fight().canAim(at: 2))
+  }
+
+  /// A fight between any units starts at
+  /// the party's first turn, and starts
+  /// again with the same units.
+  func testAnyUnits() {
+    let fight = Fight(
+      party: [.maren],
+      foes: [.oswin, .oswin]
+    )
+    XCTAssertEqual(
+      fight.units(.foes).map(\.unit.name),
+      ["Oswin", "Oswin"]
+    )
+    XCTAssertEqual(fight.actor?.side, .party)
+    fight.restart()
+    XCTAssertEqual(
+      fight.units(.party).map(\.unit.name),
+      ["Maren"]
+    )
   }
 }

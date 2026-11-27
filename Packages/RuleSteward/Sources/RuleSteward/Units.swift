@@ -1,4 +1,4 @@
-/// The first hand-made units, for trying
+/// The hand-made units so far, for trying
 /// the rules out. Their numbers are tuned
 /// so each fights each other about evenly
 /// (see `BalanceTests`).
@@ -73,7 +73,7 @@ public extension Unit {
       Layer(
         "Ember Hide",
         material: .ember,
-        points: 250,
+        points: 230,
         regrows: 15,
         matchups: [.burn: .immune]
       ),
@@ -122,7 +122,7 @@ public extension Unit {
       Layer(
         "Tower Shield",
         material: .wood,
-        points: 140
+        points: 150
       ),
       Layer(
         "Mail",
@@ -177,7 +177,7 @@ public extension Unit {
       Layer(
         "Plating",
         material: .metal,
-        points: 120
+        points: 140
       ),
       Layer(
         "Frame",
@@ -189,7 +189,7 @@ public extension Unit {
     abilities: [
       Ability(
         "Piston Fist",
-        power: 60,
+        power: 65,
         kind: .crush,
         discipline: .unarmed
       ),
@@ -217,4 +217,76 @@ public extension Unit {
       ),
     ],
   )
+
+  /// A war cleric: a padded gambeson
+  /// (soaks blows, but burns) over a
+  /// plain body; an expert's mace, a smite
+  /// from afar that sears demons, and a
+  /// prayer each turn that mends an ally
+  /// (or herself): flesh fully, armor by
+  /// half, machines not at all. Smite and
+  /// prayer share her mana.
+  static let maren = Unit(
+    "Maren",
+    kind: "war cleric",
+    stats: Stats(speed: 95),
+    layers: [
+      Layer(
+        "Gambeson",
+        material: .cloth,
+        points: 120
+      ),
+      Layer(
+        "Body",
+        material: .flesh,
+        points: 60
+      ),
+    ],
+    expertise: [.maces: 4, .faith: 4],
+    abilities: [
+      Ability(
+        "Mace Blow",
+        power: 85,
+        kind: .crush,
+        discipline: .maces
+      ),
+      Ability(
+        "Smite",
+        power: 60,
+        kind: .radiant,
+        discipline: .faith,
+        costs: [.mana: 50],
+        reach: .ranged(400),
+        measure: .cast
+      ),
+      Ability(
+        "Mend Wounds",
+        power: 30,
+        kind: .mend,
+        discipline: .faith,
+        costs: [.mana: 30],
+        bonus: Bonus("prayer"),
+        reach: .ranged(400),
+        measure: .cast
+      ),
+    ],
+    pools: [
+      Pool(
+        .movement,
+        maximum: 300,
+        measure: .step
+      ),
+      Pool(
+        .mana,
+        maximum: 100,
+        refill: 15
+      ),
+    ],
+  )
+
+  /// Every hand-made unit so far.
+  static let all: [Unit] = [
+    .gerald, .ashka, .oswin, .kestrel,
+    .maren,
+  ]
 }

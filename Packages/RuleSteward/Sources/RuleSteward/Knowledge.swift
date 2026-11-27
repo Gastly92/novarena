@@ -9,13 +9,31 @@ public extension Battle {
   /// as `side` knows, to a target's edge.
   /// Of the other side, the furthest it
   /// has moved in a turn, plus the longest
-  /// reach of the abilities it has used;
-  /// of its own, its movement next turn
-  /// plus its longest reach. None if it's
-  /// down or none is known.
+  /// reach of the attacks it has used; of
+  /// its own, its movement next turn plus
+  /// its longest reach. None if it's down
+  /// or none is known.
   func danger(
     from id: Int,
     seenBy side: Side
+  ) -> Int? {
+    zone(of: id, seenBy: side, heals: false)
+  }
+
+  /// The same for its heals: how far it
+  /// could heal on its next turn.
+  func care(
+    from id: Int,
+    seenBy side: Side
+  ) -> Int? {
+    zone(of: id, seenBy: side, heals: true)
+  }
+
+  /// `danger` or, with `heals`, `care`.
+  private func zone(
+    of id: Int,
+    seenBy side: Side,
+    heals: Bool
   ) -> Int? {
     let unit = units[id]
     guard unit.isUp else {
@@ -29,6 +47,7 @@ public extension Battle {
       ? unit.moveNextTurn : unit.furthest
     let radius = unit.unit.size.radius
     return used
+      .filter { all[$0].kind.heals == heals }
       .map {
         all[$0].reach.limit(
           from: radius, to: 0

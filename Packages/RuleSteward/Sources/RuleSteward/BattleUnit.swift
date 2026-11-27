@@ -194,4 +194,39 @@ public struct BattleUnit: Sendable,
     wasHit = wasHit || !losses.isEmpty
     return losses
   }
+
+  /// The outermost layer `kind` can mend:
+  /// worn but not broken (a broken layer,
+  /// like one that regrows, stays broken),
+  /// and of a material it works on.
+  func mendable(_ kind: Kind) -> Int? {
+    layers.indices.first {
+      (1..<unit.layers[$0].points)
+        .contains(layers[$0])
+        && unit.layers[$0].matchup(kind)
+          .percent > 0
+    }
+  }
+
+  /// Mends `amount` of `ability`'s healing
+  /// into the outermost layer it can mend,
+  /// scaled by how its kind meets the
+  /// layer, up to whole. Returns what it
+  /// gained, like `take`.
+  mutating func mend(
+    _ amount: Int,
+    from ability: Ability
+  ) -> [(layer: Int, gained: Int)] {
+    guard let index = mendable(ability.kind)
+    else { return [] }
+    let layer = unit.layers[index]
+    let scaled = amount
+      * layer.matchup(ability.kind).percent
+      / 100
+    let gained = min(
+      layer.points - layers[index], scaled
+    )
+    layers[index] += gained
+    return [(index, gained)]
+  }
 }

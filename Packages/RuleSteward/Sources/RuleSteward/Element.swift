@@ -1,14 +1,23 @@
 /// What a hit does: slash, pierce, burn…
-/// An open list: a new kind is one more
-/// `static let`, plus table entries where
-/// it meets a material unusually.
+/// or, for a heal, mend. An open list: a
+/// new kind is one more `static let`,
+/// plus table entries where it meets a
+/// material unusually.
 public struct Kind: Hashable, Sendable {
   /// Its name, for the log.
   public let name: String
+  /// Whether it mends an ally's layers
+  /// rather than wearing a foe's down.
+  public let heals: Bool
 
-  /// A kind of damage.
-  public init(_ name: String) {
+  /// A kind of damage, or with `heals`,
+  /// of healing.
+  public init(
+    _ name: String,
+    heals: Bool = false
+  ) {
     self.name = name
+    self.heals = heals
   }
 
   /// Blades.
@@ -21,6 +30,16 @@ public struct Kind: Hashable, Sendable {
   public static let burn = Self("burn")
   /// Lightning; breaks energy shields.
   public static let shock = Self("shock")
+  /// Holy light; sears demons.
+  public static let radiant = Self(
+    "radiant"
+  )
+  /// Healing: mends flesh fully, armor
+  /// and hide by half, machines not at
+  /// all.
+  public static let mend = Self(
+    "mend", heals: true
+  )
 }
 
 /// What a layer is made of: metal,
@@ -45,6 +64,8 @@ public struct Material: Hashable, Sendable {
   public static let energy = Self("energy")
   /// A fire demon's hide.
   public static let ember = Self("ember")
+  /// Padded armor: soaks blows, but burns.
+  public static let cloth = Self("cloth")
 }
 
 /// How a kind of damage meets a material.
@@ -91,14 +112,26 @@ extension Rules {
     .crush: [
       .metal: Matchup(100, carries: true),
       .wood: Matchup(150),
+      .cloth: Matchup(50),
     ],
     .burn: [
       .wood: Matchup(150),
       .flesh: Matchup(125),
+      .cloth: Matchup(150),
     ],
     .shock: [
       .metal: Matchup(100, carries: true),
       .energy: Matchup(200),
+    ],
+    .radiant: [
+      .ember: Matchup(150),
+    ],
+    .mend: [
+      .metal: Matchup(50),
+      .wood: Matchup(50),
+      .cloth: Matchup(50),
+      .ember: Matchup(50),
+      .energy: .immune,
     ],
   ]
 

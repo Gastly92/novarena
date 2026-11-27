@@ -18,6 +18,10 @@ public enum Event: Sendable, Equatable {
   case layer(
     String, String, took: Int, left: Int
   )
+  /// A unit's layer is mended.
+  case mends(
+    String, String, gained: Int, now: Int
+  )
   /// A unit has no layers left.
   case exposed(String)
   /// A unit is knocked out.
@@ -44,6 +48,11 @@ extension Event: CustomStringConvertible {
       """
         \(name)'s \(layer) -\(took) \
       (\(left))
+      """
+    case let .mends(name, layer, gain, now):
+      """
+        \(name)'s \(layer) +\(gain) \
+      (\(now))
       """
     case let .exposed(name):
       "  \(name) is exposed"

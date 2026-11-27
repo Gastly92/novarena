@@ -24,6 +24,9 @@ struct HomeView: View {
       }
       .buttonStyle(.borderedProminent)
       .padding(.top)
+      NavigationLink("Choose who fights") {
+        PickerView()
+      }
     }
     .padding()
     .fullWidth()

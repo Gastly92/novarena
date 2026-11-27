@@ -1,7 +1,7 @@
 import RuleSteward
 import XCTest
 
-/// The sample units in every team of one to
+/// Every unit in every team of one to
 /// three (a unit can appear more than
 /// once), each team against every other of
 /// its size, both ways round, with plain
@@ -9,9 +9,7 @@ import XCTest
 /// good or bad: each should win about half
 /// the battles it's in, at every size.
 final class BalanceTests: XCTestCase {
-  private let units: [Unit] = [
-    .gerald, .ashka, .oswin, .kestrel,
-  ]
+  private let units = Unit.all
 
   /// Every team of `size`, as indices into
   /// `units`, each in order so no team
@@ -35,7 +33,9 @@ final class BalanceTests: XCTestCase {
   /// percent, over every battle of teams
   /// of `size`.
   private func rates(_ size: Int) -> [Int] {
-    var wins = [Int](repeating: 0, count: 4)
+    var wins = [Int](
+      repeating: 0, count: units.count
+    )
     var fought = wins
     let all = teams(size)
     for party in all {
@@ -63,8 +63,8 @@ final class BalanceTests: XCTestCase {
     }
   }
 
-  /// One on one: each wins one or two of
-  /// its three fights.
+  /// One on one: each wins 33% to 66% of
+  /// its fights.
   func testOneOnOne() {
     for rate in rates(1) {
       XCTAssertTrue((33...66).contains(rate))

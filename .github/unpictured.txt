@@ -7,10 +7,10 @@
 # with a # comment saying why. Lines of
 # only brackets or quotes are skipped.
 
-# Taps: pick a skill, tap a foe, end the
+# Taps: pick a skill, tap a unit, end the
 # turn, and start again.
 BattleView.swift
-  fight.target(foe.id)
+  fight.target(unit.id)
   fight.restart()
   fight.endTurn()
   fight.choose(index)
@@ -25,6 +25,13 @@ BattleView.swift
 # Tap: close the sheet.
 BattleInfoView.swift
   dismiss()
+
+# Taps: take a pick off, or add a unit to
+# a side.
+PickerView.swift
+  lineup.remove(at: place, from: side)
+  lineup.add(index, to: .party)
+  lineup.add(index, to: .foes)
 
 # Taps: commit or undo a planned move.
 MovePanel.swift

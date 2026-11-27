@@ -124,10 +124,10 @@ struct ArenaView: View {
       )
   }
 
-  /// Where a unit could hit next turn, a
-  /// shaded red circle (harm), outlined
-  /// solid for a foe, dashed for the
-  /// party.
+  /// Where a unit could act next turn, a
+  /// shaded circle: red for harm, green
+  /// for heals; outlined solid for a foe,
+  /// dashed for the party.
   private func zone(
     _ zone: Zone,
     on map: ArenaMap
@@ -139,11 +139,13 @@ struct ArenaView: View {
     let line = StrokeStyle(
       lineWidth: 1, dash: ours ? [4, 3] : []
     )
+    let color: Color = zone.heals
+      ? .green : .red
     return Circle()
-      .fill(.red.opacity(0.12))
+      .fill(color.opacity(0.12))
       .overlay {
         Circle().stroke(
-          .red.opacity(0.5), style: line
+          color.opacity(0.5), style: line
         )
       }
       .frame(width: across, height: across)
@@ -199,16 +201,17 @@ struct ArenaView: View {
       .position(map.location(of: unit.place))
   }
 
-  /// A ring on the unit on turn, and on
-  /// foes the picked ability reaches.
+  /// A ring on units the picked ability
+  /// reaches (the unit on turn too, healing
+  /// itself), else on the unit on turn.
   @ViewBuilder
   private func ring(
     _ unit: BattleUnit
   ) -> some View {
-    if unit.id == fight.actor?.id {
-      Circle().stroke(.primary, lineWidth: 2)
-    } else if fight.inReach(unit.id) {
+    if fight.inReach(unit.id) {
       Circle().stroke(.orange, lineWidth: 3)
+    } else if unit.id == fight.actor?.id {
+      Circle().stroke(.primary, lineWidth: 2)
     }
   }
 

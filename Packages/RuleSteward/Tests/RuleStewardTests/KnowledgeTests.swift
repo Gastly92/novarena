@@ -65,6 +65,47 @@ final class KnowledgeTests: XCTestCase {
     )
   }
 
+  /// Heals make a zone of their own, apart
+  /// from the danger: a foe's only once
+  /// it has used one.
+  func testCare() {
+    let heal = Ability(
+      "Heal",
+      power: 30,
+      kind: .mend,
+      discipline: .unarmed,
+      reach: .ranged(200)
+    )
+    let battle = Battle(
+      party: [
+        Fixtures.unit(
+          "A", abilities: [Fixtures.poke]
+        ),
+      ],
+      foes: [
+        Fixtures.unit(
+          "B",
+          abilities: [Fixtures.poke, heal]
+        ),
+      ],
+      places: Fixtures.together(2)
+    )
+    XCTAssertEqual(
+      battle.care(from: 1, seenBy: .foes),
+      300 + 200
+    )
+    XCTAssertEqual(
+      battle.danger(from: 1, seenBy: .foes),
+      300 + 10_000
+    )
+    XCTAssertNil(
+      battle.care(from: 1, seenBy: .party)
+    )
+    XCTAssertNil(
+      battle.care(from: 0, seenBy: .party)
+    )
+  }
+
   /// A unit with no movement pool reaches
   /// only as far as its skills.
   func testStillUnitReachesFromItsSpot() {

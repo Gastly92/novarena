@@ -19,6 +19,10 @@ public struct Discipline: Hashable,
   public static let unarmed = Self("unarmed")
   /// Fire magic.
   public static let fire = Self("fire")
+  /// Maces, hammers and clubs.
+  public static let maces = Self("maces")
+  /// Holy magic: blessings and healing.
+  public static let faith = Self("faith")
   /// Lightning, magic or machine.
   public static let lightning = Self(
     "lightning"

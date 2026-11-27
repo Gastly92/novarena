@@ -49,9 +49,11 @@ extension Battle {
 
 public extension Battle {
   /// The next unit's plain choice: of the
-  /// affordable abilities and foes, the one
-  /// that knocks out, or else wears off
-  /// the most (bodyguards aside), among
+  /// affordable abilities and their
+  /// targets (foes to hit, allies to
+  /// heal), the one that knocks out, or
+  /// else wears off or mends the most
+  /// (bodyguards aside), among
   /// those it can reach this turn, walking
   /// up to it; if none, it walks toward the
   /// one that would. The first on a tie. A
@@ -63,21 +65,20 @@ public extension Battle {
     }
     var best: Turn?
     var most = (0, -1)
-    let foes = units.filter {
-      $0.isUp && $0.side != mover.side
-    }
     let abilities = mover.unit.abilities
     for index in abilities.indices
     where canUse(index)
       && abilities[index].bonus == nil {
-      for foe in foes {
+      let ability = abilities[index]
+      for target in units where target.isUp
+        && isTarget(
+          target, of: ability, by: mover
+        ) {
         let turn = approach(
-          index, on: foe.id, by: mover
+          index, on: target.id, by: mover
         )
         let amount = Self.estimate(
-          abilities[index],
-          by: mover.unit,
-          on: foe
+          ability, by: mover.unit, on: target
         )
         let score = (
           turn.action == nil ? 0 : 1, amount
@@ -112,19 +113,26 @@ public extension Battle {
   }
 
   /// How much `ability` by `unit` would
-  /// wear off `foe`'s layers, as things
-  /// stand; a knockout beats any amount.
+  /// wear off `target`'s layers, or for a
+  /// heal mend, as things stand; a
+  /// knockout beats any amount.
   private static func estimate(
     _ ability: Ability,
     by unit: Unit,
-    on foe: BattleUnit
+    on target: BattleUnit
   ) -> Int {
-    var struck = foe
+    var struck = target
+    let amount = Rules.damage(
+      ability, by: unit, intensity: 100
+    )
+    guard !ability.kind.heals else {
+      let gains = struck.mend(
+        amount, from: ability
+      )
+      return gains.map(\.gained).reduce(0, +)
+    }
     let losses = struck.take(
-      Rules.damage(
-        ability, by: unit, intensity: 100
-      ),
-      from: ability
+      amount, from: ability
     )
     return struck.isOut ? 100_000
       : losses.map(\.lost).reduce(0, +)
@@ -166,9 +174,10 @@ public extension Battle {
     return picks
   }
 
-  /// The foe in reach of `actor`'s ability
-  /// at `index`, where it stands, that it
-  /// would hurt most, if it can use it.
+  /// The target in reach of `actor`'s
+  /// ability at `index`, where it stands,
+  /// that it would hurt (or heal) most, if
+  /// it can use it.
   private func plainTarget(
     _ index: Int,
     by actor: Int
@@ -180,7 +189,10 @@ public extension Battle {
     let ability = mover.unit.abilities[index]
     return units
       .filter {
-        $0.isUp && $0.side != mover.side
+        $0.isUp
+          && isTarget(
+            $0, of: ability, by: mover
+          )
           && reaches(
             ability,
             from: mover.place,
