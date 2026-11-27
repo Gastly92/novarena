@@ -4,7 +4,10 @@ import RuleSteward
 /// a skill, the zones, the move.
 extension Fight {
   /// A tap on the arena at `point`. On a
-  /// unit (or just beside it): with a skill
+  /// unit (or within 30 cm of another: the
+  /// unit on turn's own circle is exact,
+  /// so a tap just beside it plans a short
+  /// move): with a skill
   /// picked that can be used on it, aims
   /// it (`aim(at:)`); on the unit on turn,
   /// clears the plan; with zones on, turns
@@ -17,9 +20,12 @@ extension Fight {
     guard let actor else {
       return
     }
-    let unit = battle.units.first {
-      $0.isUp && Self.covers($0, point)
+    let other = battle.units.first {
+      $0.isUp && $0.id != actor.id
+        && Self.covers($0, point, by: 30)
     }
+    let mine = Self.covers(actor, point, by: 0)
+    let unit = other ?? (mine ? actor : nil)
     if let unit, canAim(at: unit.id) {
       aim(at: unit.id)
     } else if unit?.id == actor.id {
@@ -71,13 +77,14 @@ extension Fight {
   }
 
   /// Whether `point` is on `unit`'s circle,
-  /// or within 30 cm of it, so a tap just
-  /// beside a unit still counts.
+  /// or within `slack` cm of it.
   private static func covers(
     _ unit: BattleUnit,
-    _ point: Point
+    _ point: Point,
+    by slack: Int
   ) -> Bool {
-    let radius = unit.unit.size.radius + 30
+    let radius = unit.unit.size.radius
+      + slack
     let across = point.x - unit.place.x
     let down = point.y - unit.place.y
     return across * across + down * down
