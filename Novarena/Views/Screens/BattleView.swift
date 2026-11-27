@@ -10,6 +10,8 @@ import SwiftUI
 /// identifier.
 struct BattleView: View {
   @State private var fight: Fight
+  /// Whether the battle info sheet is up.
+  @State private var showsInfo = false
 
   init(fight: Fight) {
     _fight = State(initialValue: fight)
@@ -36,6 +38,19 @@ struct BattleView: View {
     )
     .navigationTitle("Battle")
     .navigationBarTitleDisplayMode(.inline)
+    .toolbar {
+      Button(
+        "Battle info",
+        systemImage: "info.circle"
+      ) {
+        showsInfo = true
+      }
+    }
+    .sheet(isPresented: $showsInfo) {
+      NavigationStack {
+        BattleInfoView(battle: fight.battle)
+      }
+    }
   }
 
   /// The turn order and the arena, always
@@ -47,13 +62,12 @@ struct BattleView: View {
         .frame(maxHeight: 200)
         .overlay(alignment: .topTrailing) {
           Toggle(
-            "Danger zone",
-            systemImage:
-              "exclamationmark.triangle",
-            isOn: $fight.showsDanger
+            "Zones",
+            systemImage: "scope",
+            isOn: $fight.showsZones
           )
           .toggleStyle(.button)
-          .labelStyle(.iconOnly)
+          .font(.caption)
           .padding(4)
         }
     }

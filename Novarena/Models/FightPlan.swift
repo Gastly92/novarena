@@ -1,8 +1,8 @@
 import RuleSteward
 
 /// What a fight says about the turn being
-/// planned: the move, and the picked
-/// skill's reach.
+/// planned: the move, the picked skill's
+/// reach, and the zones.
 extension Fight {
   /// The planned move and what's left
   /// after, in the unit's own measure, or
@@ -59,19 +59,47 @@ extension Fight {
     return (ghost ?? actor.place, radius)
   }
 
-  /// Where each foe up could hit on its
-  /// next turn, as far as the party knows
-  /// (`Battle.danger(from:)`): a circle
-  /// around it; none while the danger
-  /// zone is off.
-  var zones: [(center: Point, radius: Int)] {
-    guard showsDanger else {
-      return []
-    }
-    return units(.foes).compactMap { foe in
-      battle.danger(from: foe.id).map {
-        (foe.place, $0)
+  /// Where each watched unit up could hit
+  /// on its next turn, as far as the
+  /// party knows (`Battle.danger(from:
+  /// seenBy:)`): a circle around it.
+  var zones: [Zone] {
+    battle.units
+      .filter { watched.contains($0.id) }
+      .compactMap { unit in
+        let radius = battle.danger(
+          from: unit.id, seenBy: .party
+        )
+        return radius.map {
+          Zone(
+            center: unit.place,
+            radius: $0,
+            side: unit.side
+          )
+        }
       }
+  }
+
+  /// Turns unit `id`'s zone on or off.
+  func watch(_ id: Int) {
+    watched.formSymmetricDifference([id])
+  }
+
+  /// Whether any zone is on; turning it on
+  /// shows everyone's, off hides them all.
+  var showsZones: Bool {
+    get { !watched.isEmpty }
+    set {
+      watched = newValue
+        ? Set(battle.units.map(\.id)) : []
     }
   }
+}
+
+/// Where a unit could hit on its next
+/// turn: a circle, and whose it is.
+struct Zone {
+  let center: Point
+  let radius: Int
+  let side: Side
 }

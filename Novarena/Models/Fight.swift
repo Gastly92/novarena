@@ -37,8 +37,8 @@ final class Fight {
     case acted
     /// Six turns in.
     case middle
-    /// The same, with the danger zone on.
-    case danger
+    /// The same, with every zone on.
+    case zones
     /// Played to the end.
     case end
   }
@@ -58,9 +58,10 @@ final class Fight {
   private(set) var ghost: Point?
   /// The part of the turn on show.
   var panel = Panel.move
-  /// Whether the arena shades where foes
-  /// could hit next turn.
-  var showsDanger = false
+  /// The units whose zones the arena
+  /// shades: where each could hit next
+  /// turn, as far as the party knows.
+  var watched: Set<Int> = []
   /// Waits between nudges of a held arrow.
   @ObservationIgnored private let wait: Pause
   /// Nudges while an arrow is held.
@@ -85,7 +86,7 @@ final class Fight {
       break
     case .planned, .acted:
       battle.playPlainly(turns: 4)
-    case .middle, .danger:
+    case .middle, .zones:
       battle.playPlainly(turns: 6)
     case .end:
       battle.playPlainly()
@@ -258,19 +259,23 @@ final class Fight {
   /// A tap on the arena at `point`: with a
   /// skill picked, a foe there is its
   /// target; the unit on turn itself clears
-  /// the plan; anywhere else it can reach
+  /// the plan; another unit's zone turns
+  /// on or off; anywhere else it can reach
   /// is planned.
   func tap(_ point: Point) {
     guard let actor else {
       return
     }
-    if chosen != nil,
-      let foe = units(.foes).first(where: {
-        $0.isUp && Self.covers($0, point)
-      }) {
-      target(foe.id)
-    } else if Self.covers(actor, point) {
+    let unit = battle.units.first {
+      $0.isUp && Self.covers($0, point)
+    }
+    if let unit, chosen != nil,
+      unit.side == .foes {
+      target(unit.id)
+    } else if unit?.id == actor.id {
       ghost = nil
+    } else if let unit {
+      watch(unit.id)
     } else {
       place(point)
     }

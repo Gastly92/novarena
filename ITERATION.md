@@ -387,6 +387,26 @@ starts.
     layer; the party's own stay exact.
   - A battle info sheet: intensity, the
     round, and weather once it exists.
+  - As built (B3b): tapping a unit in
+    the arena (with no skill picked, or
+    a party unit) turns its zone on or
+    off; the toggle, now "Zones" with a
+    scope icon, turns every zone on or
+    all off. The party's zones are all
+    it knows: its full movement next
+    turn plus its longest reach. Only
+    harm exists yet, so every zone is
+    red; a party zone has a dashed
+    outline, a foe's a solid one. Heals
+    in green come with healing (Units).
+  - Foe percentages round down, but
+    never to 0% while some is left; a
+    preview's loss is the drop between
+    the two, so the numbers add up.
+  - The info sheet opens from an info
+    button in the title bar: the round
+    (from 1, 100 ticks each) and the
+    intensity.
 - **New units** (from 0.0.6), with
   healing in the rules: a cleric who
   heals; a rogue with a free dagger
@@ -517,9 +537,9 @@ Free movement, as in `brainstorm-2.md`
   used); the screen shades the danger
   zone from that, behind a toggle.
 - **B3b, zones and percentages**
-  (0.0.9): per-foe and party zones by
-  kind, percentages for foes, the
-  battle info sheet.
+  (0.0.9, in progress): per-foe and
+  party zones by kind, percentages for
+  foes, the battle info sheet.
 - **Units**: healing, the five new
   units, the picker.
 - **The commander**: its turn and

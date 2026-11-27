@@ -2,9 +2,10 @@ import RuleSteward
 import SwiftUI
 
 /// One unit in a battle: its name and kind,
-/// its layers and pools (movement aside),
-/// and what
-/// the picked ability would do to it. Text
+/// its layers (exact for the party, in
+/// percent for foes) and pools (movement
+/// aside), and what the picked ability
+/// would do to it. Text
 /// from the rules (names, kinds) isn't
 /// translated yet, so it carries a `data-`
 /// identifier.
@@ -53,7 +54,8 @@ struct UnitRow: View {
         id: \.offset
       ) {
         gauge(
-          $0.element,
+          $0.offset,
+          of: $0.element,
           left: unit.layers[$0.offset]
         )
       }
@@ -64,36 +66,40 @@ struct UnitRow: View {
         Text("Exposed")
           .font(.caption.bold())
       }
-      ForEach(
-        Array(unit.unit.pools.enumerated())
-          .filter {
-            $0.element.kind != .movement
-          },
-        id: \.offset
-      ) {
-        Text("""
-          \($0.element.kind.name) \
-          \(unit.pools[$0.offset]) of \
-          \($0.element.maximum)
-          """)
-          .font(.caption)
-      }
+      pools
     }
   }
 
-  /// A layer's name, points and material
-  /// (from the rules, so a `data-`
-  /// identifier), over a bar.
+  /// Each pool but movement, with what's
+  /// in it.
+  private var pools: some View {
+    ForEach(
+      Array(unit.unit.pools.enumerated())
+        .filter {
+          $0.element.kind != .movement
+        },
+      id: \.offset
+    ) {
+      Text("""
+        \($0.element.kind.name) \
+        \(unit.pools[$0.offset]) of \
+        \($0.element.maximum)
+        """)
+        .font(.caption)
+    }
+  }
+
+  /// A layer's name, what's left of it and
+  /// its material (from the rules, so a
+  /// `data-` identifier), over a bar.
   private func gauge(
-    _ layer: Layer,
+    _ index: Int,
+    of layer: Layer,
     left: Int
   ) -> some View {
     VStack(alignment: .leading, spacing: 0) {
       HStack(spacing: 4) {
-        Text("""
-          \(layer.name) \(left) of \
-          \(layer.points)
-          """)
+        Text(unit.says(index, left: left))
         Text(verbatim: layer.material.name)
           .foregroundStyle(.secondary)
           .testID("data-material")

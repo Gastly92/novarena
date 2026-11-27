@@ -10,8 +10,8 @@ extension Fight.Stage {
     switch self {
     case .start, .middle, .end:
       break
-    case .danger:
-      fight.showsDanger = true
+    case .zones:
+      fight.showsZones = true
     case .moving:
       fight.place(Point(x: 300, y: 200))
     case .aiming:

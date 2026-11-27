@@ -99,6 +99,24 @@ final class BattleTests: XCTestCase {
     XCTAssertTrue(arrow.appears())
   }
 
+  /// The info button opens the battle
+  /// info sheet; Done closes it.
+  @MainActor
+  func testShowsBattleInfo() {
+    let app = App.start(
+      screen: .battleMiddle
+    )
+    app.buttons["Battle info"].tap()
+    let sheet = app.navigationBars[
+      "Battle info"
+    ]
+    XCTAssertTrue(sheet.appears())
+    app.buttons["Done"].tap()
+    XCTAssertTrue(
+      sheet.waitForNonExistence(timeout: 5)
+    )
+  }
+
   /// A spot in the arena, as fractions of
   /// its width and height.
   @MainActor

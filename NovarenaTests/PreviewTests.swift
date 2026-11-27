@@ -51,8 +51,10 @@ final class PreviewTests: XCTestCase {
   }
 
   /// Gerald's Sword Cut, 80 × 120% = 96,
-  /// at 92% 88: off Ashka's hide, or off
-  /// Kestrel-9's energy shield.
+  /// at 92% 88: off Ashka's hide (250 to
+  /// 162, 64%), or off Kestrel-9's energy
+  /// shield (100 to 12). Foes' layers show
+  /// in percent.
   func testLayers() throws {
     let battle = together(
       party: [.gerald, .oswin],
@@ -60,14 +62,15 @@ final class PreviewTests: XCTestCase {
     )
     XCTAssertEqual(
       try lines(battle, on: 2),
-      ["Ember Hide −88, 162 left"]
+      ["Ember Hide −36%, 64% left"]
     )
     XCTAssertEqual(
       try lines(battle, on: 3),
-      ["Energy Shield −88, 12 left"]
+      ["Energy Shield −88%, 12% left"]
     )
   }
 
+  /// Oswin's Tower Shield, 140 to 52.
   func testBodyguardTakesIt() throws {
     let battle = together(
       party: [.gerald],
@@ -77,8 +80,36 @@ final class PreviewTests: XCTestCase {
       try lines(battle, on: 1),
       [
         "Oswin takes it instead",
-        "Tower Shield −88, 52 left",
+        "Tower Shield −63%, 37% left",
       ]
+    )
+  }
+
+  /// The party's own layers stay exact;
+  /// foes' are in percent, rounded down,
+  /// but never 0% while some is left.
+  func testExactForTheParty() {
+    let battle = Battle(
+      party: [.gerald],
+      foes: [.ashka]
+    )
+    let gerald = battle.units[0]
+    XCTAssertEqual(
+      gerald.says(0, left: 150),
+      "Plate 150 of 190"
+    )
+    XCTAssertEqual(
+      gerald.says(0, losing: 40, left: 150),
+      "Plate −40, 150 left"
+    )
+    let ashka = battle.units[1]
+    XCTAssertEqual(
+      ashka.says(0, left: 1),
+      "Ember Hide 1%"
+    )
+    XCTAssertEqual(
+      ashka.says(0, left: 0),
+      "Ember Hide 0%"
     )
   }
 
@@ -118,7 +149,7 @@ final class PreviewTests: XCTestCase {
     XCTAssertEqual(
       try lines(battle, on: 1),
       [
-        "Hide −10, 0 left",
+        "Hide −100%, 0% left",
         "Exposed: the next hit knocks out",
       ]
     )
