@@ -54,12 +54,12 @@ public enum Reach: Sendable {
 public struct Ability: Sendable {
   /// The name shown to players.
   public let name: String
-  /// Base damage, before stats.
+  /// Base damage, before expertise.
   public let power: Int
-  /// Which defence it meets.
-  public let delivery: Delivery
-  /// What it's made of, if anything.
-  public let element: Element?
+  /// What kind of damage it does.
+  public let kind: Kind
+  /// The skill it takes.
+  public let discipline: Discipline
   /// What it takes from the unit's
   /// resource.
   public let cost: Int
@@ -67,24 +67,34 @@ public struct Ability: Sendable {
   public let weight: Weight
   /// How far it reaches.
   public let reach: Reach
+  /// Whether what's left of a hit that
+  /// breaks a layer always goes on to the
+  /// next.
+  public let pierces: Bool
+  /// Materials it passes straight through.
+  public let ignores: Set<Material>
 
   /// An attack; melee, half a metre from
   /// edge to edge, unless `reach` says.
   public init(
     _ name: String,
     power: Int,
-    delivery: Delivery,
-    element: Element? = nil,
+    kind: Kind,
+    discipline: Discipline,
     cost: Int = 0,
     weight: Weight = .normal,
-    reach: Reach = .melee(50)
+    reach: Reach = .melee(50),
+    pierces: Bool = false,
+    ignores: Set<Material> = []
   ) {
     self.name = name
     self.power = power
-    self.delivery = delivery
-    self.element = element
+    self.kind = kind
+    self.discipline = discipline
     self.cost = cost
     self.weight = weight
     self.reach = reach
+    self.pierces = pierces
+    self.ignores = ignores
   }
 }

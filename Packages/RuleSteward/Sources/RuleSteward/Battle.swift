@@ -83,7 +83,7 @@ public struct Battle: Sendable {
   /// turns come: the earliest tick first,
   /// ties broken by a fixed ladder (higher
   /// base Speed, then smaller size, then
-  /// higher health percent, then the
+  /// more of its layers left, then the
   /// party, then list order), never by
   /// chance. Empty once
   /// the battle is over.
@@ -200,33 +200,27 @@ public struct Battle: Sendable {
     let name = units[target].unit.name
     let amount = Rules.damage(
       ability,
-      from: units[actor].unit.stats,
-      to: units[target].unit,
+      by: units[actor].unit,
       intensity: Rules.intensity(at: tick)
     )
-    guard amount > 0 else {
-      log.append(.immune(name))
-      return
-    }
-    let taken = units[target].take(
+    let losses = units[target].take(
       amount, from: ability
     )
-    if taken.shield > 0 {
-      log.append(.shield(
+    let struck = units[target]
+    for (layer, lost) in losses {
+      log.append(.layer(
         name,
-        took: taken.shield,
-        left: units[target].shield
+        struck.unit.layers[layer].name,
+        took: lost,
+        left: struck.layers[layer]
       ))
     }
-    if taken.health > 0 {
-      log.append(.damage(
-        name,
-        took: taken.health,
-        left: units[target].health
-      ))
-    }
-    if !units[target].isUp {
-      log.append(.down(name))
+    if struck.isOut {
+      log.append(.out(name))
+    } else if losses.isEmpty {
+      log.append(.immune(name))
+    } else if struck.isExposed {
+      log.append(.exposed(name))
     }
   }
 }

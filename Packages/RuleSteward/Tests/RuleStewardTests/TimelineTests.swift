@@ -92,7 +92,8 @@ final class TimelineTests: XCTestCase {
     let heavy = Ability(
       "Slam",
       power: 10,
-      delivery: .physical,
+      kind: .crush,
+      discipline: .unarmed,
       weight: .heavy,
       reach: Fixtures.far
     )

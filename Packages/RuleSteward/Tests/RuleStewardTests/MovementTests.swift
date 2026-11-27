@@ -28,7 +28,10 @@ final class MovementTests: XCTestCase {
 
   /// Melee, half a metre edge to edge.
   private static let jab = Ability(
-    "Jab", power: 10, delivery: .physical
+    "Jab",
+    power: 10,
+    kind: .crush,
+    discipline: .unarmed
   )
 
   func testDeployment() {
@@ -39,9 +42,9 @@ final class MovementTests: XCTestCase {
     XCTAssertEqual(
       battle.units.map(\.place),
       [
-        Point(x: 150, y: 200),
-        Point(x: 150, y: 600),
-        Point(x: 1050, y: 400),
+        Point(x: 250, y: 200),
+        Point(x: 250, y: 600),
+        Point(x: 950, y: 400),
       ]
     )
   }
@@ -77,7 +80,8 @@ final class MovementTests: XCTestCase {
     let bolt = Ability(
       "Bolt",
       power: 10,
-      delivery: .special,
+      kind: .burn,
+      discipline: .unarmed,
       reach: .ranged(400)
     )
     var battle = duel([bolt])
@@ -144,10 +148,14 @@ final class MovementTests: XCTestCase {
     let smash = Ability(
       "Smash",
       power: 5000,
-      delivery: .physical,
+      kind: .crush,
+      discipline: .unarmed,
       reach: Fixtures.far
     )
-    var battle = duel([smash])
+    var battle = duel(
+      [smash],
+      foe: Fixtures.unit("B", hide: 0)
+    )
     try battle.act(0, on: 1)
     XCTAssertTrue(
       battle.fits(
@@ -235,42 +243,11 @@ final class MovementTests: XCTestCase {
     )
   }
 
-  /// The plain choice picks a foe it can
-  /// reach this turn over a bigger hit it
-  /// can't.
-  func testPlainChoicePrefersReach() {
-    let big = Ability(
-      "Big", power: 90, delivery: .physical
-    )
-    let battle = Battle(
-      party: [
-        Fixtures.unit(
-          "A", abilities: [Self.jab, big]
-        ),
-      ],
-      foes: [
-        Fixtures.unit("Far", speed: 50),
-        Fixtures.unit(
-          "Near", speed: 50, size: .huge
-        ),
-      ],
-      places: [
-        Point(x: 100, y: 400),
-        Point(x: 1100, y: 400),
-        Point(x: 500, y: 400),
-      ]
-    )
-    let choice = battle.plainChoice
-    XCTAssertEqual(
-      choice?.action, Action(1, on: 2)
-    )
-  }
-
   /// No approach once the battle is over.
   func testNoApproachOnceOver() {
     var battle = duel(
       [Fixtures.poke],
-      foe: Fixtures.unit("B", health: 1)
+      foe: Fixtures.unit("B", hide: 0)
     )
     battle.playPlainly()
     XCTAssertNil(battle.approach(0, on: 1))

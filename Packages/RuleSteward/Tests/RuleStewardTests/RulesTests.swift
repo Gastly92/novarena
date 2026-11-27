@@ -33,69 +33,66 @@ final class RulesTests: XCTestCase {
     XCTAssertEqual(level(1000), 102)
   }
 
-  /// The examples in brainstorm-2.md.
+  /// Power, scaled by expertise, then by
+  /// intensity: Gerald (an expert, 120%)
+  /// cuts for 80 × 120% = 96, Ashka (a
+  /// master of fire, 140%) throws a
+  /// Fireball for 90 × 140% = 126.
   func testDamageFormula() {
-    let orc = Stats(
-      health: 1,
-      attack: 130,
-      magic: 0,
-      armor: 0,
-      resistance: 0,
-      speed: 1,
-      move: 1
-    )
-    let chop = Ability(
-      "Axe Chop",
-      power: 100,
-      delivery: .physical
-    )
+    let cut = Unit.gerald.abilities[0]
     XCTAssertEqual(
       Rules.damage(
-        chop,
-        from: orc,
-        to: .gerald,
-        intensity: 100
+        cut, by: .gerald, intensity: 100
       ),
-      61
+      96
     )
     let fireball = Unit.ashka.abilities[1]
     XCTAssertEqual(
       Rules.damage(
-        fireball,
-        from: Unit.ashka.stats,
-        to: .gerald,
-        intensity: 100
+        fireball, by: .ashka, intensity: 50
       ),
-      128
+      63
     )
   }
 
-  func testAffinities() {
-    let fire = Ability(
-      "Flame",
-      power: 100,
-      delivery: .special,
-      element: .fire
+  /// Levels 1 to 5 bring 60% to 140%;
+  /// missing disciplines count as 1.
+  func testExpertise() {
+    let levels = [0, 1, 2, 3, 4, 5, 9]
+      .map(Rules.expertise)
+    XCTAssertEqual(
+      levels,
+      [60, 60, 80, 100, 120, 140, 140]
     )
-    let caster = Fixtures.unit("Caster")
-    let damage = { (target: Unit) in
-      Rules.damage(
-        fire,
-        from: caster.stats,
-        to: target,
-        intensity: 100
-      )
-    }
-    let plain = Fixtures.unit("A")
-    XCTAssertEqual(damage(plain), 100)
-    XCTAssertEqual(damage(.ashka), 0)
-    let weak = Fixtures.unit(
-      "Weak", affinities: [.fire: .weak]
+    XCTAssertEqual(
+      Unit.gerald.level(.fire), 1
     )
-    XCTAssertEqual(damage(weak), 150)
-    let resists = Fixtures.unit(
-      "Resists", affinities: [.fire: .resist]
+  }
+
+  /// The table, with normal where it says
+  /// nothing; a layer's own matchups win.
+  func testMatchups() {
+    XCTAssertEqual(
+      Rules.matchup(.shock, .energy),
+      Matchup(200)
     )
-    XCTAssertEqual(damage(resists), 50)
+    XCTAssertEqual(
+      Rules.matchup(.slash, .energy),
+      .normal
+    )
+    let hide = Unit.ashka.layers[0]
+    XCTAssertEqual(
+      hide.matchup(.burn), .immune
+    )
+    XCTAssertEqual(
+      hide.matchup(.slash), .normal
+    )
+    XCTAssertEqual(Kind.shock.name, "shock")
+    XCTAssertEqual(
+      Material.wood.name, "wood"
+    )
+    XCTAssertEqual(
+      Discipline.shields.name, "shields"
+    )
   }
 }

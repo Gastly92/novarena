@@ -1,30 +1,40 @@
 /// The first hand-made units, for trying
-/// the rules out.
+/// the rules out. Their numbers are tuned
+/// so each fights each other about evenly
+/// (see `BalanceTests`).
 public extension Unit {
-  /// A mouse knight: sturdy, armored and
-  /// slow to tire, but a weak caster.
+  /// A mouse knight: small and quick, in
+  /// plate over a thin body; an expert
+  /// with his sword.
   static let gerald = Unit(
     "Gerald",
     kind: "mouse knight",
-    stats: Stats(
-      health: 300,
-      attack: 130,
-      magic: 20,
-      armor: 110,
-      resistance: 40,
-      speed: 95,
-      move: 350
-    ),
+    stats: Stats(speed: 105, move: 350),
+    layers: [
+      Layer(
+        "Plate",
+        material: .metal,
+        points: 240
+      ),
+      Layer(
+        "Body",
+        material: .flesh,
+        points: 60
+      ),
+    ],
+    expertise: [.blades: 4],
     abilities: [
       Ability(
         "Sword Cut",
-        power: 60,
-        delivery: .physical
+        power: 80,
+        kind: .slash,
+        discipline: .blades
       ),
       Ability(
         "Lunge",
         power: 100,
-        delivery: .physical,
+        kind: .pierce,
+        discipline: .blades,
         cost: 40,
         weight: .heavy
       ),
@@ -35,63 +45,76 @@ public extension Unit {
     )
   )
 
-  /// A fire demon: fire can't touch it, but
-  /// frost can.
+  /// A fire demon: no armor, but a thick
+  /// ember hide that grows back and that
+  /// fire can't touch; a master of fire.
   static let ashka = Unit(
     "Ashka",
     kind: "fire demon",
-    stats: Stats(
-      health: 320,
-      attack: 80,
-      magic: 150,
-      armor: 60,
-      resistance: 90,
-      speed: 90,
-      move: 300
-    ),
+    stats: Stats(speed: 90, move: 300),
+    layers: [
+      Layer(
+        "Ember Hide",
+        material: .ember,
+        points: 240,
+        regrows: 15,
+        matchups: [.burn: .immune]
+      ),
+    ],
+    expertise: [.unarmed: 3, .fire: 5],
     abilities: [
       Ability(
         "Claw",
         power: 60,
-        delivery: .physical
+        kind: .slash,
+        discipline: .unarmed
       ),
       Ability(
         "Fireball",
-        power: 120,
-        delivery: .special,
-        element: .fire,
+        power: 90,
+        kind: .burn,
+        discipline: .fire,
         cost: 40,
         weight: .heavy,
         reach: .ranged(500)
       ),
-    ],
-    affinities: [
-      .fire: .immune, .frost: .weak,
     ],
     resource: Resource(
       "mana", maximum: 100, refill: 15
     )
   )
 
-  /// A shield bearer: takes the first hit
-  /// each round meant for an ally.
+  /// A shield bearer: a tower shield over
+  /// mail; takes the first hit each round
+  /// meant for an ally.
   static let oswin = Unit(
     "Oswin",
     kind: "shield bearer",
-    stats: Stats(
-      health: 380,
-      attack: 100,
-      magic: 20,
-      armor: 160,
-      resistance: 70,
-      speed: 80,
-      move: 250
-    ),
+    stats: Stats(speed: 80, move: 300),
+    layers: [
+      Layer(
+        "Tower Shield",
+        material: .wood,
+        points: 140
+      ),
+      Layer(
+        "Mail",
+        material: .metal,
+        points: 110
+      ),
+      Layer(
+        "Body",
+        material: .flesh,
+        points: 60
+      ),
+    ],
+    expertise: [.shields: 5, .blades: 2],
     abilities: [
       Ability(
         "Shield Bash",
         power: 50,
-        delivery: .physical,
+        kind: .crush,
+        discipline: .shields,
         weight: .light
       ),
     ],
@@ -101,46 +124,51 @@ public extension Unit {
     passives: [.bodyguard]
   )
 
-  /// A war mech behind an energy shield
-  /// that recharges, unless shock breaks it.
+  /// A war mech: an energy shield that
+  /// recharges (unless shock breaks it)
+  /// over metal plating.
   static let kestrel = Unit(
     "Kestrel-9",
     kind: "war mech",
-    stats: Stats(
-      health: 340,
-      attack: 120,
-      magic: 90,
-      armor: 130,
-      resistance: 50,
-      speed: 85,
-      move: 250
-    ),
+    stats: Stats(speed: 82, move: 250),
+    layers: [
+      Layer(
+        "Energy Shield",
+        material: .energy,
+        points: 100,
+        recharge: 40
+      ),
+      Layer(
+        "Plating",
+        material: .metal,
+        points: 120
+      ),
+      Layer(
+        "Frame",
+        material: .metal,
+        points: 40
+      ),
+    ],
+    expertise: [.unarmed: 3, .lightning: 4],
     abilities: [
       Ability(
         "Piston Fist",
         power: 60,
-        delivery: .physical
+        kind: .crush,
+        discipline: .unarmed
       ),
       Ability(
         "Arc Beam",
-        power: 100,
-        delivery: .special,
-        element: .shock,
+        power: 55,
+        kind: .shock,
+        discipline: .lightning,
         cost: 50,
         reach: .ranged(450)
       ),
     ],
     size: .large,
-    affinities: [.shock: .weak],
     resource: Resource(
       "charge", maximum: 100, refill: 25
-    ),
-    shield: Shield(
-      "Energy Shield",
-      points: 150,
-      blocks: [.physical, .special],
-      recharges: true,
-      brokenBy: .shock
     )
   )
 }

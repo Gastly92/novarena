@@ -6,9 +6,9 @@ public enum Side: Sendable {
   case foes
 }
 
-/// A unit during a battle: its health,
-/// shield, resource, place on the
-/// timeline and spot in the arena.
+/// A unit during a battle: what's left of
+/// its layers, its resource, its place on
+/// the timeline and its spot in the arena.
 public struct BattleUnit: Sendable,
   Identifiable {
   /// Its place in the battle's list.
@@ -17,10 +17,11 @@ public struct BattleUnit: Sendable,
   public let side: Side
   /// Who it is.
   public let unit: Unit
-  /// Health left; 0 is down.
-  public internal(set) var health: Int
-  /// Shield points left.
-  public internal(set) var shield: Int
+  /// Points left in each of its layers,
+  /// outermost first.
+  public internal(set) var layers: [Int]
+  /// Knocked out: out of the fight.
+  public internal(set) var isOut = false
   /// Resource left.
   public internal(set) var pool: Int
   /// The tick its next turn comes at.
@@ -28,14 +29,21 @@ public struct BattleUnit: Sendable,
   /// Where it stands.
   public internal(set) var place: Point
   /// Whether it took any damage since its
-  /// last turn (a recharging shield waits).
+  /// last turn (a recharging layer waits).
   var wasHit = false
   /// The round it last stood in for an
   /// ally (`Passive.bodyguard`).
   var guarded: Int?
 
   /// Still in the fight.
-  public var isUp: Bool { health > 0 }
+  public var isUp: Bool { !isOut }
+
+  /// Every layer gone, its body too: the
+  /// next hit that does any damage knocks
+  /// it out.
+  public var isExposed: Bool {
+    layers.allSatisfy { $0 == 0 }
+  }
 
   init(
     id: Int,
@@ -47,8 +55,7 @@ public struct BattleUnit: Sendable,
     self.side = side
     self.unit = unit
     self.place = place
-    health = unit.stats.health
-    shield = unit.shield?.points ?? 0
+    layers = unit.layers.map(\.points)
     pool = unit.resource?.maximum ?? 0
     nextTurn = Rules.wait(
       speed: unit.stats.speed,
@@ -56,10 +63,13 @@ public struct BattleUnit: Sendable,
     )
   }
 
-  /// Its health in percent, for breaking
-  /// ties on the timeline.
+  /// What's left of its layers in percent,
+  /// for breaking ties on the timeline.
   var percent: Int {
-    health * 100 / unit.stats.health
+    let whole = unit.layers.map(\.points)
+      .reduce(0, +)
+    return whole == 0 ? 0
+      : layers.reduce(0, +) * 100 / whole
   }
 
   /// Whether it can pay for `ability`.
@@ -68,8 +78,9 @@ public struct BattleUnit: Sendable,
   }
 
   /// The start of its turn: its resource
-  /// refills, and a recharging shield that
-  /// wasn't hit since its last turn fills.
+  /// refills, recharging layers fill if it
+  /// wasn't hit since its last turn, and
+  /// layers that regrow do, unless broken.
   mutating func startTurn() {
     if let resource = unit.resource {
       pool = min(
@@ -77,40 +88,67 @@ public struct BattleUnit: Sendable,
         pool + resource.refill
       )
     }
-    if let full = unit.shield,
-      full.recharges, !wasHit {
-      shield = full.points
+    for (index, layer) in unit.layers
+      .enumerated() {
+      let grows = wasHit ? 0 : layer.recharge
+      let heals = layers[index] > 0
+        ? layer.regrows : 0
+      layers[index] = min(
+        layer.points,
+        layers[index] + grows + heals
+      )
     }
     wasHit = false
   }
 
-  /// Takes `hit` damage of `ability`'s kind:
-  /// a shield that blocks it goes first
-  /// (twice as fast against what breaks
-  /// it). Returns what the shield took and
-  /// what reached health.
+  /// Takes `amount` of `ability`'s damage.
+  /// It wears down the outermost layer
+  /// left (skipping materials the ability
+  /// ignores), scaled by how its kind meets
+  /// the layer. What's left of a hit that
+  /// breaks a layer goes on only if the
+  /// matchup carries or the ability
+  /// pierces. Once exposed, any damage
+  /// knocks it out. Returns what each
+  /// layer lost.
   mutating func take(
-    _ hit: Int,
+    _ amount: Int,
     from ability: Ability
-  ) -> (shield: Int, health: Int) {
-    var left = hit
-    var used = 0
-    if let full = unit.shield, shield > 0,
-      full.blocks.contains(
-        ability.delivery
-      ) {
-      let factor = ability.element != nil
-        && ability.element == full.brokenBy
-        ? 2 : 1
-      used = min(shield, hit * factor)
-      shield -= used
-      let covered = (used + factor - 1)
-        / factor
-      left = hit - covered
+  ) -> [(layer: Int, lost: Int)] {
+    if isExposed {
+      let body = unit.layers.last?
+        .matchup(ability.kind) ?? .normal
+      isOut = amount * body.percent / 100 > 0
+      return []
     }
-    wasHit = true
-    let dealt = min(health, left)
-    health -= dealt
-    return (used, dealt)
+    var left = amount
+    var losses: [(layer: Int, lost: Int)]
+    losses = []
+    for index in layers.indices
+    where layers[index] > 0 {
+      let layer = unit.layers[index]
+      if ability.ignores.contains(
+        layer.material
+      ) {
+        continue
+      }
+      let matchup = layer.matchup(
+        ability.kind
+      )
+      let dealt = left * matchup.percent
+        / 100
+      let lost = min(layers[index], dealt)
+      guard lost > 0 else {
+        break
+      }
+      layers[index] -= lost
+      losses.append((index, lost))
+      guard lost < dealt,
+        matchup.carries || ability.pierces
+      else { break }
+      left = left * (dealt - lost) / dealt
+    }
+    wasHit = wasHit || !losses.isEmpty
+    return losses
   }
 }
