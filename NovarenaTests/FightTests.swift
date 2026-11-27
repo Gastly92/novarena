@@ -129,12 +129,12 @@ final class FightTests: XCTestCase {
     XCTAssertFalse(fight.queueAfter.isEmpty)
   }
 
-  /// The acted stage: Sword Cut done, the
-  /// bonus still to use or the turn to
-  /// end.
+  /// The acted stage: Sword Cut and the
+  /// Pommel Strike done, the turn to end.
   func testActedStage() {
     let fight = Fight(stage: .acted)
-    XCTAssertEqual(fight.panel, .skills)
+    XCTAssertEqual(fight.panel, .actions)
+    XCTAssertFalse(fight.battle.canUse(2))
     XCTAssertTrue(fight.battle.hasActed)
     fight.endTurn()
     XCTAssertEqual(fight.actor?.side, .party)

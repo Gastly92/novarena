@@ -31,8 +31,9 @@ final class Fight {
     /// planned that puts Kestrel-9 in Sword
     /// Cut's reach, but not Ashka.
     case planned
-    /// The same, after Sword Cut on
-    /// Kestrel-9: the turn still to end.
+    /// The same, after Sword Cut and
+    /// Pommel Strike on Kestrel-9: the
+    /// turn still to end.
     case acted
     /// Six turns in.
     case middle

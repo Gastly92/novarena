@@ -25,6 +25,8 @@ extension Fight.Stage {
       fight.place(Point(x: 817, y: 448))
       fight.choose(0)
       fight.target(3)
+      fight.choose(2)
+      fight.target(3)
     }
   }
 }
