@@ -24,7 +24,9 @@ extension Fight {
       $0.isUp && $0.id != actor.id
         && Self.covers($0, point, by: 30)
     }
-    let mine = Self.covers(actor, point, by: 0)
+    let mine = Self.covers(
+      actor, point, by: 0
+    )
     let unit = other ?? (mine ? actor : nil)
     if let unit, canAim(at: unit.id) {
       aim(at: unit.id)
