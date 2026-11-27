@@ -18,6 +18,12 @@ written and is left as it is. This doc is
 where it changes: what's been tried, what it
 felt like, and what's next.
 
+This doc is the battle's only. Ideas beyond
+it (facilities, currency, saving) go in
+`brainstorm-3.md`; each part of the game
+gets its own iteration doc when its work
+starts.
+
 ## How it works
 
 - **One pull request at a time.** Each one
@@ -92,6 +98,37 @@ felt like, and what's next.
     move's.
   - Centimetres don't read well as a
     unit.
+- **0.0.6, layers**: layers, damage
+  kinds, materials and expertise.
+  - Wanted: a skill picked against a foe
+    out of reach should plan the walk
+    into reach, to commit then use.
+  - Wanted: the turn ending by itself
+    once nothing's left, as a setting.
+  - Wanted: danger zones per foe, and
+    the party's own zones too, by kind
+    (heal ranges, a foe's revealed
+    heals).
+  - Wanted: foe layers and damage
+    previews as percentages.
+  - Wanted: a battle info sheet
+    (intensity, weather and the like).
+  - Wanted: more units, and a way to
+    try them out.
+- **0.0.7, pools**: pools, bonus
+  actions, measures, the skill's reach
+  ring.
+  - After the main action, the skills
+    should stay open while a bonus is
+    left, not jump to ending the turn
+    (fixed in 0.0.8).
+- **0.0.8, the danger zone**: a toggle
+  shading where foes could hit next
+  turn, from what they've shown.
+  - The toggle's warning-triangle icon
+    reads as something wrong with the
+    battle, not a button that shows
+    reach: B3b gives it a clearer look.
 
 ## Decisions
 
@@ -338,6 +375,92 @@ felt like, and what's next.
   two-finger drag, the one-finger drag
   still moving the ghost; with bigger
   arenas and terrain.
+- **Zones and percentages** (from
+  0.0.6):
+  - Each foe's danger zone toggles on
+    its own (tap the foe); the party's
+    units show their zones too, coloured
+    by kind: harm in red, heals in
+    green (a foe's heals once revealed).
+  - Foe layers, and damage previews on
+    them, show as percentages of the
+    layer; the party's own stay exact.
+  - A battle info sheet: intensity, the
+    round, and weather once it exists.
+- **New units** (from 0.0.6), with
+  healing in the rules: a cleric who
+  heals; a rogue with a free dagger
+  throw and jump each turn and a dodge;
+  an archer (pierce, leather); a stone
+  golem that resists pierce; an ice
+  mage whose cantrips share one bonus,
+  bringing a freeze kind. A simple
+  picker for who fights, to try them
+  (the real draft is a facility, in
+  `brainstorm-3.md`).
+- **The commander** (owner's call; the
+  name is a placeholder): the player,
+  off the field, gets a portrait in the
+  turn order and acts from afar on its
+  turns:
+  - Restore 25% of what's left of a
+    unit's outer layer.
+  - Once per battle per unit, a ward:
+    a new outer layer that soaks the
+    next 3 hits.
+  - Foes have one in boss battles
+    (`brainstorm-3.md`).
+- **Reactions** (owner's call): things
+  units do out of turn, when something
+  happens: being attacked, a foe moving
+  by, a spell cast, an ally hit.
+  - Passives react by themselves (a
+    bodyguard stepping in, a rogue's
+    dodge); others ask (a wizard's
+    counterspell: "React? Yes / No").
+  - One reaction a round; some cost
+    pools.
+  - Previews say "may be dodged" when
+    a reaction could change the result.
+  - A setting per reaction: ask, always
+    or never.
+- **Novarenas, the fields** (owner's
+  call):
+  - Biomes from Earth's ecosystems:
+    forest, volcano, beach and more,
+    each with its own ground (sand,
+    water, burning vents) and weather.
+  - Obstacles: walls of brick or steel,
+    breakable, with a material and
+    points like a layer, so the matchup
+    table covers them (crush breaks
+    brick; slash barely marks steel).
+    They block movement and sight.
+  - Towers with ladders: height, which
+    walkers climb, heavy units can't
+    and fliers skip.
+  - The shape of a track-and-field
+    oval: long straight top and bottom,
+    curved ends, walled all round by
+    impenetrable barriers. The sides
+    deploy clear of the curves.
+  - The camera can switch perspective
+    (top-down and tilted). Open:
+    `brainstorm-2.md` planned sprites at
+    one fixed 3/4 angle with no 3D, so
+    this needs real 3D or drawn angles;
+    decide before the art.
+  - Generated before each match from a
+    seed: the biome, then its ground,
+    then obstacles from its set. A
+    whole-number generator in the rules,
+    so the same seed is the same field
+    and battles stay free of chance.
+    Fields are fair (mirrored or
+    balanced), always passable, nobody
+    deploys in an obstacle, and
+    `BalanceTests` runs over many seeds.
+    Hand-made fields come first.
 
 ## Next: movement
 
@@ -387,28 +510,84 @@ Free movement, as in `brainstorm-2.md`
   bars, measures, the picked skill's
   reach as a ring, and the ghost
   snapping to the edge of the range.
-- **B3, the danger zone** (0.0.8, in
-  progress): the
+- **B3, the danger zone** (done, #20,
+  0.0.8): the
   rules record what each side has seen
   of the other (furthest move, abilities
   used); the screen shades the danger
   zone from that, behind a toggle.
-- **B4, usability** (0.0.9): plan the
-  approach to a far foe, end turns by
+- **B3b, zones and percentages**
+  (0.0.9): per-foe and party zones by
+  kind, percentages for foes, the
+  battle info sheet.
+- **Units**: healing, the five new
+  units, the picker.
+- **The commander**: its turn and
+  actions.
+- **Reactions**: triggers, automatic and
+  asked, the one-a-round limit.
+- **B4, usability**: plan the approach
+  to a far foe, end turns by
   themselves, the settings screen.
 - **AI, basic and tactical**: the AI
   levels' interface, and the tactical
   level.
-- **C.** Obstacles and pathfinding (the
-  hidden fine grid), then terrain and
-  height, with pan and zoom. Traps join
+- **C.** The oval novarena; obstacles
+  (breakable walls) and pathfinding
+  (the hidden fine grid); terrain,
+  biomes and height (towers), with pan
+  and zoom and the camera; then fields
+  generated from a seed. Traps join
   here: an event on the way stops and
   commits a walk. Then the planner and
   omniscient AI.
 
 ## After that
 
-Roughly, and reordered by how each build
-feels: ranges from unknown stats
-(knowledge); status effects; commander
-actions.
+Battle ideas from the brainstorms not
+planned yet, roughly in order and
+reordered by how each build feels:
+
+- **Status effects** (`brainstorm-2.md`):
+  kinds (boons, curses, stances,
+  conditions), fixed durations, blocked
+  by a matching layer (a ward stops a
+  freeze), taxes not skips (a stun
+  delays). The ice mage's freeze first.
+- **Time magic and charged abilities**:
+  haste, slow, delay, quicken; a
+  charged spell sits in the turn order
+  with its area drawn on the arena.
+- **Ranges from unknown stats**
+  (knowledge): previews as ranges for a
+  foe not fully seen, narrowing as it
+  shows more; `brainstorm.md` adds
+  scanning, at a cost.
+- **Traits**: always-visible passives
+  (Small, Brave, immune to fire); an
+  unrevealed one shows as "?".
+- **Bodyguard range**: guarding only
+  allies nearby (open since A).
+- **Shove, knockback, knockdown,
+  grapple**: decided by size and
+  strength, with where someone lands
+  previewed.
+- **Protections**: last stand, a
+  phoenix's rebirth egg, a hit cap
+  aura, repair over time.
+- **Scout and deploy**: see the field
+  and foes, then place the party in its
+  starting zone.
+- **Weather, arena traits and
+  surfaces**: fire burns grass and melts
+  ice, frost freezes water to floor,
+  shock spreads through water; hazards
+  on a schedule shown in advance.
+- **Pickups**: items on the field with a
+  number of uses; one-time charms.
+- **A picker for long ability lists**:
+  grouped by kind, what's affordable
+  first.
+- **More commander powers** from the
+  fork's gimmicks: Titan, Finisher, a
+  transformation, a change of kind.
