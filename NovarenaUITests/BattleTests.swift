@@ -98,7 +98,9 @@ final class BattleTests: XCTestCase {
     let app = App.start(
       screen: .battleHealing
     )
-    app.swipeUp()
+    // The list, not the arena (a drag
+    // there moves the ghost).
+    app.collectionViews.firstMatch.swipeUp()
     let gerald = app.buttons["data-unit-0"]
     XCTAssertTrue(gerald.appears())
     gerald.tap()
