@@ -25,8 +25,7 @@ final class BattleTests: XCTestCase {
     app.buttons["Actions"].tap()
     app.buttons["End turn"].tap()
     // Ashka's turn, a step at a time:
-    // it begins, then she moves.
-    app.buttons["Next"].tap()
+    // it has begun; next, she moves.
     app.buttons["Next"].tap()
     let step = app.text("data-step")
     XCTAssertTrue(

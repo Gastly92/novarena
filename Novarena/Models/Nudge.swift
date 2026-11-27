@@ -33,6 +33,21 @@ enum Nudge: CaseIterable {
     }
   }
 
+  /// The pad's corner a circling arrow
+  /// sits in (across, down): clockwise top
+  /// right, the other way top left; the
+  /// middle of the pad for the others.
+  var corner: (x: Int, y: Int) {
+    switch self {
+    case .clockwise:
+      (1, -1)
+    case .counterclockwise:
+      (-1, -1)
+    default:
+      (0, 0)
+    }
+  }
+
   /// Whether it circles round a unit.
   var circles: Bool {
     self == .clockwise

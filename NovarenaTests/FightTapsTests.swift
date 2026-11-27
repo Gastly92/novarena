@@ -86,9 +86,10 @@ final class FightTapsTests: XCTestCase {
     XCTAssertTrue(fight.inReach(0))
   }
 
-  /// Touching Oswin from above, the bottom
+  /// Touching Oswin from above, the top
   /// corners circle round him: clockwise
-  /// (right) and the other way (left).
+  /// (right, going right) and the other
+  /// way (left).
   func testCircles() throws {
     let fight = Fight(stage: .circling)
     let start = try XCTUnwrap(fight.ghost)
@@ -96,13 +97,13 @@ final class FightTapsTests: XCTestCase {
       start, Point(x: 250, y: 535)
     )
     XCTAssertEqual(
-      fight.circling(at: (1, 1)), .clockwise
+      fight.circling(at: (1, -1)), .clockwise
     )
     XCTAssertEqual(
-      fight.circling(at: (-1, 1)),
+      fight.circling(at: (-1, -1)),
       .counterclockwise
     )
-    XCTAssertNil(fight.circling(at: (1, -1)))
+    XCTAssertNil(fight.circling(at: (1, 1)))
     XCTAssertEqual(
       fight.bend(.clockwise), .straight
     )
@@ -118,13 +119,36 @@ final class FightTapsTests: XCTestCase {
       apart, 65 * 65
     )
     XCTAssertNil(
-      Fight().circling(at: (1, 1))
+      Fight().circling(at: (1, -1))
     )
     let foes = Fight(stage: .foes)
-    XCTAssertNil(foes.circling(at: (1, 1)))
+    XCTAssertNil(foes.circling(at: (1, -1)))
     let free = Fight()
     free.nudge(.clockwise, by: 10)
     XCTAssertNil(free.ghost)
+  }
+
+  /// A circling arrow held with nothing to
+  /// circle lets go at once, so pressing
+  /// it again, once touching Oswin,
+  /// circles.
+  func testCirclingLetsGo() async {
+    let nudged = expectation(
+      description: "a nudge"
+    )
+    nudged.assertForOverFulfill = false
+    let fight = Fight { _ in
+      nudged.fulfill()
+      await Task.yield()
+    }
+    fight.press(.clockwise)
+    await Task.yield()
+    fight.place(Point(x: 250, y: 535))
+    fight.press(.clockwise)
+    await fulfillment(of: [nudged])
+    fight.press(nil)
+    let x = fight.ghost?.x ?? 0
+    XCTAssertGreaterThan(x, 250)
   }
 
   /// Circling arrows' icons.

@@ -25,8 +25,15 @@ extension Fight {
   /// Plays the next step of the foes'
   /// turns, planning the next foe's turn
   /// once one ends; what it logged goes in
-  /// `shown`. Nothing on the party's turn.
+  /// `shown`. A turn's end, which shows
+  /// nothing, goes with the step after
+  /// (the next turn's start), so each step
+  /// shows something. Nothing on the
+  /// party's turn.
   func advance() {
+    if steps.first == .end {
+      take(steps.removeFirst())
+    }
     if steps.isEmpty {
       steps = plan()
     }

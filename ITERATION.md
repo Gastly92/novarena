@@ -214,6 +214,23 @@ starts.
     it).
   - "[236] Kestrel-9" (a turn's start at
     tick 236) didn't say what it meant.
+- **0.0.13, aiming and moving**: taps by
+  mode, aiming at a foe out of reach, a
+  walk to a unit, circling arrows.
+  - The walk to a foe feels good.
+  - The corner arrows felt laggy: a tap
+    often needed a second, and the curve
+    felt unpredictable. (Each arrow sat
+    in the corner its way round headed
+    for, so it jumped corners as the plan
+    circled; the arrow under the finger
+    went away mid-hold, the hold was
+    never let go, its next press was
+    ignored, and the orphaned hold kept
+    circling.)
+  - A foe's turn had a needless step:
+    Next, then "turn begins", then Next
+    again.
 
 ## Decisions
 
@@ -637,6 +654,17 @@ starts.
   the pad's corners circle round it,
   each in the corner its way round heads
   for, held like the others.
+- **Circling, fixed** (from 0.0.13): the
+  circling arrows sit in fixed corners,
+  clockwise top right and the other way
+  top left, so a held one stays under
+  the finger; a hold with nothing to
+  circle lets go by itself.
+- **Every foe step shows something**
+  (from 0.0.13): ending the party's turn
+  shows the foe's turn beginning at once,
+  and a turn's end goes with the next
+  turn's start.
 - **Foe steps say what they mean**: a
   turn's start reads "Kestrel-9's turn
   begins", not its tick. Stepping is
@@ -777,12 +805,16 @@ Free movement, as in `brainstorm-2.md`
   steps; the wait scaled by movement
   used; nudges that slide, with curved
   arrows.
-- **Aiming and moving** (0.0.13, in
-  progress): from 0.0.12, taps by mode,
+- **Aiming and moving** (done, #27,
+  0.0.13): from 0.0.12, taps by mode,
   aiming a skill at a foe out of reach
   (B4's first item), a walk to a unit,
   circling arrows, turn starts in
   words.
+- **Circling and steps, fixed** (0.0.14,
+  in progress): from 0.0.13, the circling
+  arrows in fixed corners, a hold that
+  lets go, no empty foe steps.
 - **Units**, in parts:
   - **Healing and the cleric**
     (done, #24, 0.0.10): heals in the
