@@ -14,29 +14,29 @@ extension Forecast {
       return [String(localized: "Immune")]
     }
     var lines: [String] = []
+    let struck = battle.units[strike.hit]
     if strike.hit != target {
-      let name = battle.units[strike.hit]
-        .unit.name
+      let name = struck.unit.name
       lines.append(String(
         localized: "\(name) takes it instead"
       ))
     }
-    if strike.shieldLost > 0 {
+    for loss in strike.losses {
+      let layer = struck.unit
+        .layers[loss.layer].name
       lines.append(String(localized: """
-        Shield −\(strike.shieldLost), \
-        \(strike.shieldLeft) left
+        \(layer) −\(loss.lost), \
+        \(loss.left) left
         """))
     }
-    if strike.healthLost > 0 {
-      lines.append(String(localized: """
-        Health −\(strike.healthLost), \
-        \(strike.healthLeft) left
-        """))
-    }
-    if strike.healthLeft == 0 {
+    if strike.knocksOut {
       lines.append(
-        String(localized: "Goes down")
+        String(localized: "Knocked out")
       )
+    } else if strike.exposes {
+      lines.append(String(localized: """
+        Exposed: the next hit knocks out
+        """))
     }
     if winner == .party {
       lines.append(

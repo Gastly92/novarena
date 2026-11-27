@@ -267,7 +267,8 @@ Free movement, as in `brainstorm-2.md`
   hold and drag a ghost, nudge it with a
   directional pad, commit the walk. A
   skill only targets foes in reach.
-- **B2b, layers** (0.0.6): layers,
+- **B2b, layers** (0.0.6, in progress):
+  layers,
   damage kinds, materials and expertise
   in the rules, the sample units remade
   and balanced, layer bars and previews

@@ -5,10 +5,11 @@ import XCTest
 /// its rows don't exist to check;
 /// `FightTests` checks the log instead.
 final class BattleTests: XCTestCase {
-  /// Tap the arena at (300, 200) cm, 1.5 m
-  /// right of Gerald, to plan a move; hold
-  /// the right arrow to nudge it; commit
-  /// it, then end the turn: Oswin is next.
+  /// Tap the arena at (300, 200) cm, half
+  /// a metre right of Gerald, to plan a
+  /// move; hold the right arrow to nudge
+  /// it; commit it, then end the turn:
+  /// Oswin is next.
   @MainActor
   func testMovesAndEndsTheTurn() {
     let app = App.start(screen: .battle)
@@ -32,7 +33,7 @@ final class BattleTests: XCTestCase {
     let app = App.start(screen: .battle)
     let commit = app.buttons["Commit move"]
     XCTAssertFalse(commit.isEnabled)
-    spot(app, x: 0.125, y: 0.25)
+    spot(app, x: 0.208, y: 0.25)
       .press(
         forDuration: 0.2,
         thenDragTo: spot(app, x: 0.3, y: 0.4)
@@ -42,14 +43,14 @@ final class BattleTests: XCTestCase {
 
   /// With Sword Cut picked and a move
   /// planned, tap Kestrel-9 in the arena
-  /// (at 883, 478 cm): Gerald walks and
+  /// (at 912, 556 cm): Gerald walks and
   /// hits, and the turn waits to be ended.
   @MainActor
   func testActsThenEnds() {
     let app = App.start(
       screen: .battlePlanned
     )
-    tap(app, x: 0.736, y: 0.598)
+    tap(app, x: 0.76, y: 0.695)
     let end = app.buttons["End turn"]
     XCTAssertTrue(end.appears())
     end.tap()

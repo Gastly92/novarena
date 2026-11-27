@@ -30,7 +30,7 @@ final class FightTests: XCTestCase {
     let fight = Fight(stage: .moving)
     let spot = Point(x: 300, y: 200)
     XCTAssertEqual(fight.ghost, spot)
-    XCTAssertEqual(fight.planned, 150)
+    XCTAssertEqual(fight.planned, 50)
     XCTAssertFalse(fight.queueAfter.isEmpty)
     fight.nudge(.east, by: 1)
     XCTAssertEqual(
@@ -40,12 +40,12 @@ final class FightTests: XCTestCase {
     XCTAssertEqual(
       fight.ghost, Point(x: 301, y: 200)
     )
-    fight.place(Point(x: 150, y: 200))
+    fight.place(Point(x: 250, y: 200))
     XCTAssertNil(fight.ghost)
     XCTAssertNil(fight.planned)
     fight.nudge(.south, by: 10)
     XCTAssertEqual(
-      fight.ghost, Point(x: 150, y: 210)
+      fight.ghost, Point(x: 250, y: 210)
     )
     fight.undo()
     XCTAssertNil(fight.ghost)
@@ -59,21 +59,21 @@ final class FightTests: XCTestCase {
     let fight = Fight(stage: .moving)
     fight.commit()
     XCTAssertNil(fight.ghost)
-    XCTAssertEqual(fight.moveLeft, 200)
+    XCTAssertEqual(fight.moveLeft, 300)
     let moved = "Gerald moves to (300, 200)"
     XCTAssertTrue(
       fight.latest.contains(moved)
     )
     fight.commit()
-    XCTAssertEqual(fight.moveLeft, 200)
+    XCTAssertEqual(fight.moveLeft, 300)
     fight.endTurn()
     XCTAssertEqual(fight.actor?.id, 1)
     XCTAssertEqual(fight.panel, .move)
   }
 
   /// From the planned spot, Sword Cut
-  /// reaches Kestrel-9 (its shield takes
-  /// 60 × 130 ÷ 230 = 33, at 94% 31) but
+  /// reaches Kestrel-9 (80 × 120% = 96, at
+  /// 93% 89, off its 100-point shield) but
   /// not Ashka; an ally is no target.
   func testPlannedSpot() {
     let fight = Fight(stage: .planned)
@@ -83,7 +83,7 @@ final class FightTests: XCTestCase {
     XCTAssertFalse(fight.inReach(2))
     XCTAssertEqual(
       fight.preview(of: 3),
-      ["Shield −31, 119 left"]
+      ["Energy Shield −89, 11 left"]
     )
     XCTAssertEqual(
       fight.preview(of: 2), ["Out of reach"]
@@ -137,11 +137,11 @@ final class FightTests: XCTestCase {
   /// empty ground plans a move there.
   func testTaps() {
     let fight = Fight(stage: .moving)
-    fight.tap(Point(x: 160, y: 210))
+    fight.tap(Point(x: 260, y: 210))
     XCTAssertNil(fight.ghost)
-    fight.tap(Point(x: 250, y: 300))
+    fight.tap(Point(x: 300, y: 300))
     XCTAssertEqual(
-      fight.ghost, Point(x: 250, y: 300)
+      fight.ghost, Point(x: 300, y: 300)
     )
   }
 
@@ -182,7 +182,7 @@ final class FightTests: XCTestCase {
     await fulfillment(of: [ticks])
     fight.press(nil)
     let x = fight.ghost?.x ?? 0
-    XCTAssertGreaterThanOrEqual(x, 153)
+    XCTAssertGreaterThanOrEqual(x, 253)
   }
 
   /// Tapping a foe before picking does
@@ -203,7 +203,7 @@ final class FightTests: XCTestCase {
     let side = middle.actor?.side
     XCTAssertEqual(side, .party)
     let end = Fight(stage: .end)
-    let won = "The foes win"
+    let won = "The party wins"
     XCTAssertEqual(end.outcome, won)
     XCTAssertNil(end.actor)
   }
