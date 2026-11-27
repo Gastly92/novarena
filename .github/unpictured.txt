@@ -15,6 +15,17 @@ BattleView.swift
   fight.endTurn()
   fight.choose(index)
 
+# Opening the battle info sheet, and what
+# it holds (pictured as its own screen,
+# battleInfo).
+  showsInfo = true
+  NavigationStack {
+  BattleInfoView(battle: fight.battle)
+
+# Tap: close the sheet.
+BattleInfoView.swift
+  dismiss()
+
 # Taps: commit or undo a planned move.
 MovePanel.swift
   fight.commit()

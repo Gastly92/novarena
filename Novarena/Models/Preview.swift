@@ -22,12 +22,11 @@ extension Forecast {
       ))
     }
     for loss in strike.losses {
-      let layer = struck.unit
-        .layers[loss.layer].name
-      lines.append(String(localized: """
-        \(layer) −\(loss.lost), \
-        \(loss.left) left
-        """))
+      lines.append(struck.says(
+        loss.layer,
+        losing: loss.lost,
+        left: loss.left
+      ))
     }
     if strike.knocksOut {
       lines.append(
@@ -103,5 +102,72 @@ extension Ability {
         Range \(measure.says(reach))
         """)
     }
+  }
+}
+
+extension BattleUnit {
+  /// Its layer at `index`, with `left` of
+  /// its points: exact for the party, a
+  /// percentage for foes ("Plate 45 of
+  /// 60", "Plate 75%").
+  func says(
+    _ index: Int,
+    left: Int
+  ) -> String {
+    let layer = unit.layers[index]
+    let name = layer.name
+    guard side == .foes else {
+      return String(localized: """
+        \(name) \(left) of \(layer.points)
+        """)
+    }
+    let part = Self.percent(
+      left, of: layer.points
+    )
+    return String(localized: """
+      \(name) \(part.formatted(.percent))
+      """)
+  }
+
+  /// What a hit takes from its layer at
+  /// `index`, `lost` of it with `left`
+  /// after: exact for the party, a
+  /// percentage of the layer for foes
+  /// ("Plate −15, 45 left", "Plate −25%,
+  /// 75% left").
+  func says(
+    _ index: Int,
+    losing lost: Int,
+    left: Int
+  ) -> String {
+    let layer = unit.layers[index]
+    let name = layer.name
+    guard side == .foes else {
+      return String(localized: """
+        \(name) −\(lost), \(left) left
+        """)
+    }
+    let after = Self.percent(
+      left, of: layer.points
+    )
+    let before = Self.percent(
+      left + lost, of: layer.points
+    )
+    let gone = (before - after)
+      .formatted(.percent)
+    return String(localized: """
+      \(name) −\(gone), \
+      \(after.formatted(.percent)) left
+      """)
+  }
+
+  /// `part` of `whole` in percent, rounded
+  /// down, but never 0 while some is left.
+  static func percent(
+    _ part: Int,
+    of whole: Int
+  ) -> Int {
+    part == 0
+      ? 0 : max(1, part * 100 / whole)
   }
 }

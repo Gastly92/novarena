@@ -16,7 +16,9 @@ final class KnowledgeTests: XCTestCase {
         Point(x: 1100, y: 400),
       ]
     )
-    XCTAssertNil(battle.danger(from: 0))
+    XCTAssertNil(
+      battle.danger(from: 0, seenBy: .foes)
+    )
     for x in [200, 250] {
       try battle.move(
         to: Point(x: x, y: 400)
@@ -29,9 +31,61 @@ final class KnowledgeTests: XCTestCase {
     XCTAssertEqual(unit.shown, [0])
     // 150 moved, plus Poke's reach.
     XCTAssertEqual(
-      battle.danger(from: 0), 10_150
+      battle.danger(from: 0, seenBy: .foes),
+      10_150
     )
-    XCTAssertNil(battle.danger(from: 1))
+    XCTAssertNil(
+      battle.danger(from: 1, seenBy: .party)
+    )
+  }
+
+  /// Its own side knows it all: its whole
+  /// movement next turn, plus its longest
+  /// reach, used or not. Sword's melee
+  /// reach counts from its 40 cm edge.
+  func testOwnSideKnowsAll() {
+    let sword = Fixtures.hit(
+      "Sword", power: 10, reach: .melee(50)
+    )
+    let battle = Battle(
+      party: [
+        Fixtures.unit(
+          "A", abilities: [sword]
+        ),
+      ],
+      foes: [Fixtures.unit("B")],
+      places: Fixtures.together(2)
+    )
+    XCTAssertEqual(
+      battle.danger(from: 0, seenBy: .party),
+      300 + 40 + 50
+    )
+    XCTAssertNil(
+      battle.danger(from: 0, seenBy: .foes)
+    )
+  }
+
+  /// A unit with no movement pool reaches
+  /// only as far as its skills.
+  func testStillUnitReachesFromItsSpot() {
+    let turret = Unit(
+      "T",
+      kind: "test",
+      stats: Stats(speed: 100),
+      layers: [],
+      expertise: [:],
+      abilities: [Fixtures.poke],
+      pools: []
+    )
+    let battle = Battle(
+      party: [turret],
+      foes: [Fixtures.unit("B")],
+      places: Fixtures.together(2)
+    )
+    XCTAssertEqual(
+      battle.danger(from: 0, seenBy: .party),
+      10_000
+    )
   }
 
   /// A unit that's down is no danger.
@@ -42,6 +96,25 @@ final class KnowledgeTests: XCTestCase {
       places: Fixtures.together(2)
     )
     try battle.act(0, on: 1)
-    XCTAssertNil(battle.danger(from: 1))
+    XCTAssertNil(
+      battle.danger(from: 1, seenBy: .foes)
+    )
+  }
+
+  /// The round and intensity follow the
+  /// clock: the first turns come at tick
+  /// 100, round 2, at 93%.
+  func testRoundAndIntensity() throws {
+    var battle = Battle(
+      party: [Fixtures.unit("A")],
+      foes: [Fixtures.unit("B")],
+      places: Fixtures.together(2)
+    )
+    XCTAssertEqual(battle.round, 1)
+    XCTAssertEqual(battle.intensity, 92)
+    try battle.act(0, on: 1)
+    XCTAssertEqual(battle.tick, 100)
+    XCTAssertEqual(battle.round, 2)
+    XCTAssertEqual(battle.intensity, 93)
   }
 }

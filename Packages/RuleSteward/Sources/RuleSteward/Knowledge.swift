@@ -2,28 +2,60 @@
 /// what it has seen. A foe that hasn't
 /// moved far yet may go further; one that
 /// hasn't used an ability may still have
-/// it.
+/// it. Of its own side, it knows all.
 public extension Battle {
   /// How far from where unit `id` stands
   /// it could hit on its next turn, as far
-  /// as the other side knows: the furthest
-  /// it has moved in a turn, plus the
-  /// longest reach of the abilities it has
-  /// used, to a target's edge. None if it's
-  /// down or hasn't used one yet.
-  func danger(from id: Int) -> Int? {
-    let foe = units[id]
-    guard foe.isUp else {
+  /// as `side` knows, to a target's edge.
+  /// Of the other side, the furthest it
+  /// has moved in a turn, plus the longest
+  /// reach of the abilities it has used;
+  /// of its own, its movement next turn
+  /// plus its longest reach. None if it's
+  /// down or none is known.
+  func danger(
+    from id: Int,
+    seenBy side: Side
+  ) -> Int? {
+    let unit = units[id]
+    guard unit.isUp else {
       return nil
     }
-    let radius = foe.unit.size.radius
-    return foe.shown
+    let all = unit.unit.abilities
+    let known = unit.side == side
+    let used = known
+      ? Set(all.indices) : unit.shown
+    let move = known
+      ? unit.moveNextTurn : unit.furthest
+    let radius = unit.unit.size.radius
+    return used
       .map {
-        foe.unit.abilities[$0].reach.limit(
+        all[$0].reach.limit(
           from: radius, to: 0
         )
       }
       .max()
-      .map { foe.furthest + $0 }
+      .map { move + $0 }
+  }
+
+  /// The round, from 1: 100 ticks each.
+  var round: Int {
+    tick / 100 + 1
+  }
+
+  /// How hard hits land now, in percent
+  /// (`Rules.intensity(at:)`).
+  var intensity: Int {
+    Rules.intensity(at: tick)
+  }
+}
+
+extension BattleUnit {
+  /// What its movement pool holds once its
+  /// next turn starts; 0 with none.
+  var moveNextTurn: Int {
+    zip(unit.pools, pools)
+      .first { $0.0.kind == .movement }
+      .map { $0.0.refilled($0.1) } ?? 0
   }
 }

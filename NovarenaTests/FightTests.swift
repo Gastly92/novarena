@@ -142,7 +142,9 @@ final class FightTests: XCTestCase {
   }
 
   /// Taps: on Gerald clears the plan, on
-  /// empty ground plans a move there.
+  /// empty ground plans a move there (on
+  /// another unit, see
+  /// `FightPlanTests.testWatchesByTapping`).
   func testTaps() {
     let fight = Fight(stage: .moving)
     fight.tap(Point(x: 260, y: 210))

@@ -1,3 +1,4 @@
+import RuleSteward
 import SwiftUI
 
 /// Shows one screen (`ScreenID`): where the
@@ -27,12 +28,19 @@ struct ScreenHost: View {
         battle(.acted)
       case .battleMiddle:
         battle(.middle)
-      case .battleDanger:
-        battle(.danger)
+      case .battleZones:
+        battle(.zones)
       case .battleEnd:
         battle(.end)
+      case .battleInfo:
+        BattleInfoView(battle: middle)
       }
     }
+  }
+
+  /// The sample battle six turns in.
+  private var middle: Battle {
+    Fight(stage: .middle).battle
   }
 
   /// The sample battle at `stage`.

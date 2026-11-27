@@ -4,7 +4,7 @@ import XCTest
 
 /// What a fight says about the turn being
 /// planned: the move, the skill's reach,
-/// and the danger zone.
+/// and the zones.
 @MainActor
 final class FightPlanTests: XCTestCase {
   /// The move in Gerald's steps (half a
@@ -64,23 +64,52 @@ final class FightPlanTests: XCTestCase {
     )
   }
 
-  /// With the danger zone on, each foe that
-  /// has shown something is circled: Ashka
-  /// moved 269 cm in a turn and threw a
-  /// Fireball (500 cm), Kestrel-9 moved 59
-  /// and fired an Arc Beam (450).
+  /// With every zone on, each unit is
+  /// circled: Gerald and Oswin by all
+  /// the party knows of them (350 + 25 +
+  /// 50 and 300 + 40 + 50); Ashka by what
+  /// she has shown, 269 cm moved in a turn
+  /// and a Fireball (500 cm), Kestrel-9 by
+  /// 59 moved and an Arc Beam (450).
   func testZones() {
     XCTAssertTrue(
       Fight(stage: .middle).zones.isEmpty
     )
-    let fight = Fight(stage: .danger)
-    XCTAssertTrue(fight.showsDanger)
+    let fight = Fight(stage: .zones)
+    XCTAssertTrue(fight.showsZones)
     XCTAssertEqual(
-      fight.zones.map(\.radius), [769, 509]
+      fight.zones.map(\.radius),
+      [425, 390, 769, 509]
     )
     XCTAssertEqual(
-      fight.zones.first?.center,
+      fight.zones.map(\.side),
+      [.party, .party, .foes, .foes]
+    )
+    XCTAssertEqual(
+      fight.zones[2].center,
       Point(x: 717, y: 333)
     )
+    fight.showsZones = false
+    XCTAssertTrue(fight.zones.isEmpty)
+  }
+
+  /// Tapping a unit turns its zone on, and
+  /// again off; a foe that hasn't shown
+  /// anything has none to draw.
+  func testWatchesByTapping() {
+    let fight = Fight(stage: .middle)
+    let ashka = fight.battle.units[2]
+    fight.tap(ashka.place)
+    XCTAssertEqual(fight.watched, [2])
+    XCTAssertEqual(
+      fight.zones.map(\.radius), [769]
+    )
+    XCTAssertNil(fight.ghost)
+    fight.tap(ashka.place)
+    XCTAssertFalse(fight.showsZones)
+    let start = Fight()
+    start.tap(start.battle.units[3].place)
+    XCTAssertEqual(start.watched, [3])
+    XCTAssertTrue(start.zones.isEmpty)
   }
 }

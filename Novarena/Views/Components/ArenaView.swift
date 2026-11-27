@@ -6,9 +6,11 @@ import SwiftUI
 /// turn ringed with what's left of its
 /// Move shaded, the planned move as a
 /// dashed ghost, and foes the picked skill
-/// reaches ringed. Dragging moves the
-/// ghost; a tap places it, or with a skill
-/// picked, picks a foe.
+/// reaches ringed, and the zones of units
+/// watched. Dragging moves the ghost; a
+/// tap places it, turns a unit's zone on
+/// or off, or with a skill picked, picks
+/// a foe.
 /// Initials come from the rules, so they
 /// carry a `data-` identifier.
 struct ArenaView: View {
@@ -42,7 +44,7 @@ struct ArenaView: View {
   }
 
   /// Everything in the arena, back to
-  /// front: the floor, danger zones, the
+  /// front: the floor, the zones, the
   /// unit on turn's range, the units, the
   /// planned move and the skill's reach.
   private func drawing(
@@ -122,20 +124,26 @@ struct ArenaView: View {
       )
   }
 
-  /// Where a foe could hit next turn, a
-  /// shaded red circle.
+  /// Where a unit could hit next turn, a
+  /// shaded red circle (harm), outlined
+  /// solid for a foe, dashed for the
+  /// party.
   private func zone(
-    _ zone: (center: Point, radius: Int),
+    _ zone: Zone,
     on map: ArenaMap
   ) -> some View {
     let across = map.points(
       2 * zone.radius
     )
+    let ours = zone.side == .party
+    let line = StrokeStyle(
+      lineWidth: 1, dash: ours ? [4, 3] : []
+    )
     return Circle()
       .fill(.red.opacity(0.12))
       .overlay {
         Circle().stroke(
-          .red.opacity(0.5), lineWidth: 1
+          .red.opacity(0.5), style: line
         )
       }
       .frame(width: across, height: across)
