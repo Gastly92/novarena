@@ -67,7 +67,6 @@ struct BattleView: View {
     VStack(spacing: 8) {
       TurnRow(fight: fight)
       ArenaView(fight: fight)
-        .frame(maxHeight: 300)
         .overlay(alignment: .topTrailing) {
           Toggle(
             "Zones",

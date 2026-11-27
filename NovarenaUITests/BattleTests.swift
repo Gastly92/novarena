@@ -23,8 +23,7 @@ final class BattleTests: XCTestCase {
     app.buttons["Commit move"].tap()
     app.buttons["Actions"].tap()
     app.buttons["End turn"].tap()
-    let first = app.text("data-order-0")
-    XCTAssertEqual(first.label, "Oswin")
+    XCTAssertTrue(isTurn(of: "Oswin", app))
   }
 
   /// Drag from Gerald to plan a move there.
@@ -59,8 +58,7 @@ final class BattleTests: XCTestCase {
     XCTAssertTrue(pommel.appears())
     app.buttons["Actions"].tap()
     app.buttons["End turn"].tap()
-    let first = app.text("data-order-0")
-    XCTAssertEqual(first.label, "Oswin")
+    XCTAssertTrue(isTurn(of: "Oswin", app))
   }
 
   /// Undo forgets a planned move.
@@ -84,7 +82,8 @@ final class BattleTests: XCTestCase {
       screen: .battlePlanned
     )
     app.buttons["data-ability-1"].tap()
-    app.buttons["data-unit-2"].tap()
+    // Ashka, at (717, 333) cm.
+    tap(app, x: 0.5975, y: 0.416)
     let end = app.buttons["End turn"]
     XCTAssertFalse(end.exists)
     let lunge = app.buttons["data-ability-1"]
@@ -97,6 +96,7 @@ final class BattleTests: XCTestCase {
   func testOpensTheFallen() {
     let app = App.start(screen: .battleEnd)
     app.buttons["Knocked out"].tap()
+    app.swipeUp()
     let ashka = app.text("data-name-2")
     XCTAssertTrue(ashka.appears())
   }
@@ -125,6 +125,18 @@ final class BattleTests: XCTestCase {
     XCTAssertTrue(
       sheet.waitForNonExistence(timeout: 5)
     )
+  }
+
+  /// Whether the turn order is titled for
+  /// `name`'s turn.
+  @MainActor
+  private func isTurn(
+    of name: String,
+    _ app: XCUIApplication
+  ) -> Bool {
+    let title = app.text("turn-title")
+    return title.appears()
+      && title.label.contains(name)
   }
 
   /// A spot in the arena, as fractions of
