@@ -338,8 +338,11 @@ final class Fight {
   }
 
   /// Uses the picked skill on `target`,
-  /// walking the planned move first.
-  /// Nothing happens if it can't reach.
+  /// walking the planned move first; the
+  /// skills stay open while one can still
+  /// be used (a bonus), else the actions
+  /// open. Nothing happens if it can't
+  /// reach.
   func target(_ target: Int) {
     guard let chosen, inReach(target) else {
       return
@@ -347,7 +350,9 @@ final class Fight {
     commit()
     try? battle.use(chosen, on: target)
     self.chosen = nil
-    panel = .actions
+    let left = actor?.unit.abilities.indices
+      .contains(where: battle.canUse)
+    panel = left == true ? .skills : .actions
   }
 
   /// Walks the planned move, if any, and
