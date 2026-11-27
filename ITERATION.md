@@ -190,6 +190,30 @@ starts.
     works (foes in reach are ringed); a
     foe out of reach, planning the walk
     there, is B4.
+- **0.0.12, steps, moving and timing**:
+  foe turns a step at a time, passives
+  as steps, the pace, sliding nudges
+  with curved arrows.
+  - Stepping through a foe's turn is
+    nice: nothing is lost, which matters
+    for tactics. Keep it the default;
+    playing a whole turn through can be
+    a setting once there's animation.
+  - Against another unit (still in
+    range), extra arrows in the pad's
+    diagonals should curve round it, so
+    the plan circles an ally or a foe
+    smoothly.
+  - Wanted: a "walk to": with the move
+    open, tap a foe and the ghost takes
+    a straight path to it.
+  - Smite then a foe out of reach moved
+    the ghost to the edge of the range,
+    not to the least needed (a tap just
+    off the foe planned a move toward
+    it).
+  - "[236] Kestrel-9" (a turn's start at
+    tick 236) didn't say what it meant.
 
 ## Decisions
 
@@ -591,6 +615,34 @@ starts.
     with "Next" and "Skip to your turn".
     Screens set up for tests skip
     through.
+- **Taps by mode** (owner's call, from
+  0.0.12): a tap on a unit does what's
+  selected: with a skill picked, aims it
+  (a foe in reach is struck; out of
+  reach, the move just into reach is
+  planned, as the stand-in AI walks);
+  with zones on, turns that unit's zone
+  on or off (the Zones toggle shows
+  everyone's, then taps pick); with the
+  move open, plans a straight walk to it
+  (just touching, or to the edge of the
+  range); otherwise nothing yet. Later,
+  that plain tap shows the unit's
+  portrait and what's known of it.
+  - A tap within 30 cm of a unit counts
+    as on it, so a near miss doesn't
+    plan a move to the ground.
+- **Circling** (from 0.0.12): when the
+  planned spot touches a unit, arrows in
+  the pad's corners circle round it,
+  each in the corner its way round heads
+  for, held like the others.
+- **Foe steps say what they mean**: a
+  turn's start reads "Kestrel-9's turn
+  begins", not its tick. Stepping is
+  the default; playing whole turns
+  through is a setting for later, with
+  animation.
 - **The commander** (owner's call; the
   name is a placeholder): the player,
   off the field, gets a portrait in the
@@ -718,13 +770,19 @@ Free movement, as in `brainstorm-2.md`
   pad, the turn order for any turn, the
   party first, knocked-out units
   collapsed, a bigger arena.
-- **Steps, moving and timing** (0.0.12,
-  in progress; one PR, owner's call):
+- **Steps, moving and timing** (done,
+  #26, 0.0.12; one PR, owner's call):
   foe turns played step by step,
   passives at a turn's start their own
   steps; the wait scaled by movement
   used; nudges that slide, with curved
   arrows.
+- **Aiming and moving** (0.0.13, in
+  progress): from 0.0.12, taps by mode,
+  aiming a skill at a foe out of reach
+  (B4's first item), a walk to a unit,
+  circling arrows, turn starts in
+  words.
 - **Units**, in parts:
   - **Healing and the cleric**
     (done, #24, 0.0.10): heals in the
@@ -740,9 +798,12 @@ Free movement, as in `brainstorm-2.md`
   actions.
 - **Reactions**: triggers, automatic and
   asked, the one-a-round limit.
-- **B4, usability**: plan the approach
-  to a far foe, end turns by
-  themselves, the settings screen.
+- **B4, usability**: end turns by
+  themselves, the settings screen (with
+  playing foe turns through, once
+  animated). Planning the approach to a
+  far foe came with "Aiming and
+  moving".
 - **AI, basic and tactical**: the AI
   levels' interface, and the tactical
   level.

@@ -85,8 +85,9 @@ final class BattleTests: XCTestCase {
   }
 
   /// Pick Lunge, then tap Ashka, out of
-  /// reach: nothing happens, and the skills
-  /// stay open.
+  /// reach: the move into reach is planned
+  /// (not struck yet), and the skills stay
+  /// open.
   @MainActor
   func testOutOfReachDoesNothing() {
     let app = App.start(

@@ -54,6 +54,11 @@ final class Fight {
     /// to the east edge of his range: up
     /// and down slide along it.
     case edge
+    /// Gerald's first turn, Oswin tapped
+    /// with the move open: a walk planned
+    /// to touch him, arrows circling round
+    /// him.
+    case circling
     /// Gerald and Maren against the same
     /// foes, six turns in: Maren's turn,
     /// Mend Wounds picked, Gerald's plate
@@ -81,6 +86,9 @@ final class Fight {
   private(set) var ghost: Point?
   /// The part of the turn on show.
   var panel = Panel.move
+  /// Whether zones are on: taps on units
+  /// turn theirs on or off.
+  var zoning = false
   /// What's left of the foe's turn being
   /// played, a step at a time.
   var steps: [Step] = []
@@ -238,50 +246,16 @@ final class Fight {
     }
   }
 
-  /// A tap on the arena at `point`: with a
-  /// skill picked, a unit there it can be
-  /// used on is its target (a foe for an
-  /// attack, an ally for a heal); else the
-  /// unit on turn itself clears the plan;
-  /// another unit's zone turns on or off;
-  /// anywhere else it can reach is
-  /// planned.
-  func tap(_ point: Point) {
-    guard let actor else {
-      return
-    }
-    let unit = battle.units.first {
-      $0.isUp && Self.covers($0, point)
-    }
-    if let unit, canAim(at: unit.id) {
-      target(unit.id)
-    } else if unit?.id == actor.id {
-      ghost = nil
-    } else if let unit {
-      watch(unit.id)
-    } else {
-      place(point)
-    }
-  }
-
-  /// Whether `point` is on `unit`'s circle.
-  private static func covers(
-    _ unit: BattleUnit,
-    _ point: Point
-  ) -> Bool {
-    let radius = unit.unit.size.radius
-    let across = point.x - unit.place.x
-    let down = point.y - unit.place.y
-    return across * across + down * down
-      <= radius * radius
-  }
-
   /// Moves the planned spot (or, with none,
   /// the unit's own) `step` centimetres
   /// `way`, if it can go there.
   func nudge(_ way: Nudge, by step: Int) {
     guard let from = ghost ?? actor?.place
     else { return }
+    guard !way.circles else {
+      circle(way, from: from, by: step)
+      return
+    }
     place(Point(
       x: from.x + way.offset.x * step,
       y: from.y + way.offset.y * step

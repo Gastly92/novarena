@@ -37,13 +37,15 @@ final class FightStepsTests: XCTestCase {
   }
 
   /// A foe's turn begins as a step of its
-  /// own, showing the tick.
+  /// own, in words.
   func testBeginsAsAStep() {
     let fight = Fight()
     fight.endTurn()
     fight.advance()
     let shown = fight.shown
-    XCTAssertEqual(shown, ["[111] Ashka"])
+    XCTAssertEqual(
+      shown, ["Ashka's turn begins"]
+    )
   }
 
   /// At the east edge of Gerald's range,

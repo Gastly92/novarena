@@ -35,11 +35,22 @@ extension Fight {
     }
     let mark = battle.log.count
     take(steps.removeFirst())
-    shown = battle.log[mark...].map {
-      $0.description.trimmingCharacters(
-        in: .whitespaces
+    shown = battle.log[mark...]
+      .map(Self.says)
+  }
+
+  /// What `event` says on screen: a turn's
+  /// start in words, the rest as logged.
+  static func says(
+    _ event: Event
+  ) -> String {
+    if case let .turn(name, _) = event {
+      return String(
+        localized: "\(name)'s turn begins"
       )
     }
+    return event.description
+      .trimmingCharacters(in: .whitespaces)
   }
 
   /// Plays the foes' turns through, to the

@@ -123,16 +123,4 @@ extension Battle {
       action: Action(ability, on: target)
     ))
   }
-
-  /// The next unit's turn for using
-  /// `ability` on `target`, walking up to
-  /// it first.
-  func approach(
-    _ ability: Int,
-    on target: Int
-  ) -> Turn? {
-    (try? ready()).map {
-      approach(ability, on: target, by: $0)
-    }
-  }
 }

@@ -5,7 +5,9 @@ import SwiftUI
 /// repeats, faster and faster
 /// (`Fight.press(_:)`). An arrow that
 /// would slide along an edge turns, and
-/// one that can't move dims.
+/// one that can't move dims. Touching a
+/// unit, arrows in the corners circle
+/// round it.
 struct NudgePad: View {
   let fight: Fight
   @ScaledMetric private var size = 40.0
@@ -20,9 +22,9 @@ struct NudgePad: View {
       verticalSpacing: 4
     ) {
       GridRow {
-        gap
+        corner(-1, -1)
         arrow(.north)
-        gap
+        corner(1, -1)
       }
       GridRow {
         arrow(.west)
@@ -30,10 +32,27 @@ struct NudgePad: View {
         arrow(.east)
       }
       GridRow {
-        gap
+        corner(-1, 1)
         arrow(.south)
-        gap
+        corner(1, 1)
       }
+    }
+  }
+
+  /// A corner: an arrow circling round
+  /// the unit the planned spot touches,
+  /// if one heads that way, else empty.
+  @ViewBuilder
+  private func corner(
+    _ across: Int,
+    _ down: Int
+  ) -> some View {
+    if let way = fight.circling(
+      at: (across, down)
+    ) {
+      arrow(way)
+    } else {
+      gap
     }
   }
 
@@ -86,6 +105,10 @@ private extension Nudge {
       "Nudge right"
     case .south:
       "Nudge down"
+    case .clockwise:
+      "Circle clockwise"
+    case .counterclockwise:
+      "Circle counterclockwise"
     }
   }
 }
