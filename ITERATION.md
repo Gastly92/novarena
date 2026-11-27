@@ -122,6 +122,13 @@ starts.
     should stay open while a bonus is
     left, not jump to ending the turn
     (fixed in 0.0.8).
+- **0.0.8, the danger zone**: a toggle
+  shading where foes could hit next
+  turn, from what they've shown.
+  - The toggle's warning-triangle icon
+    reads as something wrong with the
+    battle, not a button that shows
+    reach: B3b gives it a clearer look.
 
 ## Decisions
 
