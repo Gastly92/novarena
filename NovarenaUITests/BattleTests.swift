@@ -91,6 +91,16 @@ final class BattleTests: XCTestCase {
     XCTAssertTrue(lunge.exists)
   }
 
+  /// The knocked-out section opens to
+  /// show who fell.
+  @MainActor
+  func testOpensTheFallen() {
+    let app = App.start(screen: .battleEnd)
+    app.buttons["Knocked out"].tap()
+    let ashka = app.text("data-name-2")
+    XCTAssertTrue(ashka.appears())
+  }
+
   @MainActor
   func testFightsAgain() {
     let app = App.start(screen: .battleEnd)

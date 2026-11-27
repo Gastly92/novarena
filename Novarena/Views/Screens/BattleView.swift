@@ -86,14 +86,18 @@ struct BattleView: View {
   /// Everyone knocked out, folded away
   /// until opened.
   private var fallen: some View {
-    DisclosureGroup(
-      "Knocked out", isExpanded: $showsFallen
+    let open = Binding {
+      showsFallen
+    } set: {
+      showsFallen = $0
+    }
+    return DisclosureGroup(
+      "Knocked out", isExpanded: open
     ) {
       ForEach(fight.fallen) {
         UnitRow(unit: $0)
       }
     }
-    .testID("fallen")
   }
 
   /// One side's units still up, each a
