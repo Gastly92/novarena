@@ -203,7 +203,7 @@ final class FightTests: XCTestCase {
     let side = middle.actor?.side
     XCTAssertEqual(side, .party)
     let end = Fight(stage: .end)
-    let won = "The party wins"
+    let won = "The foes win"
     XCTAssertEqual(end.outcome, won)
     XCTAssertNil(end.actor)
   }

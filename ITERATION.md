@@ -187,11 +187,16 @@ felt like, and what's next.
 - **Balance** (from playing 0.0.4 and
   0.0.5): the foes were far too strong;
   the sample fight was lost however it
-  was played. Units should be about even
-  with each other: each pair tuned in
-  simulation (plain choices on both
-  sides, both ways round) to near even,
-  so that tactics decide a fight.
+  was played. No unit is good or bad,
+  and there are no fixed sides: every
+  team of one to three (repeats
+  allowed) fights every other of its
+  size, both ways round, with plain
+  choices on both sides, and each unit
+  should win about half the battles
+  it's in, at every size (40-60%;
+  `BalanceTests`). Battles can have
+  more than two units a side.
 - **Layers, not health** (owner's call):
   - No health. A unit wears layers,
     outermost first (plate; a tower

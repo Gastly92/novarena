@@ -80,7 +80,7 @@ public extension Unit {
       ),
     ],
     resource: Resource(
-      "mana", maximum: 100, refill: 15
+      "mana", maximum: 100, refill: 10
     )
   )
 
@@ -130,7 +130,7 @@ public extension Unit {
   static let kestrel = Unit(
     "Kestrel-9",
     kind: "war mech",
-    stats: Stats(speed: 82, move: 250),
+    stats: Stats(speed: 82, move: 300),
     layers: [
       Layer(
         "Energy Shield",
@@ -159,7 +159,7 @@ public extension Unit {
       ),
       Ability(
         "Arc Beam",
-        power: 55,
+        power: 60,
         kind: .shock,
         discipline: .lightning,
         cost: 50,
