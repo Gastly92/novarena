@@ -15,6 +15,10 @@ BattleView.swift
   fight.endTurn()
   fight.choose(index)
 
+# Tap: open or fold the knocked-out
+# section (battleFallen shows it open).
+  showsFallen = $0
+
 # Opening the battle info sheet, and what
 # it holds (pictured as its own screen,
 # battleInfo).

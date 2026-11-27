@@ -90,6 +90,24 @@ final class BattleTests: XCTestCase {
     XCTAssertTrue(lunge.exists)
   }
 
+  /// With Mend Wounds picked, tapping
+  /// Gerald's row heals his plate, 7 to
+  /// 25.
+  @MainActor
+  func testHealsFromTheRow() {
+    let app = App.start(
+      screen: .battleHealing
+    )
+    app.swipeUp()
+    let gerald = app.buttons["data-unit-0"]
+    XCTAssertTrue(gerald.appears())
+    gerald.tap()
+    let healed = gerald.label
+    XCTAssertTrue(
+      healed.contains("25 of 190")
+    )
+  }
+
   /// The knocked-out section opens to
   /// show who fell.
   @MainActor

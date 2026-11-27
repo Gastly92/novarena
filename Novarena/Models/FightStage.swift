@@ -57,8 +57,10 @@ extension Fight.Stage {
   @MainActor
   func setUp(_ fight: Fight) {
     switch self {
-    case .start, .middle, .exposed, .end:
+    case .start, .middle, .end:
       break
+    case .exposed:
+      fight.panel = .actions
     case .zones:
       fight.showsZones = true
     case .moving:
