@@ -9,46 +9,58 @@ typealias Unit = RuleSteward.Unit
 /// Made-up units for testing one rule at a
 /// time.
 enum Fixtures {
-  /// A unit with these stats and abilities.
+  /// A unit with these stats and abilities,
+  /// trained (100%) unarmed, wearing one
+  /// flesh hide of `hide` points, or
+  /// `layers`; with no hide, it's exposed
+  /// from the start.
   static func unit(
     _ name: String,
     speed: Int = 100,
     move: Int = 300,
     size: Size = .medium,
-    health: Int = 1000,
-    affinities: [Element: Affinity] = [:],
-    shield: Shield? = nil,
+    hide: Int = 1000,
+    layers: [Layer]? = nil,
     abilities: [Ability] = [poke],
     passives: [Passive] = []
   ) -> Unit {
-    Unit(
+    let skin = Layer(
+      "Hide", material: .flesh, points: hide
+    )
+    return Unit(
       name,
       kind: "test",
-      stats: Stats(
-        health: health,
-        attack: 100,
-        magic: 100,
-        armor: 0,
-        resistance: 0,
-        speed: speed,
-        move: move
-      ),
+      stats: Stats(speed: speed, move: move),
+      layers: layers
+        ?? (hide > 0 ? [skin] : []),
+      expertise: [.unarmed: 3],
       abilities: abilities,
       size: size,
-      affinities: affinities,
-      shield: shield,
       passives: passives
     )
   }
 
-  /// A small physical hit that reaches
-  /// across any arena.
-  static let poke = Ability(
-    "Poke",
-    power: 10,
-    delivery: .physical,
-    reach: far
-  )
+  /// An unarmed hit of `kind`.
+  static func hit(
+    _ name: String,
+    power: Int,
+    kind: Kind = .crush,
+    weight: Weight = .normal,
+    reach: Reach = far
+  ) -> Ability {
+    Ability(
+      name,
+      power: power,
+      kind: kind,
+      discipline: .unarmed,
+      weight: weight,
+      reach: reach
+    )
+  }
+
+  /// A small blunt hit that reaches across
+  /// any arena.
+  static let poke = hit("Poke", power: 10)
 
   /// Further than any arena is wide.
   static let far = Reach.ranged(10_000)

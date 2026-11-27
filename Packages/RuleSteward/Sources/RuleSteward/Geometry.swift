@@ -107,15 +107,15 @@ public struct Arena: Sendable {
   }
 
   /// Where the sides start: the party in a
-  /// column near the left edge, the foes
-  /// near the right, each spread evenly
-  /// from top to bottom.
+  /// column 2.5 m from the left edge, the
+  /// foes 2.5 m from the right, each
+  /// spread evenly from top to bottom.
   func deploy(
     party: Int,
     foes: Int
   ) -> [Point] {
-    column(party, at: 150)
-      + column(foes, at: width - 150)
+    column(party, at: 250)
+      + column(foes, at: width - 250)
   }
 
   /// `count` spots spread down a column.

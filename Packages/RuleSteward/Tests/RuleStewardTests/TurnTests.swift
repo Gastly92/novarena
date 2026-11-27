@@ -53,7 +53,8 @@ final class TurnTests: XCTestCase {
     let strong = Ability(
       "Smash",
       power: 2000,
-      delivery: .physical,
+      kind: .crush,
+      discipline: .unarmed,
       reach: Fixtures.far
     )
     var battle = Battle(
@@ -63,8 +64,12 @@ final class TurnTests: XCTestCase {
         ),
       ],
       foes: [
-        Fixtures.unit("B", speed: 50),
-        Fixtures.unit("C", speed: 50),
+        Fixtures.unit(
+          "B", speed: 50, hide: 0
+        ),
+        Fixtures.unit(
+          "C", speed: 50, hide: 0
+        ),
       ]
     )
     XCTAssertNil(battle.winner)
@@ -97,8 +102,8 @@ final class TurnTests: XCTestCase {
             Ability(
               "Flame",
               power: 50,
-              delivery: .special,
-              element: .fire,
+              kind: .burn,
+              discipline: .unarmed,
               reach: Fixtures.far
             ),
           ]
@@ -110,8 +115,8 @@ final class TurnTests: XCTestCase {
       Fixtures.lines(battle).last,
       "  Ashka is immune"
     )
-    let health = battle.units[0].health
-    XCTAssertEqual(health, 320)
+    let hide = battle.units[0].layers
+    XCTAssertEqual(hide, [240])
   }
 
   /// Plain choices stop once there's a
@@ -119,14 +124,14 @@ final class TurnTests: XCTestCase {
   func testPlayPlainlyStopsAtTheEnd() {
     var battle = Battle(
       party: [.gerald],
-      foes: [Fixtures.unit("B", health: 10)],
+      foes: [Fixtures.unit("B", hide: 0)],
       places: Fixtures.together(2)
     )
     battle.playPlainly(turns: 50)
     XCTAssertEqual(battle.winner, .party)
-    // B's turn (3 lines), then Gerald's
-    // (5, with the down and the win).
-    XCTAssertEqual(battle.log.count, 8)
+    // Gerald's turn, the faster: his cut,
+    // the knockout, and the win.
+    XCTAssertEqual(battle.log.count, 4)
   }
 
   /// …and also when the turns run out.
@@ -181,7 +186,7 @@ final class TurnTests: XCTestCase {
   func testNothingIsUsableOnceOver() {
     var battle = Battle(
       party: [.gerald],
-      foes: [Fixtures.unit("B", health: 1)]
+      foes: [Fixtures.unit("B", hide: 0)]
     )
     battle.playPlainly()
     XCTAssertEqual(battle.queue, [])

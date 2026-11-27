@@ -2,7 +2,7 @@ import RuleSteward
 import SwiftUI
 
 /// One unit in a battle: its name and kind,
-/// health, shield and resource, and what
+/// its layers and resource, and what
 /// the picked ability would do to it. Text
 /// from the rules (names, kinds) isn't
 /// translated yet, so it carries a `data-`
@@ -41,31 +41,57 @@ struct UnitRow: View {
     .padding(.vertical, 2)
   }
 
-  /// Health, then shield and resource if
-  /// it has them.
+  /// Each layer, outermost first, with
+  /// what's left of it; whether it's
+  /// exposed or knocked out; its resource,
+  /// if it has one.
   private var gauges: some View {
-    let full = unit.unit.stats.health
-    return VStack(alignment: .leading) {
-      ProgressView(
-        value: Double(unit.health),
-        total: Double(full)
-      )
-      Text("""
-        Health \(unit.health) of \
-        \(full)
-        """)
-        .font(.caption)
-      if let shield = unit.unit.shield {
-        Text("""
-          \(shield.name) \(unit.shield) \
-          of \(shield.points)
-          """)
-          .font(.caption)
+    VStack(alignment: .leading, spacing: 2) {
+      ForEach(
+        Array(unit.unit.layers.enumerated()),
+        id: \.offset
+      ) {
+        gauge(
+          $0.element,
+          left: unit.layers[$0.offset]
+        )
+      }
+      if !unit.isUp {
+        Text("Knocked out")
+          .font(.caption.bold())
+      } else if unit.isExposed {
+        Text("Exposed")
+          .font(.caption.bold())
       }
       if let pool = unit.unit.resource {
         Text("\(pool.name) \(unit.pool)")
           .font(.caption)
       }
+    }
+  }
+
+  /// A layer's name, points and material
+  /// (from the rules, so a `data-`
+  /// identifier), over a bar.
+  private func gauge(
+    _ layer: Layer,
+    left: Int
+  ) -> some View {
+    VStack(alignment: .leading, spacing: 0) {
+      HStack(spacing: 4) {
+        Text("""
+          \(layer.name) \(left) of \
+          \(layer.points)
+          """)
+        Text(verbatim: layer.material.name)
+          .foregroundStyle(.secondary)
+          .testID("data-material")
+      }
+      .font(.caption)
+      ProgressView(
+        value: Double(left),
+        total: Double(layer.points)
+      )
     }
   }
 }

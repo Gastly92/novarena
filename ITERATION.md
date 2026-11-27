@@ -184,6 +184,58 @@ felt like, and what's next.
   This is the first piece of knowledge
   (see "Ranges come from what you don't
   know").
+- **Balance** (from playing 0.0.4 and
+  0.0.5): the foes were far too strong;
+  the sample fight was lost however it
+  was played. No unit is good or bad,
+  and there are no fixed sides: every
+  team of one to three (repeats
+  allowed) fights every other of its
+  size, both ways round, with plain
+  choices on both sides, and each unit
+  should win about half the battles
+  it's in, at every size (40-60%;
+  `BalanceTests`). Battles can have
+  more than two units a side.
+- **Layers, not health** (owner's call):
+  - No health. A unit wears layers,
+    outermost first (plate; a tower
+    shield over mail; an energy shield
+    over plating), down to its body, a
+    natural last layer (thin flesh; a
+    fire demon's ember hide; a rock
+    unit's stone).
+  - With every layer, body too, gone,
+    the unit is exposed: the next hit
+    that does any damage knocks it out.
+    Breaking the last layer never knocks
+    out in the same hit.
+  - No physical/special split. A hit
+    has a damage kind (slash, pierce,
+    crush, burn, shock, …); a layer has
+    a material (metal, wood, flesh,
+    energy, ember, …). A table says how
+    each kind meets each material (0
+    immune, 50 resists, 150 weak), and
+    a layer can override it (ember is
+    immune to burn). Kinds and materials
+    are open lists: poison and others
+    join as units need them.
+  - Carry-over is conditional: what's
+    left of a hit that breaks a layer
+    stops there, unless the table says
+    that kind carries through that
+    material, or the ability pierces.
+    Some abilities skip a material.
+  - Expertise instead of Attack and
+    Magic: each unit has levels (1-5,
+    untrained to master) in disciplines
+    (blades, shields, fire, …), and an
+    ability's discipline scales its
+    power (60% to 140%). Disciplines are
+    an open list too; expertise may do
+    more than damage later.
+  - Stats left: Speed and Move.
 
 ## Next: movement
 
@@ -211,8 +263,8 @@ Free movement, as in `brainstorm-2.md`
   picking a spot, then a foe in reach with
   its preview; the turn order as a row,
   showing where the unit lands.
-- **B2, turns in steps** (0.0.5, in
-  progress): the
+- **B2, turns in steps** (done, #17,
+  0.0.5): the
   rules take a turn a step at a time:
   move (any number of legs, up to Move
   in all), one action, end. The screen
@@ -220,7 +272,13 @@ Free movement, as in `brainstorm-2.md`
   hold and drag a ghost, nudge it with a
   directional pad, commit the walk. A
   skill only targets foes in reach.
-- **B3, the danger zone** (0.0.6): the
+- **B2b, layers** (0.0.6, in progress):
+  layers,
+  damage kinds, materials and expertise
+  in the rules, the sample units remade
+  and balanced, layer bars and previews
+  on screen.
+- **B3, the danger zone** (0.0.7): the
   rules record what each side has seen
   of the other (furthest move, abilities
   used); the screen shades the danger

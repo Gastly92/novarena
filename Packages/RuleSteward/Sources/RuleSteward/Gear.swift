@@ -22,37 +22,51 @@ public struct Resource: Sendable {
   }
 }
 
-/// A layer over a unit's health that takes
-/// damage of the kinds it blocks first.
-public struct Shield: Sendable {
+/// Something a unit wears, or is, that
+/// hits wear down: plate, a shield, its
+/// own hide. A unit's last layer is its
+/// body.
+public struct Layer: Sendable {
   /// What it's called, for display.
   public let name: String
-  /// Its points when full.
+  /// What it's made of.
+  public let material: Material
+  /// Its points when whole.
   public let points: Int
-  /// The deliveries it blocks.
-  public let blocks: Set<Delivery>
-  /// Refills at the start of the unit's
-  /// turn if the unit took no damage since
-  /// its last turn, like the shields in
-  /// Halo.
-  public let recharges: Bool
-  /// Hits of this element do double damage
-  /// to it (shock against energy).
-  public let brokenBy: Element?
+  /// What it refills at the start of the
+  /// unit's turn if the unit wasn't hit
+  /// since its last turn, even when
+  /// broken, like the shields in Halo.
+  public let recharge: Int
+  /// What it grows back at the start of
+  /// each of the unit's turns, unless it's
+  /// broken.
+  public let regrows: Int
+  /// How kinds of damage meet it, where it
+  /// differs from its material.
+  public let matchups: [Kind: Matchup]
 
-  /// A shield.
+  /// A layer.
   public init(
     _ name: String,
+    material: Material,
     points: Int,
-    blocks: Set<Delivery>,
-    recharges: Bool = false,
-    brokenBy: Element? = nil
+    recharge: Int = 0,
+    regrows: Int = 0,
+    matchups: [Kind: Matchup] = [:]
   ) {
     self.name = name
+    self.material = material
     self.points = points
-    self.blocks = blocks
-    self.recharges = recharges
-    self.brokenBy = brokenBy
+    self.recharge = recharge
+    self.regrows = regrows
+    self.matchups = matchups
+  }
+
+  /// How `kind` meets it.
+  func matchup(_ kind: Kind) -> Matchup {
+    matchups[kind]
+      ?? Rules.matchup(kind, material)
   }
 }
 

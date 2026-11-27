@@ -14,12 +14,14 @@ public enum Event: Sendable, Equatable {
   case guards(String, ally: String)
   /// A unit is immune to the hit.
   case immune(String)
-  /// A shield takes damage.
-  case shield(String, took: Int, left: Int)
-  /// Health takes damage.
-  case damage(String, took: Int, left: Int)
-  /// A unit goes down.
-  case down(String)
+  /// A unit's layer takes damage.
+  case layer(
+    String, String, took: Int, left: Int
+  )
+  /// A unit has no layers left.
+  case exposed(String)
+  /// A unit is knocked out.
+  case out(String)
   /// The battle is over.
   case wins(Side)
 }
@@ -38,12 +40,15 @@ extension Event: CustomStringConvertible {
       "  \(name) guards \(ally)"
     case let .immune(name):
       "  \(name) is immune"
-    case let .shield(name, took, left):
-      "  \(name)'s shield -\(took) (\(left))"
-    case let .damage(name, took, left):
-      "  \(name) -\(took) (\(left))"
-    case let .down(name):
-      "  \(name) is down"
+    case let .layer(name, layer, took, left):
+      """
+        \(name)'s \(layer) -\(took) \
+      (\(left))
+      """
+    case let .exposed(name):
+      "  \(name) is exposed"
+    case let .out(name):
+      "  \(name) is knocked out"
     case .wins(.party):
       "The party wins"
     case .wins(.foes):

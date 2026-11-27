@@ -8,19 +8,20 @@ public struct Unit: Sendable {
   public let kind: String
   /// Its numbers.
   public let stats: Stats
-  /// How big it is.
-  public let size: Size
-  /// How it takes each element; elements
-  /// missing here hit normally.
-  public let affinities: [Element: Affinity]
-  /// What its abilities spend, if anything.
-  public let resource: Resource?
-  /// A layer over its health, if any.
-  public let shield: Shield?
+  /// What it wears, outermost first, down
+  /// to its body, the last.
+  public let layers: [Layer]
+  /// Its level, 1 to 5, in each
+  /// discipline; 1 where missing.
+  public let expertise: [Discipline: Int]
   /// What it can do on its turn. The first
   /// should cost nothing, so a unit with an
   /// empty pool still has a move.
   public let abilities: [Ability]
+  /// How big it is.
+  public let size: Size
+  /// What its abilities spend, if anything.
+  public let resource: Resource?
   /// Its always-on effects.
   public let passives: [Passive]
 
@@ -29,21 +30,28 @@ public struct Unit: Sendable {
     _ name: String,
     kind: String,
     stats: Stats,
+    layers: [Layer],
+    expertise: [Discipline: Int],
     abilities: [Ability],
     size: Size = .medium,
-    affinities: [Element: Affinity] = [:],
     resource: Resource? = nil,
-    shield: Shield? = nil,
     passives: [Passive] = []
   ) {
     self.name = name
     self.kind = kind
     self.stats = stats
-    self.size = size
-    self.affinities = affinities
-    self.resource = resource
-    self.shield = shield
+    self.layers = layers
+    self.expertise = expertise
     self.abilities = abilities
+    self.size = size
+    self.resource = resource
     self.passives = passives
+  }
+
+  /// Its level in `discipline`.
+  func level(
+    _ discipline: Discipline
+  ) -> Int {
+    expertise[discipline] ?? 1
   }
 }

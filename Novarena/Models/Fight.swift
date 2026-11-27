@@ -388,10 +388,10 @@ private extension Fight.Stage {
       fight.choose(0)
     case .planned:
       fight.panel = .skills
-      fight.place(Point(x: 767, y: 394))
+      fight.place(Point(x: 817, y: 448))
       fight.choose(0)
     case .acted:
-      fight.place(Point(x: 767, y: 394))
+      fight.place(Point(x: 817, y: 448))
       fight.choose(0)
       fight.target(3)
     }

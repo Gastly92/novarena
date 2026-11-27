@@ -6,28 +6,21 @@ import XCTest
 /// would do, before it's used.
 @MainActor
 final class PreviewTests: XCTestCase {
-  /// A unit made for one case.
+  /// A unit made for one case: trained
+  /// unarmed, in `layers`.
   private static func unit(
     _ name: String,
-    health: Int = 300,
     speed: Int = 100,
-    abilities: [Ability] = [],
-    affinities: [Element: Affinity] = [:]
+    layers: [Layer] = [],
+    abilities: [Ability] = []
   ) -> RuleSteward.Unit {
     RuleSteward.Unit(
       name,
       kind: "test",
-      stats: Stats(
-        health: health,
-        attack: 100,
-        magic: 100,
-        armor: 0,
-        resistance: 0,
-        speed: speed,
-        move: 300
-      ),
-      abilities: abilities,
-      affinities: affinities
+      stats: Stats(speed: speed, move: 300),
+      layers: layers,
+      expertise: [.unarmed: 3],
+      abilities: abilities
     )
   }
 
@@ -57,18 +50,21 @@ final class PreviewTests: XCTestCase {
       .lines(for: target, in: battle)
   }
 
-  func testHealthAndShield() throws {
+  /// Gerald's Sword Cut, 80 × 120% = 96,
+  /// at 92% 88: off Ashka's hide, or off
+  /// Kestrel-9's energy shield.
+  func testLayers() throws {
     let battle = together(
       party: [.gerald, .oswin],
       foes: [.ashka, .kestrel]
     )
     XCTAssertEqual(
       try lines(battle, on: 2),
-      ["Health −44, 276 left"]
+      ["Ember Hide −88, 152 left"]
     )
     XCTAssertEqual(
       try lines(battle, on: 3),
-      ["Shield −30, 120 left"]
+      ["Energy Shield −88, 12 left"]
     )
   }
 
@@ -81,7 +77,7 @@ final class PreviewTests: XCTestCase {
       try lines(battle, on: 1),
       [
         "Oswin takes it instead",
-        "Health −27, 353 left",
+        "Tower Shield −88, 52 left",
       ]
     )
   }
@@ -90,8 +86,8 @@ final class PreviewTests: XCTestCase {
     let flame = Ability(
       "Flame",
       power: 50,
-      delivery: .special,
-      element: .fire
+      kind: .burn,
+      discipline: .unarmed
     )
     let battle = together(
       party: [
@@ -106,26 +102,40 @@ final class PreviewTests: XCTestCase {
     )
   }
 
-  func testFinishingBlow() throws {
+  /// Breaking the last layer exposes.
+  func testExposes() throws {
+    let hide = Layer(
+      "Hide", material: .flesh, points: 10
+    )
     let battle = together(
       party: [.gerald],
       foes: [
         Self.unit(
-          "Rat", health: 10, speed: 50
+          "Rat", speed: 50, layers: [hide]
         ),
       ]
     )
     XCTAssertEqual(
       try lines(battle, on: 1),
       [
-        "Health −10, 0 left",
-        "Goes down",
-        "Wins the battle",
+        "Hide −10, 0 left",
+        "Exposed: the next hit knocks out",
       ]
     )
   }
 
-  /// Too far to reach this turn: it walks.
+  /// With nothing left, any hit knocks out.
+  func testFinishingBlow() throws {
+    let battle = together(
+      party: [.gerald],
+      foes: [Self.unit("Rat", speed: 50)]
+    )
+    XCTAssertEqual(
+      try lines(battle, on: 1),
+      ["Knocked out", "Wins the battle"]
+    )
+  }
+
   /// A turn with no action says nothing
   /// about a foe.
   func testNoAction() throws {

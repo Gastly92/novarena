@@ -48,13 +48,13 @@ extension Battle {
 public extension Battle {
   /// The next unit's plain choice: of the
   /// affordable abilities and foes, the one
-  /// that deals the most damage (shields
-  /// and bodyguards aside) among those it
-  /// can reach this turn, walking up to it;
-  /// if none, it walks toward the one that
-  /// would. The first on a tie. A stand-in
-  /// for real tactics, so whole battles can
-  /// be played and read.
+  /// that knocks out, or else wears off
+  /// the most (bodyguards aside), among
+  /// those it can reach this turn, walking
+  /// up to it; if none, it walks toward the
+  /// one that would. The first on a tie. A
+  /// stand-in for real tactics, so whole
+  /// battles can be played and read.
   var plainChoice: Turn? {
     guard let actor = next else {
       return nil
@@ -72,11 +72,10 @@ public extension Battle {
         let turn = approach(
           index, on: foe.id, by: mover
         )
-        let amount = Rules.damage(
+        let amount = Self.estimate(
           abilities[index],
-          from: mover.unit.stats,
-          to: foe.unit,
-          intensity: 100
+          by: mover.unit,
+          on: foe
         )
         let score = (
           turn.action == nil ? 0 : 1, amount
@@ -102,5 +101,24 @@ public extension Battle {
       }
       try? act(turn)
     }
+  }
+
+  /// How much `ability` by `unit` would
+  /// wear off `foe`'s layers, as things
+  /// stand; a knockout beats any amount.
+  private static func estimate(
+    _ ability: Ability,
+    by unit: Unit,
+    on foe: BattleUnit
+  ) -> Int {
+    var struck = foe
+    let losses = struck.take(
+      Rules.damage(
+        ability, by: unit, intensity: 100
+      ),
+      from: ability
+    )
+    return struck.isOut ? 100_000
+      : losses.map(\.lost).reduce(0, +)
   }
 }

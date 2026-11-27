@@ -30,10 +30,10 @@ final class BodyguardTests: XCTestCase {
         "[50] X",
         "  X: Poke → Gerald",
         "  Guard guards Gerald",
-        "  Guard -9 (991)",
+        "  Guard's Hide -9 (991)",
         "[52] Y",
         "  Y: Poke → Gerald",
-        "  Gerald -9 (991)",
+        "  Gerald's Hide -9 (991)",
       ]
     )
   }

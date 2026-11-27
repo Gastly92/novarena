@@ -21,32 +21,19 @@ enum Rules {
     92 + tick / 100
   }
 
-  /// What `ability` from `attacker` does to
-  /// `target`, before shields:
-  /// Power × Offense ÷ (100 + Defense),
-  /// then the target's affinity for the
-  /// element, then intensity.
+  /// What `ability` used by `unit` does
+  /// before it meets a layer: its power,
+  /// scaled by the unit's expertise in its
+  /// discipline, then by intensity.
   static func damage(
     _ ability: Ability,
-    from attacker: Stats,
-    to target: Unit,
+    by unit: Unit,
     intensity: Int
   ) -> Int {
-    let physical = ability.delivery
-      == .physical
-    let offense = physical
-      ? attacker.attack : attacker.magic
-    let defense = physical
-      ? target.stats.armor
-      : target.stats.resistance
-    var hit = ability.power * offense
-      / (100 + defense)
-    if let element = ability.element,
-      let affinity =
-        target.affinities[element] {
-      let (top, bottom) = affinity.factor
-      hit = hit * top / bottom
-    }
-    return hit * intensity / 100
+    let skill = expertise(
+      unit.level(ability.discipline)
+    )
+    return ability.power * skill / 100
+      * intensity / 100
   }
 }

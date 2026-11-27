@@ -14,7 +14,9 @@ final class ForecastTests: XCTestCase {
   }
 
   /// It says exactly what acting does, and
-  /// leaves the battle as it was.
+  /// leaves the battle as it was: Sword
+  /// Cut, 80 × 120% = 96, at 92% 88, off
+  /// Ashka's 240-point hide.
   func testMatchesTheAction() throws {
     let battle = sample()
     let forecast = try battle.forecast(
@@ -25,10 +27,13 @@ final class ForecastTests: XCTestCase {
       Forecast(
         strike: Strike(
           hit: 2,
-          shieldLost: 0,
-          shieldLeft: 0,
-          healthLost: 44,
-          healthLeft: 276,
+          losses: [
+            Loss(
+              layer: 0, lost: 88, left: 152
+            ),
+          ],
+          exposes: false,
+          knocksOut: false,
           immune: false
         ),
         queue: [2, 3, 1, 0],
@@ -38,22 +43,22 @@ final class ForecastTests: XCTestCase {
     XCTAssertTrue(battle.log.isEmpty)
     var acted = battle
     try acted.act(0, on: 2)
-    XCTAssertEqual(
-      acted.units[2].health, 276
-    )
+    let hide = acted.units[2].layers
+    XCTAssertEqual(hide, [152])
     XCTAssertEqual(
       acted.queue, forecast.queue
     )
   }
 
-  /// Against a shield, the shield's loss.
-  func testShield() throws {
+  /// Against layers, what each loses.
+  func testLayers() throws {
     let strike = try sample()
       .forecast(0, on: 3).strike
     XCTAssertEqual(strike?.hit, 3)
-    XCTAssertEqual(strike?.shieldLost, 30)
-    XCTAssertEqual(strike?.shieldLeft, 120)
-    XCTAssertEqual(strike?.healthLost, 0)
+    XCTAssertEqual(
+      strike?.losses,
+      [Loss(layer: 0, lost: 88, left: 12)]
+    )
   }
 
   /// A bodyguard who'd step in takes it.
@@ -71,16 +76,20 @@ final class ForecastTests: XCTestCase {
       0, on: 0
     ).strike
     XCTAssertEqual(strike?.hit, 1)
-    XCTAssertEqual(strike?.healthLost, 9)
+    XCTAssertEqual(
+      strike?.losses.first?.lost, 9
+    )
   }
 
   func testImmune() throws {
-    let flame = Ability(
-      "Flame",
-      power: 10,
-      delivery: .special,
-      element: .fire,
-      reach: Fixtures.far
+    let flame = Fixtures.hit(
+      "Flame", power: 10, kind: .burn
+    )
+    let ember = Layer(
+      "Ember",
+      material: .ember,
+      points: 100,
+      matchups: [.burn: .immune]
     )
     let battle = Battle(
       party: [
@@ -92,7 +101,7 @@ final class ForecastTests: XCTestCase {
         Fixtures.unit(
           "Salamander",
           speed: 50,
-          affinities: [.fire: .immune]
+          layers: [ember]
         ),
       ]
     )
@@ -100,7 +109,25 @@ final class ForecastTests: XCTestCase {
       0, on: 1
     ).strike
     XCTAssertEqual(strike?.immune, true)
-    XCTAssertEqual(strike?.healthLost, 0)
+    XCTAssertEqual(strike?.losses, [])
+  }
+
+  /// Breaking the last layer exposes; it
+  /// doesn't knock out.
+  func testExposes() throws {
+    let battle = Battle(
+      party: [Fixtures.unit("Gerald")],
+      foes: [
+        Fixtures.unit(
+          "Rat", speed: 50, hide: 5
+        ),
+      ]
+    )
+    let strike = try battle.forecast(
+      0, on: 1
+    ).strike
+    XCTAssertEqual(strike?.exposes, true)
+    XCTAssertEqual(strike?.knocksOut, false)
   }
 
   /// A finishing blow ends the battle: no
@@ -110,7 +137,7 @@ final class ForecastTests: XCTestCase {
       party: [Fixtures.unit("Gerald")],
       foes: [
         Fixtures.unit(
-          "Rat", speed: 50, health: 5
+          "Rat", speed: 50, hide: 0
         ),
       ]
     )
@@ -118,7 +145,7 @@ final class ForecastTests: XCTestCase {
       0, on: 1
     )
     XCTAssertEqual(
-      forecast.strike?.healthLeft, 0
+      forecast.strike?.knocksOut, true
     )
     XCTAssertEqual(forecast.winner, .party)
     XCTAssertTrue(forecast.queue.isEmpty)

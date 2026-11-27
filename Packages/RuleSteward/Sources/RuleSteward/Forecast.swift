@@ -1,17 +1,28 @@
+/// What a hit would do to one of a unit's
+/// layers.
+public struct Loss: Sendable, Equatable {
+  /// Which layer, outermost 0.
+  public let layer: Int
+  /// The points it would lose.
+  public let lost: Int
+  /// The points it would have left.
+  public let left: Int
+}
+
 /// What a hit would do.
 public struct Strike: Sendable, Equatable {
   /// Who takes it: the target, or the
   /// bodyguard who steps in for it.
   public let hit: Int
-  /// What the shield would lose.
-  public let shieldLost: Int
-  /// The shield left after.
-  public let shieldLeft: Int
-  /// What health would lose.
-  public let healthLost: Int
-  /// The health left after.
-  public let healthLeft: Int
-  /// Whether it does nothing (an
+  /// What its layers would lose,
+  /// outermost first.
+  public let losses: [Loss]
+  /// Whether it would be left with no
+  /// layers.
+  public let exposes: Bool
+  /// Whether it would be knocked out.
+  public let knocksOut: Bool
+  /// Whether it would do nothing (an
   /// immunity).
   public let immune: Bool
 }
@@ -72,15 +83,27 @@ public extension Battle {
     let hit = stepped?.id ?? target
     let before = units[hit]
     let now = after.units[hit]
+    let losses = before.layers.indices
+      .filter {
+        before.layers[$0] != now.layers[$0]
+      }
+      .map {
+        Loss(
+          layer: $0,
+          lost: before.layers[$0]
+            - now.layers[$0],
+          left: now.layers[$0]
+        )
+      }
     let immune = after.log
       .dropFirst(log.count)
       .contains(.immune(now.unit.name))
     return Strike(
       hit: hit,
-      shieldLost: before.shield - now.shield,
-      shieldLeft: now.shield,
-      healthLost: before.health - now.health,
-      healthLeft: now.health,
+      losses: losses,
+      exposes: now.isExposed
+        && !before.isExposed,
+      knocksOut: !now.isUp,
       immune: immune
     )
   }

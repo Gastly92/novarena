@@ -16,7 +16,8 @@ final class StepTests: XCTestCase {
             Ability(
               "Jab",
               power: 10,
-              delivery: .physical,
+              kind: .crush,
+              discipline: .unarmed,
               weight: .heavy,
               reach: Fixtures.far
             ),
@@ -67,7 +68,7 @@ final class StepTests: XCTestCase {
         "  A moves to (103, 404)",
         "  A moves to (200, 404)",
         "  A: Poke → B",
-        "  B -9 (991)",
+        "  B's Hide -9 (991)",
         "  A moves to (398, 404)",
       ]
     )
@@ -108,7 +109,7 @@ final class StepTests: XCTestCase {
   func testNothingOnceOver() {
     var battle = Battle(
       party: [Fixtures.unit("A")],
-      foes: [Fixtures.unit("B", health: 1)]
+      foes: [Fixtures.unit("B", hide: 0)]
     )
     battle.playPlainly()
     XCTAssertEqual(battle.moveLeft, 0)
