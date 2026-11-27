@@ -84,7 +84,7 @@ final class BattleTests: XCTestCase {
       screen: .battlePlanned
     )
     app.buttons["data-ability-1"].tap()
-    app.buttons["data-foe-2"].tap()
+    app.buttons["data-unit-2"].tap()
     let end = app.buttons["End turn"]
     XCTAssertFalse(end.exists)
     let lunge = app.buttons["data-ability-1"]

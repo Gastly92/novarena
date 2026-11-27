@@ -34,6 +34,10 @@ struct ScreenHost: View {
         battle(.end)
       case .battleInfo:
         BattleInfoView(battle: middle)
+      case .battleHealing:
+        battle(.healing)
+      case .picker:
+        PickerView()
       }
     }
   }

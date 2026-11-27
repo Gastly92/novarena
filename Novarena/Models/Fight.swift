@@ -41,6 +41,12 @@ final class Fight {
     case zones
     /// Played to the end.
     case end
+    /// Gerald and Maren against the same
+    /// foes, five turns in: Maren's turn,
+    /// Mend Wounds picked, Gerald's plate
+    /// worn and in her reach, every zone
+    /// on.
+    case healing
   }
 
   /// The parts of a turn, one shown at a
@@ -50,6 +56,10 @@ final class Fight {
   }
 
   private(set) var battle: Battle
+  /// Who fights for the party.
+  private let party: [Unit]
+  /// Who they face.
+  private let foes: [Unit]
   /// The skill picked for the unit on
   /// turn, waiting for a target.
   private(set) var chosen: Int?
@@ -75,24 +85,40 @@ final class Fight {
   /// Nudging while an arrow is held.
   typealias Hold = Task<Void, Never>
 
-  init(
+  /// The sample battle at `stage`.
+  convenience init(
     stage: Stage = .start,
     pause: @escaping Pause = Fight.sleep
   ) {
-    wait = pause
-    battle = Self.sample()
-    switch stage {
-    case .start, .moving, .aiming:
-      break
-    case .planned, .acted:
-      battle.playPlainly(turns: 4)
-    case .middle, .zones:
-      battle.playPlainly(turns: 6)
-    case .end:
-      battle.playPlainly()
-    }
-    foesAct()
+    self.init(
+      party: stage.party,
+      foes: stage.foes,
+      pause: pause
+    )
+    play(stage.turns)
     stage.setUp(self)
+  }
+
+  /// A battle between `party` and `foes`,
+  /// up to the party's first turn.
+  init(
+    party: [Unit],
+    foes: [Unit],
+    pause: @escaping Pause = Fight.sleep
+  ) {
+    wait = pause
+    self.party = party
+    self.foes = foes
+    battle = Battle(party: party, foes: foes)
+    foesAct()
+  }
+
+  /// Plays `turns` turns with the plain
+  /// choices, then the foes' turns, up to
+  /// the party's.
+  func play(_ turns: Int) {
+    battle.playPlainly(turns: turns)
+    foesAct()
   }
 
   /// Waits for `time`, really.
@@ -100,15 +126,6 @@ final class Fight {
     _ time: Duration
   ) async {
     _ = try? await Task.sleep(for: time)
-  }
-
-  /// Gerald and Oswin against Ashka and
-  /// Kestrel-9.
-  private static func sample() -> Battle {
-    Battle(
-      party: [.gerald, .oswin],
-      foes: [.ashka, .kestrel]
-    )
   }
 
   /// The unit whose turn it is.
@@ -156,71 +173,6 @@ final class Fight {
     battle.moveLeft
   }
 
-  /// What the picked skill would do to
-  /// `foe`, from the planned spot, a line
-  /// each; none until one is picked, or if
-  /// `foe` is down.
-  func preview(of foe: Int) -> [String] {
-    guard let turn = plan(on: foe) else {
-      return []
-    }
-    do {
-      return try battle.forecast(turn)
-        .lines(for: foe, in: battle)
-    } catch .outOfReach {
-      return [
-        String(localized: "Out of reach"),
-      ]
-    } catch {
-      return []
-    }
-  }
-
-  /// Whether the picked skill, from the
-  /// planned spot, reaches `foe`.
-  func inReach(_ foe: Int) -> Bool {
-    let forecast = plan(on: foe).flatMap {
-      try? battle.forecast($0)
-    }
-    return forecast?.strike != nil
-  }
-
-  /// The turn order once this turn ends
-  /// (with the picked skill on the first
-  /// foe it reaches, if any), showing
-  /// where the unit on turn lands; none
-  /// until something is planned or done,
-  /// or if it would end the battle.
-  var queueAfter: [BattleUnit] {
-    guard chosen != nil || ghost != nil
-      || battle.hasActed
-    else { return [] }
-    let turns = units(.foes)
-      .compactMap { plan(on: $0.id) }
-      + [Turn(before: ghost)]
-    let forecasts = turns.compactMap {
-      try? battle.forecast($0)
-    }
-    let after = forecasts.first {
-      $0.strike != nil
-    } ?? forecasts.last
-    return (after?.queue ?? []).map {
-      battle.units[$0]
-    }
-  }
-
-  /// The rest of the turn using the picked
-  /// skill on `foe` from the planned spot;
-  /// none until a skill is picked.
-  private func plan(on foe: Int) -> Turn? {
-    chosen.map {
-      Turn(
-        before: ghost,
-        action: Action($0, on: foe)
-      )
-    }
-  }
-
   /// Picks a skill for the unit on turn.
   func choose(_ ability: Int) {
     chosen = ability
@@ -257,11 +209,13 @@ final class Fight {
   }
 
   /// A tap on the arena at `point`: with a
-  /// skill picked, a foe there is its
-  /// target; the unit on turn itself clears
-  /// the plan; another unit's zone turns
-  /// on or off; anywhere else it can reach
-  /// is planned.
+  /// skill picked, a unit there it can be
+  /// used on is its target (a foe for an
+  /// attack, an ally for a heal); else the
+  /// unit on turn itself clears the plan;
+  /// another unit's zone turns on or off;
+  /// anywhere else it can reach is
+  /// planned.
   func tap(_ point: Point) {
     guard let actor else {
       return
@@ -269,8 +223,7 @@ final class Fight {
     let unit = battle.units.first {
       $0.isUp && Self.covers($0, point)
     }
-    if let unit, chosen != nil,
-      unit.side == .foes {
+    if let unit, canAim(at: unit.id) {
       target(unit.id)
     } else if unit?.id == actor.id {
       ghost = nil
@@ -373,7 +326,7 @@ final class Fight {
 
   /// The same battle, from the start.
   func restart() {
-    battle = Self.sample()
+    battle = Battle(party: party, foes: foes)
     chosen = nil
     ghost = nil
     panel = .move

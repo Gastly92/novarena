@@ -9,7 +9,18 @@ public struct Loss: Sendable, Equatable {
   public let left: Int
 }
 
-/// What a hit would do.
+/// What a heal would do to one of a
+/// unit's layers.
+public struct Gain: Sendable, Equatable {
+  /// Which layer, outermost 0.
+  public let layer: Int
+  /// The points it would gain.
+  public let gained: Int
+  /// The points it would have after.
+  public let now: Int
+}
+
+/// What a hit, or a heal, would do.
 public struct Strike: Sendable, Equatable {
   /// Who takes it: the target, or the
   /// bodyguard who steps in for it.
@@ -17,6 +28,8 @@ public struct Strike: Sendable, Equatable {
   /// What its layers would lose,
   /// outermost first.
   public let losses: [Loss]
+  /// What a heal would mend.
+  public let gains: [Gain]
   /// Whether it would be left with no
   /// layers.
   public let exposes: Bool
@@ -83,9 +96,13 @@ public extension Battle {
     let hit = stepped?.id ?? target
     let before = units[hit]
     let now = after.units[hit]
-    let losses = before.layers.indices
+    let changed = before.layers.indices
       .filter {
         before.layers[$0] != now.layers[$0]
+      }
+    let losses = changed
+      .filter {
+        before.layers[$0] > now.layers[$0]
       }
       .map {
         Loss(
@@ -95,12 +112,25 @@ public extension Battle {
           left: now.layers[$0]
         )
       }
+    let gains = changed
+      .filter {
+        before.layers[$0] < now.layers[$0]
+      }
+      .map {
+        Gain(
+          layer: $0,
+          gained: now.layers[$0]
+            - before.layers[$0],
+          now: now.layers[$0]
+        )
+      }
     let immune = after.log
       .dropFirst(log.count)
       .contains(.immune(now.unit.name))
     return Strike(
       hit: hit,
       losses: losses,
+      gains: gains,
       exposes: now.isExposed
         && !before.isExposed,
       knocksOut: !now.isUp,

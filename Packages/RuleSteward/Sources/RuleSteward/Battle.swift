@@ -6,8 +6,10 @@ public enum Mistake: Error, Equatable {
   case noAbility
   /// Its pools can't pay for it.
   case cantAfford
-  /// The target is an ally, down, or
-  /// missing.
+  /// The target is missing or down; for
+  /// an attack, an ally; for a heal, a
+  /// foe, or an ally with nothing it can
+  /// mend.
   case badTarget
   /// The target is out of the ability's
   /// reach.
@@ -155,7 +157,9 @@ public struct Battle: Sendable {
     let target = action.target
     guard units.indices.contains(target),
       units[target].isUp,
-      units[target].side != mover.side
+      isTarget(
+        units[target], of: chosen, by: mover
+      )
     else { throw .badTarget }
     guard mover.affords(chosen) else {
       throw .cantAfford
@@ -167,6 +171,22 @@ public struct Battle: Sendable {
       to: units[target]
     ) else { throw .outOfReach }
     return chosen
+  }
+
+  /// Whether `chosen` by `mover` can be
+  /// used on `target` (up): an attack on
+  /// a foe, a heal on an ally (or itself)
+  /// with something it can mend.
+  func isTarget(
+    _ target: BattleUnit,
+    of chosen: Ability,
+    by mover: BattleUnit
+  ) -> Bool {
+    guard chosen.kind.heals else {
+      return target.side != mover.side
+    }
+    return target.side == mover.side
+      && target.mendable(chosen.kind) != nil
   }
 
   /// The ally who takes this hit for
@@ -182,6 +202,33 @@ public struct Battle: Sendable {
           .contains(.bodyguard)
         && $0.guarded != round
     }?.id
+  }
+
+  /// Mends `target` with `ability` from
+  /// `actor`. Heals don't grow with
+  /// intensity.
+  mutating func heal(
+    _ target: Int,
+    with ability: Ability,
+    from actor: Int
+  ) {
+    let amount = Rules.damage(
+      ability,
+      by: units[actor].unit,
+      intensity: 100
+    )
+    let gains = units[target].mend(
+      amount, from: ability
+    )
+    let healed = units[target]
+    for (layer, gained) in gains {
+      log.append(.mends(
+        healed.unit.name,
+        healed.unit.layers[layer].name,
+        gained: gained,
+        now: healed.layers[layer]
+      ))
+    }
   }
 
   /// Resolves `ability` from `actor` on

@@ -129,6 +129,11 @@ starts.
     reads as something wrong with the
     battle, not a button that shows
     reach: B3b gives it a clearer look.
+- **0.0.9, zones and percentages**:
+  per-unit zones (tap a unit), the
+  party's own, foes in percent, the
+  battle info sheet.
+  - Felt good; on to the units.
 
 ## Decisions
 
@@ -422,6 +427,42 @@ starts.
   picker for who fights, to try them
   (the real draft is a facility, in
   `brainstorm-3.md`).
+- **Healing, as built** (Units, part
+  one):
+  - A heal is a kind, `mend`, so the
+    matchup table says what it mends:
+    flesh fully, metal, wood, cloth and
+    ember by half, energy not at all
+    (machines need repair, later).
+  - It goes on an ally (or the healer)
+    and mends the outermost worn layer
+    it can, up to whole, without
+    intensity. A broken layer stays
+    broken, as with regrowing: otherwise
+    two healers kept an exposed unit up
+    forever, since breaking a layer
+    never knocks out.
+  - Maren, a war cleric: a padded
+    gambeson (a new material, cloth:
+    soaks blows, burns) over her body, a
+    mace, and Mend Wounds as a bonus
+    prayer each turn. As a main action,
+    healing cost her the hit and she
+    lost; as a bonus she wins about half.
+  - Rebalanced with her (`BalanceTests`,
+    every unit 45-57% in teams): Ashka's
+    hide 230 (was 250), Oswin's shield
+    150 (140), Kestrel-9's plating 140
+    (120) and Piston Fist 65 (60).
+  - The stand-in AI weighs a heal by
+    what it mends against a hit by what
+    it wears off.
+  - On screen: heal zones in green, an
+    ally's row and token targetable with
+    a heal, its preview exact ("Plate
+    +18, now 25"). A picker, from home,
+    chooses up to three units a side
+    (repeats allowed).
 - **The commander** (owner's call; the
   name is a placeholder): the player,
   off the field, gets a portrait in the
@@ -544,8 +585,16 @@ Free movement, as in `brainstorm-2.md`
   (done, #22, 0.0.9): per-foe and
   party zones by kind, percentages for
   foes, the battle info sheet.
-- **Units**: healing, the five new
-  units, the picker.
+- **Units**, in parts:
+  - **Healing and the cleric**
+    (0.0.10, in progress): heals in the
+    rules, Maren, heal zones and
+    previews, the picker.
+  - **The archer, golem and ice mage**,
+    with the freeze kind.
+  - **The rogue** comes with Reactions
+    (its dodge is one, and its jump is
+    a new kind of move).
 - **The commander**: its turn and
   actions.
 - **Reactions**: triggers, automatic and

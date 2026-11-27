@@ -125,7 +125,7 @@ final class TurnTests: XCTestCase {
       "  Ashka is immune"
     )
     let hide = battle.units[0].layers
-    XCTAssertEqual(hide, [250])
+    XCTAssertEqual(hide, [230])
   }
 
   /// Plain choices stop once there's a

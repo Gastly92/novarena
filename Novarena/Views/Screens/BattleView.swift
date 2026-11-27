@@ -24,12 +24,8 @@ struct BattleView: View {
         Section {
           Controls(fight: fight)
         }
-        Section("Foes") { foes }
-        Section("Party") {
-          ForEach(fight.units(.party)) {
-            UnitRow(unit: $0)
-          }
-        }
+        Section("Foes") { side(.foes) }
+        Section("Party") { side(.party) }
         Section("Log") { log }
       }
     }
@@ -75,22 +71,24 @@ struct BattleView: View {
     .padding(.top, 8)
   }
 
-  /// The foes, each a button to tap once a
-  /// skill is picked.
-  private var foes: some View {
-    ForEach(fight.units(.foes)) { foe in
+  /// One side's units, each a button to
+  /// tap once a skill that can be used on
+  /// it is picked (an attack on a foe, a
+  /// heal on an ally).
+  private func side(
+    _ side: Side
+  ) -> some View {
+    ForEach(fight.units(side)) { unit in
       Button {
-        fight.target(foe.id)
+        fight.target(unit.id)
       } label: {
         UnitRow(
-          unit: foe,
-          preview: fight.preview(of: foe.id)
+          unit: unit,
+          preview: fight.preview(of: unit.id)
         )
       }
-      .disabled(
-        fight.chosen == nil || !foe.isUp
-      )
-      .testID("data-foe-\(foe.id)")
+      .disabled(!fight.canAim(at: unit.id))
+      .testID("data-unit-\(unit.id)")
     }
   }
 

@@ -51,8 +51,8 @@ final class PreviewTests: XCTestCase {
   }
 
   /// Gerald's Sword Cut, 80 × 120% = 96,
-  /// at 92% 88: off Ashka's hide (250 to
-  /// 162, 64%), or off Kestrel-9's energy
+  /// at 92% 88: off Ashka's hide (230 to
+  /// 142, 61%), or off Kestrel-9's energy
   /// shield (100 to 12). Foes' layers show
   /// in percent.
   func testLayers() throws {
@@ -62,7 +62,7 @@ final class PreviewTests: XCTestCase {
     )
     XCTAssertEqual(
       try lines(battle, on: 2),
-      ["Ember Hide −36%, 64% left"]
+      ["Ember Hide −39%, 61% left"]
     )
     XCTAssertEqual(
       try lines(battle, on: 3),
@@ -70,7 +70,7 @@ final class PreviewTests: XCTestCase {
     )
   }
 
-  /// Oswin's Tower Shield, 140 to 52.
+  /// Oswin's Tower Shield, 150 to 62.
   func testBodyguardTakesIt() throws {
     let battle = together(
       party: [.gerald],
@@ -80,7 +80,7 @@ final class PreviewTests: XCTestCase {
       try lines(battle, on: 1),
       [
         "Oswin takes it instead",
-        "Tower Shield −63%, 37% left",
+        "Tower Shield −59%, 41% left",
       ]
     )
   }
@@ -101,6 +101,10 @@ final class PreviewTests: XCTestCase {
     XCTAssertEqual(
       gerald.says(0, losing: 40, left: 150),
       "Plate −40, 150 left"
+    )
+    XCTAssertEqual(
+      gerald.says(1, gaining: 20, now: 50),
+      "Body +20, now 50"
     )
     let ashka = battle.units[1]
     XCTAssertEqual(

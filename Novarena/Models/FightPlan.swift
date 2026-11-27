@@ -60,24 +60,40 @@ extension Fight {
   }
 
   /// Where each watched unit up could hit
-  /// on its next turn, as far as the
-  /// party knows (`Battle.danger(from:
-  /// seenBy:)`): a circle around it.
+  /// on its next turn, and heal, as far as
+  /// the party knows (`Battle.danger` and
+  /// `Battle.care`): circles around it.
   var zones: [Zone] {
     battle.units
       .filter { watched.contains($0.id) }
-      .compactMap { unit in
-        let radius = battle.danger(
-          from: unit.id, seenBy: .party
-        )
-        return radius.map {
-          Zone(
-            center: unit.place,
-            radius: $0,
-            side: unit.side
-          )
+      .flatMap { unit in
+        [false, true].compactMap { heals in
+          zone(of: unit, heals: heals)
         }
       }
+  }
+
+  /// Unit's harm zone, or with `heals` its
+  /// heal zone, if the party knows one.
+  private func zone(
+    of unit: BattleUnit,
+    heals: Bool
+  ) -> Zone? {
+    let radius = heals
+      ? battle.care(
+        from: unit.id, seenBy: .party
+      )
+      : battle.danger(
+        from: unit.id, seenBy: .party
+      )
+    return radius.map {
+      Zone(
+        center: unit.place,
+        radius: $0,
+        side: unit.side,
+        heals: heals
+      )
+    }
   }
 
   /// Turns unit `id`'s zone on or off.
@@ -96,10 +112,12 @@ extension Fight {
   }
 }
 
-/// Where a unit could hit on its next
-/// turn: a circle, and whose it is.
+/// Where a unit could hit (or heal) on its
+/// next turn: a circle, whose it is, and
+/// which.
 struct Zone {
   let center: Point
   let radius: Int
   let side: Side
+  let heals: Bool
 }

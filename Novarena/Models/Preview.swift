@@ -28,6 +28,13 @@ extension Forecast {
         left: loss.left
       ))
     }
+    for gain in strike.gains {
+      lines.append(struck.says(
+        gain.layer,
+        gaining: gain.gained,
+        now: gain.now
+      ))
+    }
     if strike.knocksOut {
       lines.append(
         String(localized: "Knocked out")
@@ -158,6 +165,20 @@ extension BattleUnit {
     return String(localized: """
       \(name) −\(gone), \
       \(after.formatted(.percent)) left
+      """)
+  }
+
+  /// What a heal mends in its layer at
+  /// `index`: `gained`, to `now`. Always
+  /// exact: the party heals its own.
+  func says(
+    _ index: Int,
+    gaining gained: Int,
+    now: Int
+  ) -> String {
+    let name = unit.layers[index].name
+    return String(localized: """
+      \(name) +\(gained), now \(now)
       """)
   }
 

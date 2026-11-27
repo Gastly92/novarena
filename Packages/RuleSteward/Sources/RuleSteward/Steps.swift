@@ -124,11 +124,17 @@ public extension Battle {
       chosen.name,
       target: units[target].unit.name
     ))
-    hit(
-      units[target],
-      with: chosen,
-      from: mover.id
-    )
+    if chosen.kind.heals {
+      heal(
+        target, with: chosen, from: mover.id
+      )
+    } else {
+      hit(
+        units[target],
+        with: chosen,
+        from: mover.id
+      )
+    }
     if let side = winner {
       progress = nil
       log.append(.wins(side))
