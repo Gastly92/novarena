@@ -16,5 +16,6 @@ enum ScreenID: String, CaseIterable {
   case home
   case battle, battleMoving, battleAiming
   case battlePlanned, battleActed
-  case battleMiddle, battleEnd
+  case battleMiddle, battleDanger
+  case battleEnd
 }

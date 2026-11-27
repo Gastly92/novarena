@@ -36,6 +36,8 @@ final class Fight {
     case acted
     /// Six turns in.
     case middle
+    /// The same, with the danger zone on.
+    case danger
     /// Played to the end.
     case end
   }
@@ -55,6 +57,9 @@ final class Fight {
   private(set) var ghost: Point?
   /// The part of the turn on show.
   var panel = Panel.move
+  /// Whether the arena shades where foes
+  /// could hit next turn.
+  var showsDanger = false
   /// Waits between nudges of a held arrow.
   @ObservationIgnored private let wait: Pause
   /// Nudges while an arrow is held.
@@ -79,7 +84,7 @@ final class Fight {
       break
     case .planned, .acted:
       battle.playPlainly(turns: 4)
-    case .middle:
+    case .middle, .danger:
       battle.playPlainly(turns: 6)
     case .end:
       battle.playPlainly()
@@ -370,31 +375,6 @@ final class Fight {
     while actor?.side == .foes,
       let turn = battle.plainChoice {
       try? battle.act(turn)
-    }
-  }
-}
-
-private extension Fight.Stage {
-  /// The plans and picks this stage starts
-  /// with, once the foes have acted.
-  @MainActor
-  func setUp(_ fight: Fight) {
-    switch self {
-    case .start, .middle, .end:
-      break
-    case .moving:
-      fight.place(Point(x: 300, y: 200))
-    case .aiming:
-      fight.panel = .skills
-      fight.choose(0)
-    case .planned:
-      fight.panel = .skills
-      fight.place(Point(x: 817, y: 448))
-      fight.choose(0)
-    case .acted:
-      fight.place(Point(x: 817, y: 448))
-      fight.choose(0)
-      fight.target(3)
     }
   }
 }

@@ -387,7 +387,8 @@ Free movement, as in `brainstorm-2.md`
   bars, measures, the picked skill's
   reach as a ring, and the ghost
   snapping to the edge of the range.
-- **B3, the danger zone** (0.0.8): the
+- **B3, the danger zone** (0.0.8, in
+  progress): the
   rules record what each side has seen
   of the other (furthest move, abilities
   used); the screen shades the danger

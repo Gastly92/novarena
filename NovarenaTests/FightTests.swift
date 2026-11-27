@@ -286,4 +286,24 @@ final class FightTests: XCTestCase {
       Point(x: 817, y: 448)
     )
   }
+
+  /// With the danger zone on, each foe that
+  /// has shown something is circled: Ashka
+  /// moved 269 cm in a turn and threw a
+  /// Fireball (500 cm), Kestrel-9 moved 59
+  /// and fired an Arc Beam (450).
+  func testZones() {
+    XCTAssertTrue(
+      Fight(stage: .middle).zones.isEmpty
+    )
+    let fight = Fight(stage: .danger)
+    XCTAssertTrue(fight.showsDanger)
+    XCTAssertEqual(
+      fight.zones.map(\.radius), [769, 509]
+    )
+    XCTAssertEqual(
+      fight.zones.first?.center,
+      Point(x: 717, y: 333)
+    )
+  }
 }

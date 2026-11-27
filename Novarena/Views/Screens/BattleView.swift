@@ -45,6 +45,17 @@ struct BattleView: View {
       TurnRow(fight: fight)
       ArenaView(fight: fight)
         .frame(maxHeight: 200)
+        .overlay(alignment: .topTrailing) {
+          Toggle(
+            "Danger zone",
+            systemImage:
+              "exclamationmark.triangle",
+            isOn: $fight.showsDanger
+          )
+          .toggleStyle(.button)
+          .labelStyle(.iconOnly)
+          .padding(4)
+        }
     }
     .padding(.horizontal)
     .padding(.top, 8)

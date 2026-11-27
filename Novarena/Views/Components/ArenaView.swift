@@ -24,25 +24,7 @@ struct ArenaView: View {
       let map = ArenaMap(
         arena, width: space.size.width
       )
-      ZStack(alignment: .topLeading) {
-        Rectangle()
-          .fill(Color(
-            .secondarySystemGroupedBackground
-          ))
-        if let actor = fight.actor {
-          range(of: actor, on: map)
-        }
-        ForEach(fight.battle.units) {
-          token($0, on: map)
-        }
-        if let actor = fight.actor,
-          let spot = fight.ghost {
-          ghost(of: actor, at: spot, on: map)
-        }
-        if let reach = fight.reach {
-          ring(reach, on: map)
-        }
-      }
+      drawing(on: map)
       .contentShape(Rectangle())
       .accessibilityElement()
       .accessibilityLabel("Arena")
@@ -57,6 +39,40 @@ struct ArenaView: View {
     .clipShape(
       RoundedRectangle(cornerRadius: 12)
     )
+  }
+
+  /// Everything in the arena, back to
+  /// front: the floor, danger zones, the
+  /// unit on turn's range, the units, the
+  /// planned move and the skill's reach.
+  private func drawing(
+    on map: ArenaMap
+  ) -> some View {
+    ZStack(alignment: .topLeading) {
+      Rectangle()
+        .fill(Color(
+          .secondarySystemGroupedBackground
+        ))
+      ForEach(
+        Array(fight.zones.enumerated()),
+        id: \.offset
+      ) {
+        zone($0.element, on: map)
+      }
+      if let actor = fight.actor {
+        range(of: actor, on: map)
+      }
+      ForEach(fight.battle.units) {
+        token($0, on: map)
+      }
+      if let actor = fight.actor,
+        let spot = fight.ghost {
+        ghost(of: actor, at: spot, on: map)
+      }
+      if let reach = fight.reach {
+        ring(reach, on: map)
+      }
+    }
   }
 
   /// A drag moves the ghost; a tap, once
@@ -103,6 +119,28 @@ struct ArenaView: View {
       .frame(width: across, height: across)
       .position(
         map.location(of: actor.place)
+      )
+  }
+
+  /// Where a foe could hit next turn, a
+  /// shaded red circle.
+  private func zone(
+    _ zone: (center: Point, radius: Int),
+    on map: ArenaMap
+  ) -> some View {
+    let across = map.points(
+      2 * zone.radius
+    )
+    return Circle()
+      .fill(.red.opacity(0.12))
+      .overlay {
+        Circle().stroke(
+          .red.opacity(0.5), lineWidth: 1
+        )
+      }
+      .frame(width: across, height: across)
+      .position(
+        map.location(of: zone.center)
       )
   }
 
