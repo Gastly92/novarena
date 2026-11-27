@@ -75,21 +75,28 @@ struct PickerView: View {
   }
 
   /// A unit there is: its name and kind,
-  /// and buttons adding it to either side.
+  /// then buttons adding it to a side.
   private func candidate(
     _ index: Int
   ) -> some View {
     let unit = Unit.all[index]
-    return HStack {
-      VStack(alignment: .leading) {
-        Text(verbatim: unit.name)
-          .testID("data-name")
-        Text(verbatim: unit.kind)
-          .font(.caption)
-          .foregroundStyle(.secondary)
-          .testID("data-kind")
-      }
-      Spacer()
+    return VStack(alignment: .leading) {
+      Text(verbatim: unit.name)
+        .testID("data-name")
+      Text(verbatim: unit.kind)
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .testID("data-kind")
+      adders(index)
+    }
+  }
+
+  /// Buttons adding unit `index` to either
+  /// side, while it has room.
+  private func adders(
+    _ index: Int
+  ) -> some View {
+    HStack {
       Button("Party", systemImage: "plus") {
         lineup.add(index, to: .party)
       }
