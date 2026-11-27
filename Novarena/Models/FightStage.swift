@@ -24,6 +24,8 @@ extension Fight.Stage {
       4
     case .middle, .zones, .healing:
       6
+    case .exposed:
+      11
     case .end:
       200
     }
@@ -34,7 +36,7 @@ extension Fight.Stage {
   @MainActor
   func setUp(_ fight: Fight) {
     switch self {
-    case .start, .middle, .end:
+    case .start, .middle, .exposed, .end:
       break
     case .zones:
       fight.showsZones = true

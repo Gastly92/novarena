@@ -213,6 +213,13 @@ final class FightTests: XCTestCase {
     XCTAssertGreaterThan(tick, 0)
     let side = middle.actor?.side
     XCTAssertEqual(side, .party)
+    let exposed = Fight(stage: .exposed)
+    let bare = exposed.battle.units.filter {
+      $0.isUp && $0.isExposed
+    }
+    let names = bare.map(\.unit.name)
+    XCTAssertEqual(names, ["Oswin", "Ashka"])
+    XCTAssertEqual(exposed.actor?.id, 1)
     let end = Fight(stage: .end)
     let won = "The party wins"
     XCTAssertEqual(end.outcome, won)

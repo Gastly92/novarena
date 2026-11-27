@@ -17,9 +17,10 @@ final class HomeTests: XCTestCase {
   }
 
   /// Choose who fights: Ashka joins the
-  /// party, Gerald leaves, then the turn
-  /// order (always in view) has Oswin and
-  /// Ashka against Ashka and Kestrel-9.
+  /// party and Gerald the foes, Gerald
+  /// leaves the party, then the turn order
+  /// (always in view) has Oswin and Ashka
+  /// against Ashka, Kestrel-9 and Gerald.
   @MainActor
   func testChoosesWhoFights() {
     let app = App.start()
@@ -27,15 +28,17 @@ final class HomeTests: XCTestCase {
     let ashka = app.buttons["add-party-1"]
     XCTAssertTrue(ashka.appears())
     ashka.tap()
+    app.buttons["add-foes-0"].tap()
     app.buttons["data-party-0"].tap()
     app.buttons["start-fight"].tap()
     let first = app.text("data-order-0")
     XCTAssertTrue(first.appears())
-    let names = (0..<4).map {
+    let names = (0..<5).map {
       app.text("data-order-\($0)").label
     }
     let want = [
-      "Ashka", "Ashka", "Kestrel-9", "Oswin",
+      "Ashka", "Ashka", "Gerald",
+      "Kestrel-9", "Oswin",
     ]
     XCTAssertEqual(names.sorted(), want)
   }

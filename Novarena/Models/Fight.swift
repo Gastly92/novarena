@@ -39,6 +39,9 @@ final class Fight {
     case middle
     /// The same, with every zone on.
     case zones
+    /// Eleven turns in: Ashka and Oswin
+    /// exposed, Oswin's turn.
+    case exposed
     /// Played to the end.
     case end
     /// Gerald and Maren against the same
@@ -121,11 +124,9 @@ final class Fight {
     foesAct()
   }
 
-  /// Waits for `time`, really.
-  nonisolated static func sleep(
-    _ time: Duration
-  ) async {
-    _ = try? await Task.sleep(for: time)
+  /// Waits for a while, really.
+  nonisolated static let sleep: Pause = {
+    _ = try? await Task.sleep(for: $0)
   }
 
   /// The unit whose turn it is.
