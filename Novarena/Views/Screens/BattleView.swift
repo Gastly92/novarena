@@ -152,7 +152,9 @@ private struct Controls: View {
   }
 
   /// A skill's name, then its power, cost,
-  /// reach and weight.
+  /// reach and weight, then its kind of
+  /// damage and discipline (from the
+  /// rules, so a `data-` identifier).
   private func details(
     _ ability: Ability
   ) -> some View {
@@ -171,6 +173,13 @@ private struct Controls: View {
       }
       .font(.caption)
       .foregroundStyle(.secondary)
+      Text(verbatim: """
+        \(ability.kind.name) · \
+        \(ability.discipline.name)
+        """)
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .testID("data-ability-kind")
     }
   }
 }

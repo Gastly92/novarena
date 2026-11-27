@@ -70,17 +70,24 @@ struct UnitRow: View {
     }
   }
 
-  /// A layer's name and points, over a bar.
+  /// A layer's name, points and material
+  /// (from the rules, so a `data-`
+  /// identifier), over a bar.
   private func gauge(
     _ layer: Layer,
     left: Int
   ) -> some View {
     VStack(alignment: .leading, spacing: 0) {
-      Text("""
-        \(layer.name) \(left) of \
-        \(layer.points)
-        """)
-        .font(.caption)
+      HStack(spacing: 4) {
+        Text("""
+          \(layer.name) \(left) of \
+          \(layer.points)
+          """)
+        Text(verbatim: layer.material.name)
+          .foregroundStyle(.secondary)
+          .testID("data-material")
+      }
+      .font(.caption)
       ProgressView(
         value: Double(left),
         total: Double(layer.points)
