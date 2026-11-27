@@ -58,4 +58,20 @@ extension Fight {
     )
     return (ghost ?? actor.place, radius)
   }
+
+  /// Where each foe up could hit on its
+  /// next turn, as far as the party knows
+  /// (`Battle.danger(from:)`): a circle
+  /// around it; none while the danger
+  /// zone is off.
+  var zones: [(center: Point, radius: Int)] {
+    guard showsDanger else {
+      return []
+    }
+    return units(.foes).compactMap { foe in
+      battle.danger(from: foe.id).map {
+        (foe.place, $0)
+      }
+    }
+  }
 }

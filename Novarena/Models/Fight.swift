@@ -31,11 +31,14 @@ final class Fight {
     /// planned that puts Kestrel-9 in Sword
     /// Cut's reach, but not Ashka.
     case planned
-    /// The same, after Sword Cut on
-    /// Kestrel-9: the turn still to end.
+    /// The same, after Sword Cut and
+    /// Pommel Strike on Kestrel-9: the
+    /// turn still to end.
     case acted
     /// Six turns in.
     case middle
+    /// The same, with the danger zone on.
+    case danger
     /// Played to the end.
     case end
   }
@@ -55,6 +58,9 @@ final class Fight {
   private(set) var ghost: Point?
   /// The part of the turn on show.
   var panel = Panel.move
+  /// Whether the arena shades where foes
+  /// could hit next turn.
+  var showsDanger = false
   /// Waits between nudges of a held arrow.
   @ObservationIgnored private let wait: Pause
   /// Nudges while an arrow is held.
@@ -79,7 +85,7 @@ final class Fight {
       break
     case .planned, .acted:
       battle.playPlainly(turns: 4)
-    case .middle:
+    case .middle, .danger:
       battle.playPlainly(turns: 6)
     case .end:
       battle.playPlainly()
@@ -333,8 +339,11 @@ final class Fight {
   }
 
   /// Uses the picked skill on `target`,
-  /// walking the planned move first.
-  /// Nothing happens if it can't reach.
+  /// walking the planned move first; the
+  /// skills stay open while one can still
+  /// be used (a bonus), else the actions
+  /// open. Nothing happens if it can't
+  /// reach.
   func target(_ target: Int) {
     guard let chosen, inReach(target) else {
       return
@@ -342,7 +351,9 @@ final class Fight {
     commit()
     try? battle.use(chosen, on: target)
     self.chosen = nil
-    panel = .actions
+    let left = actor?.unit.abilities.indices
+      .contains(where: battle.canUse)
+    panel = left == true ? .skills : .actions
   }
 
   /// Walks the planned move, if any, and
@@ -370,31 +381,6 @@ final class Fight {
     while actor?.side == .foes,
       let turn = battle.plainChoice {
       try? battle.act(turn)
-    }
-  }
-}
-
-private extension Fight.Stage {
-  /// The plans and picks this stage starts
-  /// with, once the foes have acted.
-  @MainActor
-  func setUp(_ fight: Fight) {
-    switch self {
-    case .start, .middle, .end:
-      break
-    case .moving:
-      fight.place(Point(x: 300, y: 200))
-    case .aiming:
-      fight.panel = .skills
-      fight.choose(0)
-    case .planned:
-      fight.panel = .skills
-      fight.place(Point(x: 817, y: 448))
-      fight.choose(0)
-    case .acted:
-      fight.place(Point(x: 817, y: 448))
-      fight.choose(0)
-      fight.target(3)
     }
   }
 }

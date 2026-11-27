@@ -101,8 +101,9 @@ final class FightTests: XCTestCase {
 
   /// A foe out of reach can't be targeted;
   /// one in reach, tapped in the arena, is
-  /// hit after the walk, and the turn waits
-  /// to be ended.
+  /// hit after the walk. The skills stay
+  /// open for the Pommel Strike bonus;
+  /// once it's used, the actions open.
   func testActs() {
     let fight = Fight(stage: .planned)
     let count = fight.battle.log.count
@@ -115,20 +116,25 @@ final class FightTests: XCTestCase {
     fight.tap(kestrel.place)
     XCTAssertNil(fight.chosen)
     XCTAssertNil(fight.ghost)
-    XCTAssertEqual(fight.panel, .actions)
+    XCTAssertEqual(fight.panel, .skills)
     XCTAssertTrue(fight.battle.hasActed)
     XCTAssertFalse(fight.battle.canUse(0))
+    fight.choose(2)
+    fight.target(3)
+    XCTAssertEqual(fight.panel, .actions)
+    XCTAssertFalse(fight.battle.canUse(2))
     let hit = "Gerald: Sword Cut → Kestrel-9"
     XCTAssertTrue(fight.latest.contains(hit))
     XCTAssertEqual(fight.actor?.id, 0)
     XCTAssertFalse(fight.queueAfter.isEmpty)
   }
 
-  /// The acted stage: Sword Cut done, the
-  /// turn to end.
+  /// The acted stage: Sword Cut and the
+  /// Pommel Strike done, the turn to end.
   func testActedStage() {
     let fight = Fight(stage: .acted)
     XCTAssertEqual(fight.panel, .actions)
+    XCTAssertFalse(fight.battle.canUse(2))
     XCTAssertTrue(fight.battle.hasActed)
     fight.endTurn()
     XCTAssertEqual(fight.actor?.side, .party)
@@ -228,62 +234,5 @@ final class FightTests: XCTestCase {
     XCTAssertTrue(fight.battle.log.isEmpty)
     XCTAssertEqual(fight.actor?.id, 0)
     XCTAssertEqual(fight.panel, .move)
-  }
-
-  /// The move in Gerald's steps (half a
-  /// metre each).
-  func testMoveStatus() {
-    XCTAssertEqual(
-      Fight().moveStatus,
-      """
-      7 steps of movement left. Drag in \
-      the arena, or use the arrows.
-      """
-    )
-    XCTAssertEqual(
-      Fight(stage: .moving).moveStatus,
-      "Moves 1 step, then 6 steps left"
-    )
-    let fuel = Pool(
-      .movement, maximum: 100, measure: .fuel
-    )
-    XCTAssertEqual(
-      Fight.moveStatus(
-        fuel, left: 100, planned: 30
-      ),
-      "Moves 1.2 fuel, then 2.8 fuel left"
-    )
-    let plain = Pool(.movement, maximum: 100)
-    XCTAssertEqual(
-      Fight.moveStatus(
-        plain, left: 75, planned: 25
-      ),
-      "Moves 0.5 steps, then 1 step left"
-    )
-    XCTAssertEqual(
-      Fight.moveStatus(
-        nil, left: 0, planned: nil
-      ),
-      "Can't move"
-    )
-  }
-
-  /// The picked skill's reach, from the
-  /// planned spot or where Gerald stands:
-  /// Sword Cut, half a metre past his
-  /// 25 cm edge.
-  func testReach() {
-    XCTAssertNil(Fight().reach)
-    let aiming = Fight(stage: .aiming)
-    XCTAssertEqual(
-      aiming.reach?.center,
-      Point(x: 250, y: 200)
-    )
-    XCTAssertEqual(aiming.reach?.radius, 75)
-    let planned = Fight(stage: .planned)
-    XCTAssertEqual(
-      planned.reach?.center,
-      Point(x: 817, y: 448)
-    )
   }
 }

@@ -29,6 +29,16 @@ public struct BattleUnit: Sendable,
   public internal(set) var nextTurn: Int
   /// Where it stands.
   public internal(set) var place: Point
+  /// The furthest it has moved in one
+  /// turn, as the other side has seen.
+  public internal(set) var furthest = 0
+  /// What it has moved this turn.
+  var moving = 0
+  /// The abilities it has used (indices
+  /// into its list), as the other side
+  /// has seen.
+  public internal(set) var shown: Set<Int> =
+    []
   /// Whether it took any damage since its
   /// last turn (a recharging layer waits).
   var wasHit = false
@@ -131,6 +141,7 @@ public struct BattleUnit: Sendable,
       )
     }
     wasHit = false
+    moving = 0
   }
 
   /// Takes `amount` of `ability`'s damage.

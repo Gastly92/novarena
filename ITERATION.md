@@ -302,6 +302,43 @@ felt like, and what's next.
   ghost's snap to the edge then follows
   the path).
 
+- **AI levels** (owner's call): foes
+  get harder by playing better, never
+  by stronger numbers, so the units stay
+  balanced and balance runs use the same
+  AI on both sides. One interface, a
+  level per way of choosing a turn:
+  - Basic: today's stand-in.
+  - Tactical: focuses fire, stays out of
+    known danger, keeps range, saves
+    pools for a big turn.
+  - Planner: looks a few turns ahead,
+    simulating likely replies (no dice,
+    so lines play out exactly).
+  - Omniscient: the planner, deeper,
+    seeing everything.
+  The first three only know what they've
+  seen of the other side, as the player
+  does (the danger zone's knowledge).
+- **Usability** (from 0.0.6):
+  - A skill picked against a foe out of
+    reach places the ghost at the
+    nearest spot in reach, to adjust,
+    commit, then use.
+  - The turn ends by itself once nothing
+    is left to do (main action used, no
+    usable bonus, no movement), as a
+    setting, on by default.
+  - So a settings screen comes, reached
+    from home, saved with `@AppStorage`
+    (test-owned `UserDefaults`, the
+    privacy manifest's `CA92.1`, the
+    privacy page).
+- **Pan and zoom** the arena: pinch and
+  two-finger drag, the one-finger drag
+  still moving the ghost; with bigger
+  arenas and terrain.
+
 ## Next: movement
 
 Free movement, as in `brainstorm-2.md`
@@ -343,26 +380,35 @@ Free movement, as in `brainstorm-2.md`
   in the rules, the sample units remade
   and balanced, layer bars and previews
   on screen.
-- **B2c, pools** (0.0.7, in progress):
+- **B2c, pools** (done, #19, 0.0.7):
   pools,
   bonus actions, named measures and
   height in the rules; on screen, pool
   bars, measures, the picked skill's
   reach as a ring, and the ghost
   snapping to the edge of the range.
-- **B3, the danger zone** (0.0.8): the
+- **B3, the danger zone** (0.0.8, in
+  progress): the
   rules record what each side has seen
   of the other (furthest move, abilities
   used); the screen shades the danger
   zone from that, behind a toggle.
+- **B4, usability** (0.0.9): plan the
+  approach to a far foe, end turns by
+  themselves, the settings screen.
+- **AI, basic and tactical**: the AI
+  levels' interface, and the tactical
+  level.
 - **C.** Obstacles and pathfinding (the
-  hidden fine grid), then terrain.
-  Traps join here: an event on the way
-  stops and commits a walk.
+  hidden fine grid), then terrain and
+  height, with pan and zoom. Traps join
+  here: an event on the way stops and
+  commits a walk. Then the planner and
+  omniscient AI.
 
 ## After that
 
 Roughly, and reordered by how each build
 feels: ranges from unknown stats
-(knowledge); a better AI; status effects;
-commander actions.
+(knowledge); status effects; commander
+actions.

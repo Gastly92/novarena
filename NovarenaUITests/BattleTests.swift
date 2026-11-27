@@ -44,16 +44,21 @@ final class BattleTests: XCTestCase {
   /// With Sword Cut picked and a move
   /// planned, tap Kestrel-9 in the arena
   /// (at 912, 556 cm): Gerald walks and
-  /// hits, and the turn waits to be ended.
+  /// hits. The skills stay open for his
+  /// Pommel Strike; open the actions and
+  /// end the turn instead.
   @MainActor
   func testActsThenEnds() {
     let app = App.start(
       screen: .battlePlanned
     )
     tap(app, x: 0.76, y: 0.695)
-    let end = app.buttons["End turn"]
-    XCTAssertTrue(end.appears())
-    end.tap()
+    let pommel = app.buttons[
+      "data-ability-2"
+    ]
+    XCTAssertTrue(pommel.appears())
+    app.buttons["Actions"].tap()
+    app.buttons["End turn"].tap()
     let first = app.text("data-order-0")
     XCTAssertEqual(first.label, "Oswin")
   }

@@ -27,6 +27,8 @@ struct ScreenHost: View {
         battle(.acted)
       case .battleMiddle:
         battle(.middle)
+      case .battleDanger:
+        battle(.danger)
       case .battleEnd:
         battle(.end)
       }

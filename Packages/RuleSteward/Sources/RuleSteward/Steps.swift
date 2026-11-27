@@ -82,6 +82,11 @@ public extension Battle {
       cost, from: .movement
     )
     units[mover.id].place = spot
+    units[mover.id].moving += cost
+    units[mover.id].furthest = max(
+      units[mover.id].furthest,
+      units[mover.id].moving
+    )
     log.append(.moves(mover.unit.name, spot))
   }
 
@@ -113,6 +118,7 @@ public extension Battle {
       progress?.weight = chosen.weight
     }
     units[mover.id].pay(for: chosen)
+    units[mover.id].shown.insert(ability)
     log.append(.uses(
       mover.unit.name,
       chosen.name,
