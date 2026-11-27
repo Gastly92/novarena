@@ -15,7 +15,9 @@ uploading) runs in CI.
   into its pocket world to fight
   gladiator-style against random teams,
   with no dice mid-battle. Design notes:
-  `brainstorm-2.md` (current) and
+  `brainstorm-2.md` (current),
+  `brainstorm-3.md` (ideas beyond the
+  battle, from iterating) and
   `brainstorm.md` (the earlier ship idea).
   The roadmap is at the end of
   `brainstorm-2.md`, which is left as
