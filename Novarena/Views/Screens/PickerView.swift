@@ -15,6 +15,13 @@ struct PickerView: View {
 
   var body: some View {
     List {
+      Section {
+        NavigationLink("Fight") {
+          BattleView(fight: lineup.fight())
+        }
+        .disabled(!lineup.isReady)
+        .testID("start-fight")
+      }
       team(.party, title: "Party")
       team(.foes, title: "Foes")
       Section("Units") {
@@ -27,12 +34,6 @@ struct PickerView: View {
     }
     .navigationTitle("Who fights")
     .navigationBarTitleDisplayMode(.inline)
-    .toolbar {
-      NavigationLink("Fight") {
-        BattleView(fight: lineup.fight())
-      }
-      .disabled(!lineup.isReady)
-    }
   }
 
   /// One side's picks, each a button that
