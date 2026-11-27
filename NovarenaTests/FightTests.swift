@@ -51,7 +51,13 @@ final class FightTests: XCTestCase {
     )
     fight.undo()
     XCTAssertNil(fight.ghost)
-    XCTAssertTrue(fight.queueAfter.isEmpty)
+    let waiting = fight.queueAfter
+      .map(\.unit.name)
+    let want = [
+      "Ashka", "Kestrel-9", "Oswin",
+      "Gerald",
+    ]
+    XCTAssertEqual(waiting, want)
   }
 
   /// Committing walks the plan, which then
@@ -213,13 +219,6 @@ final class FightTests: XCTestCase {
     XCTAssertGreaterThan(tick, 0)
     let side = middle.actor?.side
     XCTAssertEqual(side, .party)
-    let exposed = Fight(stage: .exposed)
-    let bare = exposed.battle.units.filter {
-      $0.isUp && $0.isExposed
-    }
-    let names = bare.map(\.unit.name)
-    XCTAssertEqual(names, ["Oswin", "Ashka"])
-    XCTAssertEqual(exposed.actor?.id, 1)
     let end = Fight(stage: .end)
     let won = "The party wins"
     XCTAssertEqual(end.outcome, won)

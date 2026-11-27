@@ -228,13 +228,18 @@ final class PreviewTests: XCTestCase {
   }
 
   /// The screen's previews: none until an
-  /// ability is picked. At the start, every
-  /// foe is out of Gerald's reach.
+  /// ability is picked; the turn order
+  /// after waiting even then. At the
+  /// start, every foe is out of Gerald's
+  /// reach.
   func testFightPreviews() {
     let start = Fight()
     let none = start.preview(of: 2)
     XCTAssertTrue(none.isEmpty)
-    XCTAssertTrue(start.queueAfter.isEmpty)
+    XCTAssertEqual(
+      start.queueAfter.last?.unit.name,
+      "Gerald"
+    )
     let aiming = Fight(stage: .aiming)
     XCTAssertEqual(
       aiming.preview(of: 2),

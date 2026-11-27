@@ -12,9 +12,18 @@ struct BattleView: View {
   @State private var fight: Fight
   /// Whether the battle info sheet is up.
   @State private var showsInfo = false
+  /// Whether the knocked-out section is
+  /// open.
+  @State private var showsFallen: Bool
 
-  init(fight: Fight) {
+  init(
+    fight: Fight,
+    showsFallen: Bool = false
+  ) {
     _fight = State(initialValue: fight)
+    _showsFallen = State(
+      initialValue: showsFallen
+    )
   }
 
   var body: some View {
@@ -24,8 +33,11 @@ struct BattleView: View {
         Section {
           Controls(fight: fight)
         }
-        Section("Foes") { side(.foes) }
         Section("Party") { side(.party) }
+        Section("Foes") { side(.foes) }
+        if !fight.fallen.isEmpty {
+          Section { fallen }
+        }
         Section("Log") { log }
       }
     }
@@ -55,7 +67,6 @@ struct BattleView: View {
     VStack(spacing: 8) {
       TurnRow(fight: fight)
       ArenaView(fight: fight)
-        .frame(maxHeight: 200)
         .overlay(alignment: .topTrailing) {
           Toggle(
             "Zones",
@@ -71,14 +82,31 @@ struct BattleView: View {
     .padding(.top, 8)
   }
 
-  /// One side's units, each a button to
-  /// tap once a skill that can be used on
-  /// it is picked (an attack on a foe, a
-  /// heal on an ally).
+  /// Everyone knocked out, folded away
+  /// until opened.
+  private var fallen: some View {
+    let open = Binding {
+      showsFallen
+    } set: {
+      showsFallen = $0
+    }
+    return DisclosureGroup(
+      "Knocked out", isExpanded: open
+    ) {
+      ForEach(fight.fallen) {
+        UnitRow(unit: $0)
+      }
+    }
+  }
+
+  /// One side's units still up, each a
+  /// button to tap once a skill that can
+  /// be used on it is picked (an attack on
+  /// a foe, a heal on an ally).
   private func side(
     _ side: Side
   ) -> some View {
-    ForEach(fight.units(side)) { unit in
+    ForEach(fight.standing(side)) { unit in
       Button {
         fight.target(unit.id)
       } label: {

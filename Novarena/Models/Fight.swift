@@ -40,7 +40,8 @@ final class Fight {
     /// The same, with every zone on.
     case zones
     /// Eleven turns in: Ashka and Oswin
-    /// exposed, Oswin's turn.
+    /// exposed, Oswin's turn, the actions
+    /// open (short, so his row shows).
     case exposed
     /// Played to the end.
     case end
@@ -142,6 +143,18 @@ final class Fight {
   /// One side's units, in list order.
   func units(_ side: Side) -> [BattleUnit] {
     battle.units.filter { $0.side == side }
+  }
+
+  /// One side's units still up.
+  func standing(
+    _ side: Side
+  ) -> [BattleUnit] {
+    units(side).filter(\.isUp)
+  }
+
+  /// Everyone knocked out, party first.
+  var fallen: [BattleUnit] {
+    battle.units.filter { !$0.isUp }
   }
 
   /// The latest log lines, newest first.

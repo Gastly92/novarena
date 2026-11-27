@@ -3,6 +3,27 @@ import RuleSteward
 /// How each stage of the sample battle is
 /// set up for its screen.
 extension Fight.Stage {
+  /// The stage battle screen `screen`
+  /// shows; none for other screens.
+  init?(screen: ScreenID) {
+    let stages: [ScreenID: Self] = [
+      .battle: .start,
+      .battleMoving: .moving,
+      .battleAiming: .aiming,
+      .battlePlanned: .planned,
+      .battleActed: .acted,
+      .battleMiddle: .middle,
+      .battleZones: .zones,
+      .battleEnd: .end,
+      .battleHealing: .healing,
+      .battleExposed: .exposed,
+    ]
+    guard let stage = stages[screen] else {
+      return nil
+    }
+    self = stage
+  }
+
   /// Who fights for the party.
   var party: [Unit] {
     self == .healing
@@ -36,8 +57,10 @@ extension Fight.Stage {
   @MainActor
   func setUp(_ fight: Fight) {
     switch self {
-    case .start, .middle, .exposed, .end:
+    case .start, .middle, .end:
       break
+    case .exposed:
+      fight.panel = .actions
     case .zones:
       fight.showsZones = true
     case .moving:

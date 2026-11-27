@@ -1,10 +1,11 @@
 import RuleSteward
 import SwiftUI
 
-/// The turn order as a row of portraits,
-/// the next first. While a move is
-/// planned, the order after it, with where
-/// the unit on turn lands circled. Names
+/// The turn order as a row of portraits:
+/// the order after the turn being
+/// planned, named for the unit on turn,
+/// with where it lands circled (or, once
+/// it's over, as it stands). Names
 /// come from the rules, so they carry a
 /// `data-` identifier.
 struct TurnRow: View {
@@ -19,12 +20,17 @@ struct TurnRow: View {
     let after = fight.queueAfter
     VStack(alignment: .leading, spacing: 4) {
       Group {
-        if after.isEmpty {
-          Text("Turn order")
+        if let actor = fight.actor,
+          !after.isEmpty {
+          Text("""
+            Turn order after \
+            \(actor.unit.name)'s turn
+            """)
         } else {
-          Text("Turn order after this move")
+          Text("Turn order")
         }
       }
+      .testID("turn-title")
       .font(.caption)
       .foregroundStyle(.secondary)
       HStack(alignment: .top, spacing: 8) {

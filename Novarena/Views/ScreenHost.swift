@@ -16,30 +16,23 @@ struct ScreenHost: View {
       switch screen {
       case .home:
         HomeView()
-      case .battle:
-        battle(.start)
-      case .battleMoving:
-        battle(.moving)
-      case .battleAiming:
-        battle(.aiming)
-      case .battlePlanned:
-        battle(.planned)
-      case .battleActed:
-        battle(.acted)
-      case .battleMiddle:
-        battle(.middle)
-      case .battleZones:
-        battle(.zones)
-      case .battleEnd:
-        battle(.end)
       case .battleInfo:
         BattleInfoView(battle: middle)
-      case .battleHealing:
-        battle(.healing)
-      case .battleExposed:
-        battle(.exposed)
+      case .battleFallen:
+        BattleView(
+          fight: Fight(stage: .end),
+          showsFallen: true
+        )
       case .picker:
         PickerView()
+      default:
+        if let stage = Fight.Stage(
+          screen: screen
+        ) {
+          BattleView(
+            fight: Fight(stage: stage)
+          )
+        }
       }
     }
   }
@@ -47,12 +40,5 @@ struct ScreenHost: View {
   /// The sample battle six turns in.
   private var middle: Battle {
     Fight(stage: .middle).battle
-  }
-
-  /// The sample battle at `stage`.
-  private func battle(
-    _ stage: Fight.Stage
-  ) -> some View {
-    BattleView(fight: Fight(stage: stage))
   }
 }

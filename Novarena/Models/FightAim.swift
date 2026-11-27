@@ -55,15 +55,14 @@ extension Fight {
   }
 
   /// The turn order once this turn ends
-  /// (with the picked skill on the first
-  /// unit it reaches, if any), showing
-  /// where the unit on turn lands; none
-  /// until something is planned or done,
-  /// or if it would end the battle.
+  /// (with the planned move, and the
+  /// picked skill on the first unit it
+  /// reaches, if any), showing where the
+  /// unit on turn lands, whatever the
+  /// turn: acting, only moving or
+  /// waiting; none once it's over, or if
+  /// it would end the battle.
   var queueAfter: [BattleUnit] {
-    guard chosen != nil || ghost != nil
-      || battle.hasActed
-    else { return [] }
     let turns = battle.units
       .compactMap { plan(on: $0.id) }
       + [Turn(before: ghost)]
