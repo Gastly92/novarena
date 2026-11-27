@@ -273,6 +273,10 @@ felt like, and what's next.
     have their own).
   - The timeline stays: Speed, and the
     main action's weight.
+  - The stand-in AI uses its bonus
+    actions after its main one, on the
+    foe each hurts most (it should: a
+    free action left unused is a waste).
 - **Measures, not centimetres**: the
   rules keep whole centimetres, but the
   screen shows named measures, each a

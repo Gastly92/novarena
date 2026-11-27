@@ -16,7 +16,7 @@ final class ForecastTests: XCTestCase {
   /// It says exactly what acting does, and
   /// leaves the battle as it was: Sword
   /// Cut, 80 × 120% = 96, at 92% 88, off
-  /// Ashka's 240-point hide.
+  /// Ashka's 250-point hide.
   func testMatchesTheAction() throws {
     let battle = sample()
     let forecast = try battle.forecast(
@@ -29,7 +29,7 @@ final class ForecastTests: XCTestCase {
           hit: 2,
           losses: [
             Loss(
-              layer: 0, lost: 88, left: 152
+              layer: 0, lost: 88, left: 162
             ),
           ],
           exposes: false,
@@ -44,7 +44,7 @@ final class ForecastTests: XCTestCase {
     var acted = battle
     try acted.act(0, on: 2)
     let hide = acted.units[2].layers
-    XCTAssertEqual(hide, [152])
+    XCTAssertEqual(hide, [162])
     XCTAssertEqual(
       acted.queue, forecast.queue
     )

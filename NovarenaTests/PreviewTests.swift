@@ -60,7 +60,7 @@ final class PreviewTests: XCTestCase {
     )
     XCTAssertEqual(
       try lines(battle, on: 2),
-      ["Ember Hide −88, 152 left"]
+      ["Ember Hide −88, 162 left"]
     )
     XCTAssertEqual(
       try lines(battle, on: 3),

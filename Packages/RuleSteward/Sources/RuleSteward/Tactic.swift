@@ -68,7 +68,8 @@ public extension Battle {
     }
     let abilities = mover.unit.abilities
     for index in abilities.indices
-    where canUse(index) {
+    where canUse(index)
+      && abilities[index].bonus == nil {
       for foe in foes {
         let turn = approach(
           index, on: foe.id, by: mover
@@ -87,7 +88,13 @@ public extension Battle {
         }
       }
     }
-    return best
+    return best.map {
+      var turn = $0
+      turn.bonuses = plainBonuses(
+        after: turn
+      )
+      return turn
+    }
   }
 
   /// Plays every turn with `plainChoice`
@@ -121,5 +128,73 @@ public extension Battle {
     )
     return struck.isOut ? 100_000
       : losses.map(\.lost).reduce(0, +)
+  }
+
+  /// The bonus actions the unit on turn
+  /// would add after `turn`'s move and main
+  /// action: each bonus skill, while its
+  /// group has uses and its pools can pay,
+  /// on the foe in reach it hurts most.
+  private func plainBonuses(
+    after turn: Turn
+  ) -> [Action] {
+    var after = self
+    if let spot = turn.before {
+      try? after.move(to: spot)
+    }
+    if let action = turn.action {
+      try? after.use(
+        action.ability, on: action.target
+      )
+    }
+    var picks: [Action] = []
+    guard let actor = after.next else {
+      return picks
+    }
+    let all = after.units[actor].unit
+      .abilities
+    for index in all.indices
+    where all[index].bonus != nil {
+      while let foe = after.plainTarget(
+        index, by: actor
+      ), (try? after.use(
+        index, on: foe
+      )) != nil {
+        picks.append(Action(index, on: foe))
+      }
+    }
+    return picks
+  }
+
+  /// The foe in reach of `actor`'s ability
+  /// at `index`, where it stands, that it
+  /// would hurt most, if it can use it.
+  private func plainTarget(
+    _ index: Int,
+    by actor: Int
+  ) -> Int? {
+    guard canUse(index) else {
+      return nil
+    }
+    let mover = units[actor]
+    let ability = mover.unit.abilities[index]
+    return units
+      .filter {
+        $0.isUp && $0.side != mover.side
+          && reaches(
+            ability,
+            from: mover.place,
+            by: mover,
+            to: $0
+          )
+      }
+      .max {
+        Self.estimate(
+          ability, by: mover.unit, on: $0
+        ) < Self.estimate(
+          ability, by: mover.unit, on: $1
+        )
+      }?
+      .id
   }
 }

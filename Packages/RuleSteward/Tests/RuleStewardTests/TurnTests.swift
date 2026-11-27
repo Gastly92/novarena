@@ -125,7 +125,7 @@ final class TurnTests: XCTestCase {
       "  Ashka is immune"
     )
     let hide = battle.units[0].layers
-    XCTAssertEqual(hide, [240])
+    XCTAssertEqual(hide, [250])
   }
 
   /// Plain choices stop once there's a
@@ -152,7 +152,9 @@ final class TurnTests: XCTestCase {
     )
     battle.playPlainly(turns: 1)
     XCTAssertNil(battle.winner)
-    XCTAssertEqual(battle.log.count, 3)
+    // Gerald's turn: his cut and its hit,
+    // then his pommel strike and its hit.
+    XCTAssertEqual(battle.log.count, 5)
   }
 
   /// The queue lists everyone up in turn

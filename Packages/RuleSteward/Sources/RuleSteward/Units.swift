@@ -15,7 +15,7 @@ public extension Unit {
       Layer(
         "Plate",
         material: .metal,
-        points: 240
+        points: 190
       ),
       Layer(
         "Body",
@@ -41,7 +41,7 @@ public extension Unit {
       ),
       Ability(
         "Pommel Strike",
-        power: 25,
+        power: 12,
         kind: .crush,
         discipline: .blades,
         bonus: Bonus("pommel")
@@ -73,7 +73,7 @@ public extension Unit {
       Layer(
         "Ember Hide",
         material: .ember,
-        points: 240,
+        points: 250,
         regrows: 15,
         matchups: [.burn: .immune]
       ),

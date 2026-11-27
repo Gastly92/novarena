@@ -143,8 +143,9 @@ public extension Battle {
   }
 
   /// Plays the rest of the unit on turn's
-  /// turn: a move, an action, another move
-  /// and the end, each if given. It all
+  /// turn: a move, an action, bonus
+  /// actions, another move and the end,
+  /// each if given. It all
   /// happens or, if a step can't be taken,
   /// none of it.
   mutating func act(
@@ -157,6 +158,12 @@ public extension Battle {
     if let action = turn.action {
       try after.use(
         action.ability, on: action.target
+      )
+    }
+    for bonus in turn.bonuses
+    where after.winner == nil {
+      try after.use(
+        bonus.ability, on: bonus.target
       )
     }
     if after.winner == nil {
