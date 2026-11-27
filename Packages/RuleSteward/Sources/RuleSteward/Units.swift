@@ -5,7 +5,8 @@
 public extension Unit {
   /// A mouse knight: small and quick, in
   /// plate over a thin body; an expert
-  /// with his sword.
+  /// with his sword, and quick enough to
+  /// add a pommel strike to any turn.
   static let gerald = Unit(
     "Gerald",
     kind: "mouse knight",
@@ -37,6 +38,13 @@ public extension Unit {
         discipline: .blades,
         costs: [.stamina: 40],
         weight: .heavy
+      ),
+      Ability(
+        "Pommel Strike",
+        power: 25,
+        kind: .crush,
+        discipline: .blades,
+        bonus: Bonus("pommel")
       ),
     ],
     size: .small,

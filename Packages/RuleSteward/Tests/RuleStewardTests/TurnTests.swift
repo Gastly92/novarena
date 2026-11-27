@@ -182,7 +182,7 @@ final class TurnTests: XCTestCase {
       places: Fixtures.together(2)
     )
     XCTAssertTrue(battle.canUse(1))
-    XCTAssertFalse(battle.canUse(2))
+    XCTAssertFalse(battle.canUse(3))
     for _ in 0..<5 {
       try battle.act(1, on: 1)
     }

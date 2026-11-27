@@ -169,6 +169,9 @@ private struct Controls: View {
         if let note = ability.weight.label {
           Text(note)
         }
+        if ability.bonus != nil {
+          Text("Bonus")
+        }
       }
       HStack {
         Text(verbatim: """
