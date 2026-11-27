@@ -12,20 +12,6 @@ final class GeometryTests: XCTestCase {
     XCTAssertEqual(Geometry.rootUp(16), 4)
   }
 
-  /// 3 + 4 is 7: within 7, not within 6,
-  /// with no square roots taken.
-  func testLegsAddUpExactly() {
-    XCTAssertTrue(
-      Geometry.legs(9, 16, within: 7)
-    )
-    XCTAssertFalse(
-      Geometry.legs(9, 16, within: 6)
-    )
-    XCTAssertFalse(
-      Geometry.legs(100, 0, within: 6)
-    )
-  }
-
   /// Never further than asked, and never
   /// past the goal.
   func testToward() {

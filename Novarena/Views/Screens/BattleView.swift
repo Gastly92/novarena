@@ -2,9 +2,9 @@ import RuleSteward
 import SwiftUI
 
 /// A battle: the turn order and the arena
-/// on top, then the unit on turn's
-/// abilities (pick a spot, an ability,
-/// then a foe), both sides, and the log.
+/// on top, then the unit on turn's turn
+/// (move, skills, actions), both sides,
+/// and the log.
 /// Text from the rules isn't translated
 /// yet, so it carries a `data-`
 /// identifier.
@@ -50,8 +50,8 @@ struct BattleView: View {
     .padding(.top, 8)
   }
 
-  /// The foes, each a button to tap once an
-  /// ability is picked.
+  /// The foes, each a button to tap once a
+  /// skill is picked.
   private var foes: some View {
     ForEach(fight.units(.foes)) { foe in
       Button {
@@ -82,11 +82,16 @@ struct BattleView: View {
   }
 }
 
-/// The unit on turn's abilities and a
-/// button to end the turn without one, or
-/// the outcome once the battle is over.
+/// The parts of the unit on turn's turn,
+/// one at a time (moving, its skills,
+/// other actions), or the outcome once
+/// the battle is over.
 private struct Controls: View {
-  let fight: Fight
+  @Bindable var fight: Fight
+
+  init(fight: Fight) {
+    self.fight = fight
+  }
 
   var body: some View {
     if let outcome = fight.outcome {
@@ -96,23 +101,33 @@ private struct Controls: View {
         fight.restart()
       }
     } else if let actor = fight.actor {
-      abilities(of: actor)
-      Button {
-        fight.endTurn()
-      } label: {
-        if fight.spot == nil {
-          Text("Wait")
-        } else {
-          Text("Move and end turn")
+      Picker(
+        "Turn", selection: $fight.panel
+      ) {
+        Text("Move").tag(Fight.Panel.move)
+        Text("Skills")
+          .tag(Fight.Panel.skills)
+        Text("Actions")
+          .tag(Fight.Panel.actions)
+      }
+      .pickerStyle(.segmented)
+      switch fight.panel {
+      case .move:
+        MovePanel(fight: fight)
+      case .skills:
+        skills(of: actor)
+      case .actions:
+        Button("End turn") {
+          fight.endTurn()
         }
       }
     }
   }
 
-  /// One button per ability, with its
-  /// power, cost, reach and weight; the
-  /// picked one is checked.
-  private func abilities(
+  /// One button per skill, with its power,
+  /// cost, reach and weight; the picked
+  /// one is checked.
+  private func skills(
     of actor: BattleUnit
   ) -> some View {
     let all = actor.unit.abilities
@@ -136,8 +151,8 @@ private struct Controls: View {
     }
   }
 
-  /// An ability's name, then its power,
-  /// cost, reach and weight.
+  /// A skill's name, then its power, cost,
+  /// reach and weight.
   private func details(
     _ ability: Ability
   ) -> some View {

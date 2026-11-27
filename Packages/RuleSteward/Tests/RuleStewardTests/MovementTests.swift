@@ -149,12 +149,10 @@ final class MovementTests: XCTestCase {
     )
     var battle = duel([smash])
     try battle.act(0, on: 1)
-    let turn = Turn(
-      before: Point(x: 500, y: 400)
-    )
     XCTAssertTrue(
       battle.fits(
-        battle.units[0], at: turn.before
+        battle.units[0],
+        at: Point(x: 500, y: 400)
       )
     )
   }

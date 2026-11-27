@@ -7,7 +7,7 @@
 # with a # comment saying why. Lines of
 # only brackets or quotes are skipped.
 
-# Taps: pick an ability, tap a foe, end the
+# Taps: pick a skill, tap a foe, end the
 # turn, and start again.
 BattleView.swift
   fight.target(foe.id)
@@ -15,6 +15,24 @@ BattleView.swift
   fight.endTurn()
   fight.choose(index)
 
-# A tap on the arena.
+# Taps: commit or undo a planned move.
+MovePanel.swift
+  fight.commit()
+  fight.undo()
+
+# Pressing and letting go of an arrow.
+NudgePad.swift
+  fight.press(way)
+  fight.press(nil)
+
+# Touches on the arena, as they move and
+# when they lift.
 ArenaView.swift
-  fight.tap(map.spot(at: $0))
+  touched($0, on: map)
+  touched($0, on: map, lifted: true)
+  let moved = !ArenaMap.isTap(
+  touch.translation
+  fight.touch(
+  map.spot(at: touch.location),
+  moved: moved,
+  lifted: lifted

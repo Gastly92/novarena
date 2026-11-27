@@ -59,6 +59,25 @@ felt like, and what's next.
     up (see [Decisions](#decisions)).
   - The fork's previews were fun as
     ranges; these are exact numbers.
+- **0.0.4, the arena**: units as circles
+  on a top-down arena, to scale; tap a
+  spot, pick an ability, then a foe in
+  reach; the turn order as a row of
+  portraits.
+  - Felt like: moving looked like part of
+    a skill. Tapping the arena to move
+    wasn't discoverable; picking a skill
+    against a far foe walked toward it.
+  - Wanted: hold and drag a ghost to pick
+    a spot, then a directional control to
+    place it exactly.
+  - Wanted: a toggle showing the danger
+    zone, how far foes can reach with
+    their moves and attacks, ranged ones
+    too, from only what they've shown so
+    far.
+  - Moving, general actions and skills as
+    separate things.
 
 ## Decisions
 
@@ -136,6 +155,36 @@ felt like, and what's next.
     it does. A downed unit's row keeps its
     empty gauges.
 
+- **Turns in steps** (from 0.0.4):
+  - Moving, general actions (wait, and
+    later others) and skills are separate
+    on screen.
+  - Every turn the unit can walk its full
+    Move, in as many steps as it likes,
+    before and after acting. Later,
+    skills or foes may cut what's left.
+  - A planned move can be dragged,
+    nudged and undone freely until it's
+    committed. Committing walks it, and
+    can't be undone: nothing happening on
+    the way (no trap) is information.
+    Acting, or an event on the way, also
+    commits.
+  - A skill can only be used on a foe it
+    reaches; it no longer walks toward a
+    foe out of reach.
+- **The danger zone** (from 0.0.4): a
+  toggle shades where foes could reach
+  on their next turns, moving and
+  attacking, ranged attacks too. It
+  comes only from what each foe has
+  shown: the furthest it has moved, and
+  the abilities it has used. A foe that
+  hasn't moved far yet may go further.
+  This is the first piece of knowledge
+  (see "Ranges come from what you don't
+  know").
+
 ## Next: movement
 
 Free movement, as in `brainstorm-2.md`
@@ -156,14 +205,30 @@ Free movement, as in `brainstorm-2.md`
     long (720 ticks, not 1404): Ashka and
     Kestrel-9 shoot from range while
     Gerald and Oswin spend turns walking.
-- **B, the screen** (0.0.4, in progress):
+- **B, the screen** (done, #16, 0.0.4):
   a top-down arena of placeholder circles;
   where the unit on turn can reach;
   picking a spot, then a foe in reach with
   its preview; the turn order as a row,
   showing where the unit lands.
+- **B2, turns in steps** (0.0.5, in
+  progress): the
+  rules take a turn a step at a time:
+  move (any number of legs, up to Move
+  in all), one action, end. The screen
+  splits moving, actions and skills;
+  hold and drag a ghost, nudge it with a
+  directional pad, commit the walk. A
+  skill only targets foes in reach.
+- **B3, the danger zone** (0.0.6): the
+  rules record what each side has seen
+  of the other (furthest move, abilities
+  used); the screen shades the danger
+  zone from that, behind a toggle.
 - **C.** Obstacles and pathfinding (the
   hidden fine grid), then terrain.
+  Traps join here: an event on the way
+  stops and commits a walk.
 
 ## After that
 

@@ -40,6 +40,18 @@ struct ArenaMap {
     )
   }
 
+  /// Whether a touch that moved by
+  /// `translation` is a tap rather than a
+  /// drag: under 10 points.
+  static func isTap(
+    _ translation: CGSize
+  ) -> Bool {
+    let across = translation.width
+    let down = translation.height
+    return across * across + down * down
+      < 100
+  }
+
   /// `centimetres` in points.
   func points(_ centimetres: Int) -> Double {
     Double(centimetres) * scale
