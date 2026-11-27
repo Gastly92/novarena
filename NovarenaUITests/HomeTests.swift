@@ -18,7 +18,9 @@ final class HomeTests: XCTestCase {
 
   /// Choose who fights: Ashka joins the
   /// party, Gerald leaves, then the fight
-  /// has Oswin and Ashka.
+  /// has Oswin and Ashka (the second row
+  /// of the party, a button, reads her
+  /// name first).
   @MainActor
   func testChoosesWhoFights() {
     let app = App.start()
@@ -28,8 +30,8 @@ final class HomeTests: XCTestCase {
     ashka.tap()
     app.buttons["data-party-0"].tap()
     app.buttons["Fight"].tap()
-    let name = app.text("data-name-1")
-    XCTAssertTrue(name.appears())
-    XCTAssertEqual(name.label, "Ashka")
+    let row = app.buttons["data-unit-1"]
+    XCTAssertTrue(row.appears())
+    XCTAssertTrue(row.label.hasPrefix("Ashka"))
   }
 }
