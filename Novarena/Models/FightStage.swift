@@ -22,9 +22,7 @@ extension Fight.Stage {
       0
     case .planned, .acted:
       4
-    case .healing:
-      5
-    case .middle, .zones:
+    case .middle, .zones, .healing:
       6
     case .end:
       200
@@ -57,7 +55,7 @@ extension Fight.Stage {
       fight.target(3)
     case .healing:
       fight.panel = .skills
-      fight.choose(1)
+      fight.choose(2)
       fight.showsZones = true
     }
   }

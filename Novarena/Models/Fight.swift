@@ -42,7 +42,7 @@ final class Fight {
     /// Played to the end.
     case end
     /// Gerald and Maren against the same
-    /// foes, five turns in: Maren's turn,
+    /// foes, six turns in: Maren's turn,
     /// Mend Wounds picked, Gerald's plate
     /// worn and in her reach, every zone
     /// on.

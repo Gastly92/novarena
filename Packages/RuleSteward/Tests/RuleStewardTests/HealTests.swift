@@ -144,13 +144,17 @@ final class HealTests: XCTestCase {
     )
   }
 
-  /// Padded cloth soaks blows but burns,
-  /// and mends by half.
+  /// Padded cloth soaks blows but burns;
+  /// radiant sears ember.
   func testCloth() {
     let crush = Rules.matchup(.crush, .cloth)
     let burn = Rules.matchup(.burn, .cloth)
     XCTAssertEqual(crush.percent, 50)
     XCTAssertEqual(burn.percent, 150)
+    let smite = Rules.matchup(
+      .radiant, .ember
+    )
+    XCTAssertEqual(smite.percent, 150)
     XCTAssertTrue(Kind.mend.heals)
     XCTAssertFalse(Kind.burn.heals)
   }

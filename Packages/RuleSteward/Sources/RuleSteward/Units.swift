@@ -220,10 +220,12 @@ public extension Unit {
 
   /// A war cleric: a padded gambeson
   /// (soaks blows, but burns) over a
-  /// plain body, an expert's mace, and a
+  /// plain body; an expert's mace, a smite
+  /// from afar that sears demons, and a
   /// prayer each turn that mends an ally
-  /// (or herself) from afar: flesh fully,
-  /// armor by half, machines not at all.
+  /// (or herself): flesh fully, armor by
+  /// half, machines not at all. Smite and
+  /// prayer share her mana.
   static let maren = Unit(
     "Maren",
     kind: "war cleric",
@@ -247,6 +249,15 @@ public extension Unit {
         power: 85,
         kind: .crush,
         discipline: .maces
+      ),
+      Ability(
+        "Smite",
+        power: 60,
+        kind: .radiant,
+        discipline: .faith,
+        costs: [.mana: 50],
+        reach: .ranged(400),
+        measure: .cast
       ),
       Ability(
         "Mend Wounds",

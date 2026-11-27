@@ -445,10 +445,15 @@ starts.
   - Maren, a war cleric: a padded
     gambeson (a new material, cloth:
     soaks blows, burns) over her body, a
-    mace, and Mend Wounds as a bonus
-    prayer each turn. As a main action,
-    healing cost her the hit and she
-    lost; as a bonus she wins about half.
+    mace, Smite (holy light from afar, a
+    new kind, radiant, that sears a
+    demon's ember; owner's call: the
+    cleric needs offense), and Mend
+    Wounds as a bonus prayer each turn,
+    sharing her mana with Smite. As a
+    main action, healing cost her the
+    hit and she lost; as a bonus she
+    wins about half.
   - Rebalanced with her (`BalanceTests`,
     every unit 45-57% in teams): Ashka's
     hide 230 (was 250), Oswin's shield

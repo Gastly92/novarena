@@ -30,6 +30,10 @@ public struct Kind: Hashable, Sendable {
   public static let burn = Self("burn")
   /// Lightning; breaks energy shields.
   public static let shock = Self("shock")
+  /// Holy light; sears demons.
+  public static let radiant = Self(
+    "radiant"
+  )
   /// Healing: mends flesh fully, armor
   /// and hide by half, machines not at
   /// all.
@@ -118,6 +122,9 @@ extension Rules {
     .shock: [
       .metal: Matchup(100, carries: true),
       .energy: Matchup(200),
+    ],
+    .radiant: [
+      .ember: Matchup(150),
     ],
     .mend: [
       .metal: Matchup(50),

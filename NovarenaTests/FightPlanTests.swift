@@ -116,14 +116,14 @@ final class FightPlanTests: XCTestCase {
   /// Healing, every zone on: Maren's heal
   /// zone (green) is her 300 cm of
   /// movement plus Mend Wounds' 400, apart
-  /// from her harm zone (300 + 40 + 50);
-  /// Ashka hasn't moved, and shows her
-  /// Fireball (500).
+  /// from her harm zone, the same with
+  /// Smite; Ashka hasn't moved, and shows
+  /// her Fireball (500).
   func testHealZones() {
     let fight = Fight(stage: .healing)
     XCTAssertEqual(
       fight.zones.map(\.radius),
-      [425, 390, 700, 500, 509]
+      [425, 700, 700, 500, 509]
     )
     XCTAssertEqual(
       fight.zones.map(\.heals),
