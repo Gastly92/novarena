@@ -27,8 +27,9 @@ final class TimelineTests: XCTestCase {
     }
   }
 
-  /// Speed 125 acts 12 times in 1,000 ticks,
-  /// Speed 80 eight times.
+  /// Never moving (90% waits), Speed 125
+  /// acts 13 times in 1,000 ticks, Speed 80
+  /// eight times.
   func testFasterUnitsActMoreOften() throws {
     var battle = Battle(
       party: [unit("Fast", speed: 125)],
@@ -43,7 +44,7 @@ final class TimelineTests: XCTestCase {
       return nil
     }
     XCTAssertEqual(
-      turns.filter { $0 == "Fast" }.count, 12
+      turns.filter { $0 == "Fast" }.count, 13
     )
     XCTAssertEqual(
       turns.filter { $0 == "Slow" }.count, 8
@@ -107,8 +108,9 @@ final class TimelineTests: XCTestCase {
       foes: [Fixtures.unit("B", speed: 50)]
     )
     try battle.act(1, on: 1)
+    // 150% heavy, 90% unmoved: 135.
     let next = battle.units[0].nextTurn
-    XCTAssertEqual(next, 250)
+    XCTAssertEqual(next, 235)
     XCTAssertEqual(battle.tick, 100)
   }
 }

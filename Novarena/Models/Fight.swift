@@ -10,7 +10,8 @@ import RuleSteward
 /// reach, and ends the turn; acting or
 /// ending the turn commits a planned move.
 /// Foes take their plain choice
-/// (`Battle.plainChoice`) until it's the
+/// (`Battle.plainChoice`), played a step
+/// at a time (`advance()`), until it's the
 /// party's turn again.
 @MainActor
 @Observable
@@ -45,6 +46,14 @@ final class Fight {
     case exposed
     /// Played to the end.
     case end
+    /// Gerald's first turn ended without
+    /// moving: Ashka's turn begun and her
+    /// move shown, a step at a time.
+    case foes
+    /// Gerald's first turn, a move planned
+    /// to the east edge of his range: up
+    /// and down slide along it.
+    case edge
     /// Gerald and Maren against the same
     /// foes, six turns in: Maren's turn,
     /// Mend Wounds picked, Gerald's plate
@@ -72,6 +81,11 @@ final class Fight {
   private(set) var ghost: Point?
   /// The part of the turn on show.
   var panel = Panel.move
+  /// What's left of the foe's turn being
+  /// played, a step at a time.
+  var steps: [Step] = []
+  /// The log lines the last step added.
+  var shown: [String] = []
   /// The units whose zones the arena
   /// shades: where each could hit next
   /// turn, as far as the party knows.
@@ -114,7 +128,6 @@ final class Fight {
     self.party = party
     self.foes = foes
     battle = Battle(party: party, foes: foes)
-    foesAct()
   }
 
   /// Plays `turns` turns with the plain
@@ -122,7 +135,7 @@ final class Fight {
   /// the party's.
   func play(_ turns: Int) {
     battle.playPlainly(turns: turns)
-    foesAct()
+    skip()
   }
 
   /// Waits for a while, really.
@@ -197,6 +210,9 @@ final class Fight {
   /// (to the edge of its range); its own
   /// spot clears the plan.
   func place(_ point: Point) {
+    guard !isFoesTurn else {
+      return
+    }
     if point == actor?.place {
       ghost = nil
     } else if let spot = battle.reachable(
@@ -335,7 +351,7 @@ final class Fight {
     ghost = nil
     chosen = nil
     panel = .move
-    foesAct()
+    shown = []
   }
 
   /// The same battle, from the start.
@@ -344,15 +360,25 @@ final class Fight {
     chosen = nil
     ghost = nil
     panel = .move
-    foesAct()
+    steps = []
+    shown = []
   }
 
-  /// Foes' turns, until the party's (or
-  /// the end).
-  private func foesAct() {
-    while actor?.side == .foes,
-      let turn = battle.plainChoice {
-      try? battle.act(turn)
+  /// Takes `step` in the battle. A step
+  /// that can't be taken (the end, once
+  /// someone has won) does nothing.
+  func take(_ step: Step) {
+    switch step {
+    case .begin:
+      try? battle.beginTurn()
+    case let .move(spot):
+      try? battle.move(to: spot)
+    case let .use(action):
+      try? battle.use(
+        action.ability, on: action.target
+      )
+    case .end:
+      try? battle.endTurn()
     }
   }
 }

@@ -15,6 +15,11 @@ BattleView.swift
   fight.endTurn()
   fight.choose(index)
 
+# Taps: the foes' next step, or all of
+# them.
+  fight.advance()
+  fight.skip()
+
 # Tap: open or fold the knocked-out
 # section (battleFallen shows it open).
   showsFallen = $0

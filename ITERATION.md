@@ -177,6 +177,19 @@ starts.
   - Knocked-out foes' rows could move to
     a collapsed section.
   - A bigger arena, while testing.
+- **0.0.11, usability fixes**: a steady
+  arrow pad, the turn order for any
+  turn, the party first, the fallen
+  folded, a bigger arena.
+  - The pad stays put; the turn order
+    and the bigger arena are better.
+  - The arrows don't curve yet, and
+    moving round a unit isn't granular
+    (a nudge into one is refused).
+  - Picking a skill, then a foe in range:
+    works (foes in reach are ringed); a
+    foe out of reach, planning the walk
+    there, is B4.
 
 ## Decisions
 
@@ -550,6 +563,34 @@ starts.
     iterating (owner's call): they come
     back from the template before the
     first App Store release.
+- **Steps, moving and timing, as
+  built**:
+  - The pace: 90% of the wait for not
+    moving, 1% more for each twentieth
+    of the movement used, 110% for all
+    of it; a unit that can't move waits
+    as usual. It multiplies the action's
+    weight (a heavy action unmoved:
+    135%). Balance held (`BalanceTests`
+    unchanged); the sample battle's
+    timings shifted a little.
+  - A planned spot that's out of range,
+    past a wall or in someone is pulled
+    back into range and the arena and
+    pushed just clear of the unit, so
+    dragging or nudging slides along the
+    edge (`Battle.reachable(toward:)`).
+  - An arrow that would slide shows a
+    turning arrow (which way it bends);
+    one that can't move dims.
+  - Foe turns play a step at a time: the
+    turn's start (with each layer that
+    regrows or recharges logged), each
+    move, each action, the end. The
+    panel shows what the last step did,
+    with "Next" and "Skip to your turn".
+    Screens set up for tests skip
+    through.
 - **The commander** (owner's call; the
   name is a placeholder): the player,
   off the field, gets a portrait in the
@@ -672,16 +713,18 @@ Free movement, as in `brainstorm-2.md`
   (done, #22, 0.0.9): per-foe and
   party zones by kind, percentages for
   foes, the battle info sheet.
-- **Usability fixes** (0.0.11, in
-  progress): from 0.0.10, a steady arrow
+- **Usability fixes** (done, #25,
+  0.0.11): from 0.0.10, a steady arrow
   pad, the turn order for any turn, the
   party first, knocked-out units
   collapsed, a bigger arena.
-- **Turns as events**: foe turns played
-  step by step on screen, passives at a
-  turn's start their own steps.
-- **Moving and timing**: the wait scaled
-  by movement used; curved nudges.
+- **Steps, moving and timing** (0.0.12,
+  in progress; one PR, owner's call):
+  foe turns played step by step,
+  passives at a turn's start their own
+  steps; the wait scaled by movement
+  used; nudges that slide, with curved
+  arrows.
 - **Units**, in parts:
   - **Healing and the cleric**
     (done, #24, 0.0.10): heals in the

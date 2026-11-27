@@ -17,6 +17,8 @@ extension Fight.Stage {
       .battleEnd: .end,
       .battleHealing: .healing,
       .battleExposed: .exposed,
+      .battleFoes: .foes,
+      .battleEdge: .edge,
     ]
     guard let stage = stages[screen] else {
       return nil
@@ -39,7 +41,8 @@ extension Fight.Stage {
   /// first.
   var turns: Int {
     switch self {
-    case .start, .moving, .aiming:
+    case .start, .moving, .aiming, .foes,
+      .edge:
       0
     case .planned, .acted:
       4
@@ -61,6 +64,12 @@ extension Fight.Stage {
       break
     case .exposed:
       fight.panel = .actions
+    case .foes:
+      fight.endTurn()
+      fight.advance()
+      fight.advance()
+    case .edge:
+      fight.place(Point(x: 600, y: 200))
     case .zones:
       fight.showsZones = true
     case .moving:

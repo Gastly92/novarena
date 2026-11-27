@@ -8,8 +8,9 @@ final class BattleTests: XCTestCase {
   /// Tap the arena at (300, 200) cm, half
   /// a metre right of Gerald, to plan a
   /// move; hold the right arrow to nudge
-  /// it; commit it, then end the turn:
-  /// Oswin is next.
+  /// it; commit it, then end the turn.
+  /// Ashka's turn plays a step at a time;
+  /// skip the rest, to Oswin's turn.
   @MainActor
   func testMovesAndEndsTheTurn() {
     let app = App.start(screen: .battle)
@@ -23,6 +24,15 @@ final class BattleTests: XCTestCase {
     app.buttons["Commit move"].tap()
     app.buttons["Actions"].tap()
     app.buttons["End turn"].tap()
+    // Ashka's turn, a step at a time:
+    // it begins, then she moves.
+    app.buttons["Next"].tap()
+    app.buttons["Next"].tap()
+    let step = app.text("data-step")
+    XCTAssertTrue(
+      step.label.hasPrefix("Ashka moves")
+    )
+    app.buttons["Skip to your turn"].tap()
     XCTAssertTrue(isTurn(of: "Oswin", app))
   }
 
@@ -58,6 +68,7 @@ final class BattleTests: XCTestCase {
     XCTAssertTrue(pommel.appears())
     app.buttons["Actions"].tap()
     app.buttons["End turn"].tap()
+    app.buttons["Skip to your turn"].tap()
     XCTAssertTrue(isTurn(of: "Oswin", app))
   }
 

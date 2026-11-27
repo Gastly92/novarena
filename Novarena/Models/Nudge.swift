@@ -41,3 +41,61 @@ enum Nudge: CaseIterable {
     .milliseconds(tick == 0 ? 400 : 30)
   }
 }
+
+/// How a nudge would go: straight on,
+/// bending toward one side (sliding along
+/// the edge of the range or round a unit),
+/// or nowhere.
+enum Bend: Equatable {
+  case straight
+  case toward(Nudge)
+  case stuck
+
+  /// Bends a nudge `way` that moved
+  /// `across` centimetres sideways (right
+  /// or down positive) would go.
+  init(_ way: Nudge, across: Int) {
+    guard across != 0 else {
+      self = .straight
+      return
+    }
+    let upright = way.offset.x == 0
+    switch (upright, across < 0) {
+    case (true, true):
+      self = .toward(.west)
+    case (true, false):
+      self = .toward(.east)
+    case (false, true):
+      self = .toward(.north)
+    case (false, false):
+      self = .toward(.south)
+    }
+  }
+
+  /// The icon for an arrow nudging `way`:
+  /// a chevron, or a turning arrow when it
+  /// bends.
+  func symbol(_ way: Nudge) -> String {
+    let name = way.word
+    guard case let .toward(side) = self
+    else { return "chevron.\(name)" }
+    return "arrow.turn.\(name).\(side.word)"
+  }
+}
+
+extension Nudge {
+  /// Its direction's name, as SF Symbols
+  /// spell it.
+  var word: String {
+    switch self {
+    case .north:
+      "up"
+    case .west:
+      "left"
+    case .east:
+      "right"
+    case .south:
+      "down"
+    }
+  }
+}
