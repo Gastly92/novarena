@@ -85,6 +85,43 @@ gauntlet, a boss rush, trials, survival).
 - Each facility keeps its own streak and
   record.
 
+## Unit tiers
+
+From the `pokeemerald-expansion` fork, a
+tier for every unit (names are
+placeholders):
+
+- **Regular**: most units.
+- **Pseudo**: a step above, rarer.
+- **Legendary**: bosses' units.
+- **Mythical**: the rarest of all.
+
+Where they show up:
+
+- **Draft**: a starting team is regular
+  units, perhaps with one pseudo pick.
+- **Boss battles** may bring a legendary
+  unit.
+- **The hardest fights** (the Frontier
+  Brain's equivalent, a facility's head
+  at set points in a streak) may add a
+  mythical one.
+
+Balance: units are balanced against
+their own tier, so each should win about
+half its battles against units of that
+tier (`BalanceTests` per tier). A higher
+tier is stronger than the one below.
+Open:
+
+- How much stronger each tier is.
+- How a fight against a legendary or
+  mythical stays winnable: the player's
+  commander, a numbers edge, or
+  something else.
+- What a tier is made of: more layers,
+  more abilities, rare mechanics.
+
 ## Currency
 
 - **Earned by winning**, in every facility.

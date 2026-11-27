@@ -248,6 +248,10 @@ starts.
   it's in, at every size (40-60%;
   `BalanceTests`). Battles can have
   more than two units a side.
+  - With tiers (owner's idea,
+    `brainstorm-3.md`): units are
+    balanced within their own tier;
+    a higher tier is stronger.
 - **Layers, not health** (owner's call):
   - No health. A unit wears layers,
     outermost first (plate; a tower
@@ -537,7 +541,7 @@ Free movement, as in `brainstorm-2.md`
   used); the screen shades the danger
   zone from that, behind a toggle.
 - **B3b, zones and percentages**
-  (0.0.9, in progress): per-foe and
+  (done, #22, 0.0.9): per-foe and
   party zones by kind, percentages for
   foes, the battle info sheet.
 - **Units**: healing, the five new
