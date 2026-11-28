@@ -36,13 +36,13 @@ extension Fight {
   /// on (it can't be aimed at, but should
   /// say why).
   private func unhurt(_ id: Int) -> Bool {
-    guard let chosen, let actor else {
-      return false
+    let skill = chosen.flatMap {
+      actor?.unit.abilities[$0]
     }
-    let skill = actor.unit.abilities[chosen]
     let unit = battle.units[id]
-    return skill.kind.heals && unit.isUp
-      && unit.side == actor.side
+    return skill?.kind.heals == true
+      && unit.isUp
+      && unit.side == actor?.side
   }
 
   /// Whether the picked skill, from the
