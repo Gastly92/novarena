@@ -31,6 +31,17 @@ final class FightPlanTests: XCTestCase {
     XCTAssertFalse(away.battle.hasActed)
     away.choose(1)
     XCTAssertNil(away.aimed)
+    let kept = Fight(stage: .planned)
+    kept.cancel()
+    XCTAssertNil(kept.aimed)
+    XCTAssertEqual(kept.chosen, 0)
+    XCTAssertNotNil(kept.ghost)
+    let uses = kept.battle.log
+      .filter { $0 == line }.count
+    kept.endTurn()
+    let used = kept.battle.log
+      .filter { $0 == line }.count
+    XCTAssertEqual(used, uses)
     let none = Fight()
     XCTAssertFalse(none.canUse)
     none.use()

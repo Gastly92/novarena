@@ -834,8 +834,11 @@ starts.
   - Ending the turn carries out the plan
     too (the skill only if it reaches),
     as it commits a planned move.
-    Picking another skill drops it. The
-    turn order shows the plan.
+    Cancel (beside Use) drops it, as Undo
+    drops a planned move; so does
+    picking another skill. With nothing
+    planned, ending the turn just ends
+    it. The turn order shows the plan.
   - With the move open, tapping a foe
     stands off: the spot on the straight
     line through the two that keeps it

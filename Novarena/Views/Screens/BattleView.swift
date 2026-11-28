@@ -240,8 +240,9 @@ private struct Controls: View {
 
   /// The planned skill and its target,
   /// with a button to use it (off while it
-  /// doesn't reach). Names come from the
-  /// rules, in a sentence to translate.
+  /// doesn't reach) and one to cancel it.
+  /// Names come from the rules, in a
+  /// sentence to translate.
   @ViewBuilder
   private func plan(
     of actor: BattleUnit
@@ -256,6 +257,9 @@ private struct Controls: View {
       }
       .disabled(!fight.canUse)
       .testID("use-skill")
+      Button("Cancel", role: .cancel) {
+        fight.cancel()
+      }
     }
   }
 

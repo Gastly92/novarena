@@ -291,6 +291,12 @@ final class Fight {
     aimed = Action(chosen, on: target)
   }
 
+  /// Forgets the planned skill (the skill
+  /// stays picked).
+  func cancel() {
+    aimed = nil
+  }
+
   /// Whether the planned skill reaches its
   /// target from the planned spot.
   var canUse: Bool {

@@ -142,6 +142,21 @@ final class BattleTests: XCTestCase {
     XCTAssertTrue(isTurn(of: "Oswin", app))
   }
 
+  /// Cancel forgets a planned skill, so
+  /// its Use button goes.
+  @MainActor
+  func testCancelsASkill() {
+    let app = App.start(
+      screen: .battlePlanned
+    )
+    let use = app.buttons["use-skill"]
+    XCTAssertTrue(use.appears())
+    app.buttons["Cancel"].tap()
+    XCTAssertTrue(
+      use.waitForNonExistence(timeout: 5)
+    )
+  }
+
   /// Undo forgets a planned move.
   @MainActor
   func testUndoes() {
