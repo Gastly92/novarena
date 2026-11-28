@@ -900,8 +900,9 @@ starts.
   other broken layers stay broken. (A
   half amount was tried and dropped:
   it changed no battle's outcome, and
-  was one more thing to track.) Intensity keeps two healers
-  from holding a unit up forever: every
+  was one more thing to track.)
+  Intensity keeps two healers from
+  holding a unit up forever: every
   battle in the balance runs still ends.
   Maren then beat Tamsin one on one
   (Tamsin 25%), so Tamsin is a little
