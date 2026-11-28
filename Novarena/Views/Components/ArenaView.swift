@@ -74,11 +74,6 @@ struct ArenaView: View {
       if let reach = fight.reach {
         ring(reach, on: map)
       }
-      if let rim = fight.rim {
-        OrbitArrows(
-          fight: fight, rim: rim, map: map
-        )
-      }
     }
   }
 

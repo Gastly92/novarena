@@ -3,10 +3,11 @@ import SwiftUI
 /// Four arrows that nudge the planned
 /// move: a tap moves it 1 cm, holding
 /// repeats, faster and faster
-/// (`Fight.press(_:)`). The pad never
-/// changes; at an edge, a nudge slides
-/// along it, and orbit arrows on the arena
-/// go round it.
+/// (`Fight.press(_:)`). At the edge of
+/// the range a nudge slides along it.
+/// Beside them, touching a unit, two
+/// arrows circle round it (room is kept
+/// for them, so the pad stays put).
 struct NudgePad: View {
   let fight: Fight
   @ScaledMetric private var size = 40.0
@@ -16,6 +17,17 @@ struct NudgePad: View {
   }
 
   var body: some View {
+    HStack(spacing: 12) {
+      pad
+      VStack(spacing: 4) {
+        circler(.counterclockwise)
+        circler(.clockwise)
+      }
+    }
+  }
+
+  /// The four arrows.
+  private var pad: some View {
     Grid(
       horizontalSpacing: 4,
       verticalSpacing: 4
@@ -35,6 +47,19 @@ struct NudgePad: View {
         arrow(.south)
         gap
       }
+    }
+  }
+
+  /// An arrow circling `way` round the
+  /// unit touched, or room for one.
+  @ViewBuilder
+  private func circler(
+    _ way: Nudge
+  ) -> some View {
+    if fight.circling {
+      arrow(way)
+    } else {
+      gap
     }
   }
 

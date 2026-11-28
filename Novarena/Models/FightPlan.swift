@@ -96,62 +96,32 @@ extension Fight {
     }
   }
 
-  /// The circle the planned spot (or the
-  /// unit's own) rests on, that the orbit
-  /// arrows follow: round the unit it
-  /// touches (just clear of it), else the
-  /// edge of the range. None if neither,
-  /// or when it isn't the party's unit's
-  /// turn.
-  var rim: Rim? {
+  /// Whether the planned spot (or the
+  /// unit's own) touches another unit on
+  /// the party's turn, so the circling
+  /// arrows show.
+  var circling: Bool {
     guard !isFoesTurn, !isCommanding,
       let actor
-    else { return nil }
+    else { return false }
     let from = ghost ?? actor.place
-    let gap = actor.unit.size.radius + 45
-    if let other = battle.touching(from) {
-      let apart = actor.unit.size.radius
-        + other.unit.size.radius
-      return Rim(
-        center: other.place,
-        radius: apart,
-        spot: from,
-        gap: gap
-      )
-    }
-    return battle.atEdge(from)
-      ? Rim(
-        center: actor.place,
-        radius: moveLeft,
-        spot: from,
-        gap: gap
-      ) : nil
+    return battle.touching(from) != nil
   }
 
   /// Moves the planned spot `from` at
-  /// least 5 cm (or `step`) round what it
-  /// rests on (`rim`): clockwise on screen,
-  /// or not.
+  /// least 5 cm (or `step`) round the unit
+  /// it touches (`Battle.circle`):
+  /// clockwise on screen, or not.
   func circle(
     _ way: Nudge,
     from: Point,
     by step: Int
   ) {
-    let clockwise = way == .clockwise
-    let length = max(step, 5)
-    let spot = battle.touching(from).map {
-      battle.circle(
-        from: from,
-        round: $0,
-        clockwise: clockwise,
-        by: length
-      )
-    } ?? battle.orbit(
+    if let spot = battle.circle(
       from: from,
-      clockwise: clockwise,
-      by: length
-    )
-    if let spot {
+      clockwise: way == .clockwise,
+      by: max(step, 5)
+    ) {
       place(spot)
     }
   }
@@ -182,36 +152,4 @@ struct Zone {
   let radius: Int
   let side: Side
   let heals: Bool
-}
-
-/// The circle the planned spot rests on
-/// (`Fight.rim`), and where the orbit
-/// arrows sit.
-struct Rim {
-  let center: Point
-  let radius: Int
-  /// The planned spot, on it.
-  let spot: Point
-  /// How far from the spot the arrows
-  /// sit, in centimetres.
-  let gap: Int
-
-  /// Where the orbit arrow `way` sits:
-  /// `gap` round from the spot, the way
-  /// it goes.
-  func arrow(_ way: Nudge) -> Point {
-    let across = Double(spot.x - center.x)
-    let down = Double(spot.y - center.y)
-    let length = (
-      across * across + down * down
-    ).squareRoot()
-    let turn = way == .clockwise
-      ? (x: -down, y: across)
-      : (x: down, y: -across)
-    let scale = Double(gap) / max(length, 1)
-    return Point(
-      x: spot.x + Int(turn.x * scale),
-      y: spot.y + Int(turn.y * scale)
-    )
-  }
 }

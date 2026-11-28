@@ -250,6 +250,31 @@ starts.
     or a foe. A "lollipop" to drag round
     the circle was weighed and dropped;
     stepping one tap at a time stays.
+- **0.0.15, orbit arrows and the
+  commander**:
+  - The pad is in a good spot: at the
+    edge of the range, up and down
+    slide along it to its top and
+    bottom, and that feels good.
+  - The orbit arrows on the arena were
+    buggy: they moved as you tapped, so
+    they were hard to follow, and after
+    a few taps the ghost sometimes kept
+    moving by itself. (A quick tap could
+    press and let go within one frame,
+    so the let-go was never seen and the
+    hold ran on.)
+  - The pad against an ally or a foe
+    felt wonky and could get stuck:
+    moving down onto the top right of
+    another unit, the plan shook back
+    and forth on its edge.
+  - Owner's idea: no arrows on the
+    arena; moving into a unit locks on,
+    and a second pad with clockwise and
+    counterclockwise goes round it,
+    carrying on round the next unit
+    where two meet.
 
 ## Decisions
 
@@ -755,6 +780,29 @@ starts.
     so their timeline stays; real fights
     (Fight, and the picker's) have one,
     and so do its two screens.
+- **A circling pad** (from 0.0.15,
+  owner's idea; replaces the orbit
+  arrows on the arena):
+  - At the edge of the range, nothing
+    new: the pad's arrows slide along
+    it.
+  - Touching a unit (within 2 cm), a
+    second pad beside the first shows
+    clockwise and counterclockwise; room
+    is kept for it, so the pad never
+    moves. A tap steps about 5 cm round;
+    a hold repeats, like the pad.
+  - A straight nudge into a unit it
+    touches doesn't go (no more
+    sliding round it, which shook); one
+    away from it leaves it.
+  - Where two units meet, circling goes
+    on round whichever lets it, so a
+    group (a figure 8, a cluster) is
+    circled round its outside. It stops
+    at the edge of the range.
+  - Gone: the faint circle and the
+    arrows on the arena.
 - **Reactions, as built** (with the
   rogue, Units part three):
   - At most one a round per unit, and
@@ -977,7 +1025,9 @@ Free movement, as in `brainstorm-2.md`
   0.0.15): its turn and actions.
 - **Reactions** (0.0.16, in progress):
   automatic and asked, the one-a-round
-  limit, the dodge and the counterspell.
+  limit, the dodge and the counterspell;
+  bundled with a circling pad in place
+  of the orbit arrows (owner's call).
 - **B4, usability**: end turns by
   themselves, the settings screen (with
   playing foe turns through, once

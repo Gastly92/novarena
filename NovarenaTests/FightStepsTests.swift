@@ -2,8 +2,8 @@
 import RuleSteward
 import XCTest
 
-/// Foes' turns a step at a time, and the
-/// orbit arrows at an edge.
+/// Foes' turns a step at a time, and
+/// nudges at an edge.
 @MainActor
 final class FightStepsTests: XCTestCase {
   /// After Gerald waits, Ashka's turn plays
@@ -56,29 +56,20 @@ final class FightStepsTests: XCTestCase {
   }
 
   /// At the east edge of Gerald's range,
-  /// the orbit arrows follow it: the rim
-  /// is his range round him, clockwise
-  /// sits below the planned spot and goes
-  /// down, the other way above. Away from
-  /// an edge or a unit, on a foe's turn,
-  /// or once it's over, there's no rim.
-  func testOrbits() throws {
+  /// down slides along it; no circling
+  /// arrows there, nor away from a unit,
+  /// on a foe's turn or once it's over.
+  func testEdge() throws {
     let edge = Fight(stage: .edge)
-    let gerald = edge.battle.units[0]
-    let rim = try XCTUnwrap(edge.rim)
-    XCTAssertEqual(rim.center, gerald.place)
-    XCTAssertEqual(rim.radius, edge.moveLeft)
-    let below = rim.arrow(.clockwise)
-    let above = rim.arrow(.counterclockwise)
-    XCTAssertGreaterThan(below.y, 200)
-    XCTAssertLessThan(above.y, 200)
-    edge.nudge(.clockwise, by: 1)
+    XCTAssertFalse(edge.circling)
+    edge.nudge(.south, by: 10)
     let moved = try XCTUnwrap(edge.ghost)
     XCTAssertGreaterThan(moved.y, 200)
-    let start = Fight()
-    XCTAssertNil(start.rim)
-    XCTAssertNil(Fight(stage: .foes).rim)
-    XCTAssertNil(Fight(stage: .end).rim)
+    XCTAssertFalse(Fight().circling)
+    let foes = Fight(stage: .foes)
+    XCTAssertFalse(foes.circling)
+    let over = Fight(stage: .end)
+    XCTAssertFalse(over.circling)
   }
 
   /// Arrows' icons: chevrons, and turning

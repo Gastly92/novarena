@@ -206,7 +206,8 @@ final class Fight {
 
   /// Moves the planned spot (or, with none,
   /// the unit's own) `step` centimetres
-  /// `way`, if it can go there.
+  /// `way`, if it can go there: not into
+  /// a unit it touches.
   func nudge(_ way: Nudge, by step: Int) {
     guard let from = ghost ?? actor?.place
     else { return }
@@ -214,10 +215,16 @@ final class Fight {
       circle(way, from: from, by: step)
       return
     }
-    place(Point(
+    let spot = Point(
       x: from.x + way.offset.x * step,
       y: from.y + way.offset.y * step
-    ))
+    )
+    let into = battle.heads(
+      from: from, into: spot
+    )
+    if !into {
+      place(spot)
+    }
   }
 
   /// An arrow pressed (nudging now, then
@@ -240,7 +247,7 @@ final class Fight {
         // A circling arrow with nothing to
         // circle lets go, so its next press
         // starts again.
-        guard !way.circles || rim != nil
+        guard !way.circles || circling
         else {
           self.way = nil
           return

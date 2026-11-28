@@ -89,17 +89,17 @@ final class BattleTests: XCTestCase {
   }
 
   /// Touching Oswin, hold the clockwise
-  /// orbit arrow on the arena: Gerald's
+  /// arrow beside the pad: Gerald's
   /// planned spot circles round him, so
   /// the move changes.
   @MainActor
-  func testOrbits() {
+  func testCircles() {
     let app = App.start(
       screen: .battleCircling
     )
     let status = app.text("move-status")
     let planned = status.label
-    app.buttons["orbit-clockwise"]
+    app.buttons["nudge-clockwise"]
       .press(forDuration: 0.6)
     XCTAssertNotEqual(status.label, planned)
   }

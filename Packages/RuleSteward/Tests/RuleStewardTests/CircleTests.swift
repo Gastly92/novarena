@@ -27,6 +27,28 @@ final class CircleTests: XCTestCase {
     )
   }
 
+  /// From B's west side, east heads into
+  /// B; west and north don't; away from B
+  /// nothing does.
+  func testHeads() {
+    let east = Point(x: 521, y: 400)
+    let west = Point(x: 519, y: 400)
+    let north = Point(x: 520, y: 399)
+    XCTAssertTrue(
+      battle.heads(from: side, into: east)
+    )
+    XCTAssertFalse(
+      battle.heads(from: side, into: west)
+    )
+    XCTAssertFalse(
+      battle.heads(from: side, into: north)
+    )
+    let free = Point(x: 450, y: 400)
+    XCTAssertFalse(
+      battle.heads(from: free, into: side)
+    )
+  }
+
   /// From B's west side, clockwise on
   /// screen goes up, the other way down,
   /// each kept just clear of B.
@@ -34,20 +56,14 @@ final class CircleTests: XCTestCase {
     let other = battle.units[1]
     let upward = try XCTUnwrap(
       battle.circle(
-        from: side,
-        round: other,
-        clockwise: true,
-        by: 10
+        from: side, clockwise: true, by: 10
       )
     )
     XCTAssertEqual(
       upward, Point(x: 520, y: 390)
     )
     let down = battle.circle(
-      from: side,
-      round: other,
-      clockwise: false,
-      by: 10
+      from: side, clockwise: false, by: 10
     )
     XCTAssertEqual(
       down, Point(x: 520, y: 410)
@@ -58,16 +74,30 @@ final class CircleTests: XCTestCase {
     )
   }
 
-  /// From B's middle, or with the battle
+  /// Touching nobody, from B's middle,
+  /// out of range, or with the battle
   /// over, there's no circling.
   func testNowhere() {
-    let other = battle.units[1]
+    let middle = battle.units[1].place
+    let free = Point(x: 450, y: 400)
+    for spot in [free, middle] {
+      XCTAssertNil(
+        battle.circle(
+          from: spot, clockwise: true, by: 10
+        )
+      )
+    }
+    let short = Battle(
+      party: [Fixtures.unit("A", move: 120)],
+      foes: [Fixtures.unit("B", speed: 50)],
+      places: [
+        Point(x: 400, y: 400),
+        Point(x: 600, y: 400),
+      ]
+    )
     XCTAssertNil(
-      battle.circle(
-        from: other.place,
-        round: other,
-        clockwise: true,
-        by: 10
+      short.circle(
+        from: side, clockwise: true, by: 10
       )
     )
     var over = battle
@@ -75,11 +105,43 @@ final class CircleTests: XCTestCase {
     XCTAssertNil(over.touching(side))
     XCTAssertNil(
       over.circle(
-        from: side,
-        round: other,
-        clockwise: true,
-        by: 10
+        from: side, clockwise: true, by: 10
       )
     )
+  }
+
+  /// B with C on top of it, touching: going
+  /// clockwise up B's west side, the spot
+  /// passes where B and C meet and goes on
+  /// up C's, never overlapping either.
+  func testCirclesAGroup() throws {
+    let group = Battle(
+      party: [Fixtures.unit("A")],
+      foes: [
+        Fixtures.unit("B", speed: 50),
+        Fixtures.unit("C", speed: 50),
+      ],
+      places: [
+        Point(x: 400, y: 400),
+        Point(x: 600, y: 400),
+        Point(x: 600, y: 320),
+      ]
+    )
+    var spot = side
+    for _ in 0..<12 {
+      spot = try XCTUnwrap(
+        group.circle(
+          from: spot, clockwise: true, by: 10
+        )
+      )
+      let mover = group.units[0]
+      XCTAssertNil(
+        group.blocker(of: mover, at: spot)
+      )
+    }
+    XCTAssertEqual(
+      group.touching(spot)?.id, 2
+    )
+    XCTAssertLessThan(spot.y, 320)
   }
 }

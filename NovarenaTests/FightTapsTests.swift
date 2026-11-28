@@ -86,10 +86,10 @@ final class FightTapsTests: XCTestCase {
     XCTAssertTrue(fight.inReach(0))
   }
 
-  /// Touching Oswin from above, the orbit
-  /// arrows circle round him: clockwise
-  /// to the right, going right, and the
-  /// other way to the left.
+  /// Touching Oswin from above, the
+  /// circling arrows show; clockwise goes
+  /// right round him. A nudge down, into
+  /// him, doesn't go; one up leaves him.
   func testCircles() throws {
     let fight = Fight(stage: .circling)
     let start = try XCTUnwrap(fight.ghost)
@@ -97,13 +97,12 @@ final class FightTapsTests: XCTestCase {
       start, Point(x: 250, y: 535)
     )
     let oswin = fight.battle.units[1].place
-    let rim = try XCTUnwrap(fight.rim)
-    XCTAssertEqual(rim.center, oswin)
-    XCTAssertEqual(rim.radius, 65)
-    let right = rim.arrow(.clockwise)
-    let left = rim.arrow(.counterclockwise)
-    XCTAssertGreaterThan(right.x, 250)
-    XCTAssertLessThan(left.x, 250)
+    XCTAssertTrue(fight.circling)
+    fight.nudge(.south, by: 5)
+    XCTAssertEqual(fight.ghost, start)
+    let away = Fight(stage: .circling)
+    away.nudge(.north, by: 5)
+    XCTAssertFalse(away.circling)
     fight.nudge(.clockwise, by: 10)
     let moved = try XCTUnwrap(fight.ghost)
     XCTAssertGreaterThan(moved.x, 250)
