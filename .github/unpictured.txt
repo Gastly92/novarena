@@ -48,10 +48,13 @@ PickerView.swift
   lineup.add(index, to: .party)
   lineup.add(index, to: .foes)
 
-# Taps: commit or undo a planned move.
+# Taps: commit or undo a planned move,
+# walk up close to a foe or into range.
 MovePanel.swift
   fight.commit()
   fight.undo()
+  fight.upClose()
+  fight.inRange()
 
 # Pressing and letting go of an arrow.
 NudgePad.swift

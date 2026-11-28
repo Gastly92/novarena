@@ -39,6 +39,10 @@ extension Fight {
     /// of the foes' turns (Kestrel-9's
     /// ending): Next, no Skip.
     case lastStep
+    /// Gerald's first turn, the move open,
+    /// Ashka tapped: walk up close or into
+    /// range.
+    case approaching
     /// Gerald's first turn, a move planned
     /// to the east edge of his range: up
     /// and down slide along it.
@@ -93,6 +97,7 @@ extension Fight.Stage {
       .battleExposed: .exposed,
       .battleFoes: .foes,
       .battleLastStep: .lastStep,
+      .battleApproaching: .approaching,
       .battleEdge: .edge,
       .battleCircling: .circling,
       .battleCommanding: .commanding,
@@ -157,7 +162,7 @@ extension Fight.Stage {
   var turns: Int {
     switch self {
     case .start, .moving, .aiming, .foes,
-      .lastStep,
+      .lastStep, .approaching,
       .edge, .circling, .commanding, .warded,
       .dodging, .countering:
       0
@@ -185,6 +190,8 @@ extension Fight.Stage {
       foes(fight)
     case .edge:
       fight.place(Point(x: 600, y: 200))
+    case .approaching:
+      fight.tap(fight.battle.units[2].place)
     case .circling:
       fight.tap(fight.battle.units[1].place)
     case .dodging, .countering:

@@ -328,6 +328,22 @@ starts.
   - Does the commander passing bring its
     next turn sooner? (It didn't.)
 
+- **0.0.17, settings and fixes**:
+  - With the move open, tapping a foe:
+    it wasn't clear why the move didn't
+    use the full range when a skill
+    already reached. Wanted: choices,
+    like walking up close or getting in
+    range.
+  - Back away should be off when the
+    plan is already at the edge.
+  - There was no way to unpick a skill,
+    so taps move again.
+  - Turns didn't always end by
+    themselves: with skills out of reach
+    and no movement left, it waited.
+    (It only counted skills it couldn't
+    pay for.)
 ## Decisions
 
 - **The turn order is a row of
@@ -913,6 +929,27 @@ starts.
   owner's call): passing waits 90 ticks,
   as a unit that doesn't move does; an
   order still waits 100.
+- **Walking toward a foe, by choice**
+  (from 0.0.17): with the move open, a
+  tapped foe is picked, moving nothing
+  yet; its name shows under the pad with
+  "Up close" (straight at it, just
+  touching, or as far as the range
+  goes) and "In range" (the edge of the
+  picked skill's reach, or the longest,
+  backing away if nearer). Tapping an
+  ally still walks to touch it.
+- **Smaller fixes** (from 0.0.17):
+  - Back away is off when the planned
+    spot is already at the edge.
+  - Tapping the picked skill again
+    unpicks it (and its plan), so taps
+    move again.
+  - A turn ends by itself when no skill
+    the unit can pay for reaches anyone
+    from where it stands, and no
+    movement is left (not only when it
+    can pay for none).
 - **Settings, as built** (B4):
   - A settings screen from home, kept
     on the phone (`@AppStorage`; the
@@ -1167,8 +1204,8 @@ Free movement, as in `brainstorm-2.md`
   bundled with a circling pad in place
   of the orbit arrows and skills planned
   like moves (owner's call).
-- **B4, usability** (0.0.17, in
-  progress): turns that end by
+- **B4, usability** (done, #32,
+  0.0.17): turns that end by
   themselves, and a settings screen with
   them, playing foes' turns through, and
   counterspells. Planning the approach

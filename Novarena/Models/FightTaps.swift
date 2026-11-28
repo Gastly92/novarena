@@ -12,7 +12,8 @@ extension Fight {
   /// it (`aim(at:)`); on the unit on turn,
   /// clears the plan; with zones on, turns
   /// its zone on or off; with the move
-  /// open, plans a walk to it; else
+  /// open, a foe is picked to walk toward
+  /// (`approach`), an ally walked to; else
   /// nothing yet (later: its details).
   /// Anywhere else it can reach is
   /// planned.
@@ -20,6 +21,7 @@ extension Fight {
     guard let actor else {
       return
     }
+    approached = nil
     let other = battle.units.first {
       $0.isUp && $0.id != actor.id
         && Self.covers($0, point, by: 30)
@@ -35,7 +37,7 @@ extension Fight {
     } else if let unit, zoning {
       watch(unit.id)
     } else if let unit, panel == .move {
-      walk(to: unit, from: actor)
+      approach(unit, from: actor)
     } else if unit == nil {
       place(point)
     }
@@ -62,24 +64,59 @@ extension Fight {
     target(id)
   }
 
+  /// With the move open, a tapped foe is
+  /// picked to walk toward (`approached`):
+  /// up close or in range, as the player
+  /// chooses. An ally is walked to, just
+  /// touching.
+  func approach(
+    _ unit: BattleUnit,
+    from actor: BattleUnit
+  ) {
+    if unit.side == actor.side {
+      walk(to: unit, from: actor)
+    } else {
+      approached = unit.id
+    }
+  }
+
+  /// Walks straight toward the approached
+  /// foe, stopping just touching it (or at
+  /// the edge of the range).
+  func upClose() {
+    guard let id = approached, let actor
+    else { return }
+    walk(to: battle.units[id], from: actor)
+  }
+
+  /// Walks to the edge of the picked
+  /// skill's reach on the approached foe,
+  /// or with none, the longest reach;
+  /// backing away if nearer
+  /// (`Battle.standoff`).
+  func inRange() {
+    guard let spot = rangeSpot else {
+      return
+    }
+    place(spot)
+  }
+
+  /// Where `inRange()` goes; none without a
+  /// foe approached, or a skill that
+  /// reaches it.
+  var rangeSpot: Point? {
+    approached.flatMap {
+      battle.standoff(on: $0, with: chosen)
+    }
+  }
+
   /// Plans a straight walk from `actor`
-  /// toward `unit`: to a foe, to the edge
-  /// of the picked skill's reach (or the
-  /// longest reach), backing away if
-  /// nearer (`Battle.standoff`); to an
-  /// ally, just touching it. Either stops
-  /// at the edge of the range.
-  func walk(
+  /// toward `unit`, stopping just touching
+  /// it (or at the edge of the range).
+  private func walk(
     to unit: BattleUnit,
     from actor: BattleUnit
   ) {
-    if unit.side != actor.side,
-      let spot = battle.standoff(
-        on: unit.id, with: chosen
-      ) {
-      place(spot)
-      return
-    }
     let apart = actor.unit.size.radius
       + unit.unit.size.radius
     place(unit.place.toward(
@@ -100,6 +137,21 @@ extension Fight {
     let down = point.y - unit.place.y
     return across * across + down * down
       <= radius * radius
+  }
+
+  /// Whether backing away would move the
+  /// planned spot: a skill is planned, and
+  /// the spot isn't at the edge of its
+  /// reach already.
+  var canBackAway: Bool {
+    guard let aimed else {
+      return false
+    }
+    let edge = battle.standoff(
+      on: aimed.target,
+      with: aimed.ability
+    )
+    return edge != (ghost ?? actor?.place)
   }
 
   /// Moves the planned spot back (or in)
