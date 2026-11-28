@@ -1,5 +1,6 @@
 /// More hand-made units: a cleric, an
-/// archer, a golem and an ice mage, tuned
+/// archer, a golem and an ice mage (who
+/// counters spells cast near her), tuned
 /// with the first four (see
 /// `BalanceTests`).
 public extension Unit {
@@ -241,5 +242,6 @@ public extension Unit {
         refill: 15
       ),
     ],
+    reactions: [.counterspell]
   )
 }

@@ -61,6 +61,50 @@ public extension Battle {
     }
   }
 
+  /// Where the unit on turn would stand to
+  /// keep `target` (an id) at the edge of
+  /// `ability`'s reach, or with none, of
+  /// the longest reach among its abilities
+  /// it can use on it: on the straight
+  /// line through the two, backing away if
+  /// nearer, closing in if further, as
+  /// near that as it can go this turn
+  /// (`reachable`). None if nobody is on
+  /// turn, nothing reaches, or they stand
+  /// on one spot.
+  func standoff(
+    on target: Int,
+    with ability: Int? = nil
+  ) -> Point? {
+    guard let mover = try? ready(),
+      units.indices.contains(target)
+    else { return nil }
+    let foe = units[target]
+    let all = mover.unit.abilities
+    let picks = ability.map { [$0] }
+      ?? Array(all.indices)
+    let limit = picks
+      .filter { all.indices.contains($0) }
+      .map { all[$0] }
+      .filter {
+        isTarget(foe, of: $0, by: mover)
+          && mover.affords($0)
+      }
+      .map {
+        $0.reach.limit(
+          from: mover.unit.size.radius,
+          to: foe.unit.size.radius
+        )
+      }
+      .max()
+    guard let limit,
+      let edge = mover.place.away(
+        from: foe.place, by: limit - 2
+      )
+    else { return nil }
+    return reachable(toward: edge)
+  }
+
   /// The next unit's plain choice: of the
   /// affordable abilities and their
   /// targets (foes to hit, allies to

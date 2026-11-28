@@ -16,64 +16,6 @@ import RuleSteward
 @MainActor
 @Observable
 final class Fight {
-  /// How far into the sample battle a
-  /// screen starts, for UI tests and
-  /// snapshots.
-  enum Stage {
-    /// Gerald's first turn.
-    case start
-    /// The same, with a move planned to
-    /// (300, 200).
-    case moving
-    /// The same, skills open, Sword Cut
-    /// picked: no foe in reach.
-    case aiming
-    /// Gerald's second turn, with a move
-    /// planned that puts Kestrel-9 in Sword
-    /// Cut's reach, but not Ashka.
-    case planned
-    /// The same, after Sword Cut and
-    /// Pommel Strike on Kestrel-9: the
-    /// turn still to end.
-    case acted
-    /// Six turns in.
-    case middle
-    /// The same, with every zone on.
-    case zones
-    /// Eleven turns in: Ashka and Oswin
-    /// exposed, Oswin's turn, the actions
-    /// open (short, so his row shows).
-    case exposed
-    /// Played to the end.
-    case end
-    /// Gerald's first turn ended without
-    /// moving: Ashka's turn begun, then her
-    /// move shown, a step at a time.
-    case foes
-    /// Gerald's first turn, a move planned
-    /// to the east edge of his range: up
-    /// and down slide along it.
-    case edge
-    /// With the party's commander: its
-    /// second turn, Oswin worn.
-    case commanding
-    /// With the commander: Gerald's first
-    /// turn ended, then Gerald warded, and
-    /// Ashka's turn begun.
-    case warded
-    /// Gerald's first turn, Oswin tapped
-    /// with the move open: a walk planned
-    /// to touch him, arrows circling round
-    /// him.
-    case circling
-    /// Gerald and Maren against the same
-    /// foes, six turns in: Maren's turn,
-    /// Mend Wounds picked, Gerald's plate
-    /// worn and in her reach, every zone
-    /// on.
-    case healing
-  }
-
   /// The parts of a turn, one shown at a
   /// time.
   enum Panel {
@@ -81,18 +23,19 @@ final class Fight {
   }
 
   private(set) var battle: Battle
-  /// Who fights for the party.
-  private let party: [Unit]
-  /// Who they face.
-  private let foes: [Unit]
-  /// Its commander's side, if any.
-  private let leader: Side?
+  /// The battle as it began, to fight
+  /// again.
+  private let start: Battle
   /// The skill picked for the unit on
   /// turn, waiting for a target.
   private(set) var chosen: Int?
   /// Where the unit on turn plans to move,
   /// until it's committed.
   private(set) var ghost: Point?
+  /// The skill planned on a unit, from the
+  /// planned spot, until it's used
+  /// (`use()`).
+  private(set) var aimed: Action?
   /// The part of the turn on show.
   var panel = Panel.move
   /// Whether zones are on: taps on units
@@ -125,33 +68,36 @@ final class Fight {
     stage: Stage = .start,
     pause: @escaping Pause = Fight.sleep
   ) {
-    self.init(
-      party: stage.party,
-      foes: stage.foes,
-      commander: stage.commands,
-      pause: pause
-    )
+    self.init(stage.battle, pause: pause)
     play(stage.turns)
     stage.setUp(self)
   }
 
   /// A battle between `party` and `foes`,
-  /// up to the party's first turn.
-  init(
+  /// the party with a commander.
+  convenience init(
     party: [Unit],
     foes: [Unit],
-    commander: Bool = true,
     pause: @escaping Pause = Fight.sleep
   ) {
-    wait = pause
-    self.party = party
-    self.foes = foes
-    leader = commander ? .party : nil
-    battle = Battle(
-      party: party,
-      foes: foes,
-      commander: leader
+    self.init(
+      Battle(
+        party: party,
+        foes: foes,
+        commander: .party
+      ),
+      pause: pause
     )
+  }
+
+  /// `battle`, as it stands.
+  init(
+    _ battle: Battle,
+    pause: @escaping Pause
+  ) {
+    wait = pause
+    start = battle
+    self.battle = battle
   }
 
   /// Plays `turns` turns with the plain
@@ -224,9 +170,13 @@ final class Fight {
     battle.moveLeft
   }
 
-  /// Picks a skill for the unit on turn.
+  /// Picks a skill for the unit on turn;
+  /// a plan for another skill goes.
   func choose(_ ability: Int) {
     chosen = ability
+    if aimed?.ability != ability {
+      aimed = nil
+    }
   }
 
   /// Plans a move to `point`, or as far
@@ -264,7 +214,8 @@ final class Fight {
 
   /// Moves the planned spot (or, with none,
   /// the unit's own) `step` centimetres
-  /// `way`, if it can go there.
+  /// `way`, if it can go there: not into
+  /// a unit it touches.
   func nudge(_ way: Nudge, by step: Int) {
     guard let from = ghost ?? actor?.place
     else { return }
@@ -272,10 +223,16 @@ final class Fight {
       circle(way, from: from, by: step)
       return
     }
-    place(Point(
+    let spot = Point(
       x: from.x + way.offset.x * step,
       y: from.y + way.offset.y * step
-    ))
+    )
+    let into = battle.heads(
+      from: from, into: spot
+    )
+    if !into {
+      place(spot)
+    }
   }
 
   /// An arrow pressed (nudging now, then
@@ -298,7 +255,7 @@ final class Fight {
         // A circling arrow with nothing to
         // circle lets go, so its next press
         // starts again.
-        guard !way.circles || rim != nil
+        guard !way.circles || circling
         else {
           self.way = nil
           return
@@ -324,29 +281,58 @@ final class Fight {
     ghost = nil
   }
 
-  /// Uses the picked skill on `target`,
-  /// walking the planned move first; the
-  /// skills stay open while one can still
-  /// be used (a bonus), else the actions
-  /// open. Nothing happens if it can't
-  /// reach.
+  /// Plans the picked skill on `target`,
+  /// if it reaches from the planned spot;
+  /// `use()` carries it out.
   func target(_ target: Int) {
     guard let chosen, inReach(target) else {
       return
     }
+    aimed = Action(chosen, on: target)
+  }
+
+  /// Forgets the planned skill (the skill
+  /// stays picked).
+  func cancel() {
+    aimed = nil
+  }
+
+  /// Whether the planned skill reaches its
+  /// target from the planned spot.
+  var canUse: Bool {
+    aimed.map { inReach($0.target) }
+      ?? false
+  }
+
+  /// Carries out the plan: walks the
+  /// planned move, then uses the planned
+  /// skill. The skills stay open while one
+  /// can still be used (a bonus), else the
+  /// actions open. Nothing happens if it
+  /// can't reach.
+  func use() {
+    guard let aimed, canUse else {
+      return
+    }
     commit()
-    try? battle.use(chosen, on: target)
-    self.chosen = nil
+    try? battle.use(
+      aimed.ability, on: aimed.target
+    )
+    self.aimed = nil
+    chosen = nil
     let left = actor?.unit.abilities.indices
       .contains(where: battle.canUse)
     panel = left == true ? .skills : .actions
   }
 
-  /// Walks the planned move, if any, and
-  /// ends the turn; then the foes act.
+  /// Carries out the plan (the planned
+  /// skill too, if it reaches) and ends
+  /// the turn; then the foes act.
   func endTurn() {
+    use()
     try? battle.act(Turn(before: ghost))
     ghost = nil
+    aimed = nil
     chosen = nil
     panel = .move
     shown = []
@@ -357,11 +343,8 @@ final class Fight {
 
   /// The same battle, from the start.
   func restart() {
-    battle = Battle(
-      party: party,
-      foes: foes,
-      commander: leader
-    )
+    battle = start
+    aimed = nil
     chosen = nil
     ghost = nil
     panel = .move
@@ -383,7 +366,10 @@ final class Fight {
   /// Takes `step` in the battle. A step
   /// that can't be taken (the end, once
   /// someone has won) does nothing.
-  func take(_ step: Step) {
+  func take(
+    _ step: Step,
+    reacting: Bool = true
+  ) {
     switch step {
     case .begin:
       try? battle.beginTurn()
@@ -391,7 +377,9 @@ final class Fight {
       try? battle.move(to: spot)
     case let .use(action):
       try? battle.use(
-        action.ability, on: action.target
+        action.ability,
+        on: action.target,
+        reacting: reacting
       )
     case .end:
       try? battle.endTurn()

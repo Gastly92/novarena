@@ -250,6 +250,48 @@ starts.
     or a foe. A "lollipop" to drag round
     the circle was weighed and dropped;
     stepping one tap at a time stays.
+- **0.0.15, orbit arrows and the
+  commander**:
+  - The pad is in a good spot: at the
+    edge of the range, up and down
+    slide along it to its top and
+    bottom, and that feels good.
+  - The orbit arrows on the arena were
+    buggy: they moved as you tapped, so
+    they were hard to follow, and after
+    a few taps the ghost sometimes kept
+    moving by itself. (A quick tap could
+    press and let go within one frame,
+    so the let-go was never seen and the
+    hold ran on.)
+  - The pad against an ally or a foe
+    felt wonky and could get stuck:
+    moving down onto the top right of
+    another unit, the plan shook back
+    and forth on its edge.
+  - Owner's idea: no arrows on the
+    arena; moving into a unit locks on,
+    and a second pad with clockwise and
+    counterclockwise goes round it,
+    carrying on round the next unit
+    where two meet.
+  - With the move open, tapping a foe
+    walked right up to it, even for the
+    archer, whose longbow already
+    reached. Wanted: just into the
+    skill's range, as far off as
+    possible, or backing away to it.
+  - Picking a skill and a foe showed the
+    move to get there (good), but in
+    reach it struck at once: no chance
+    to back away first. Owner's call: no
+    attacks of opportunity while moving;
+    the whole turn (move and skill) is
+    planned on the ghost, and the skill
+    committed like the move. Both ways
+    should be easy, since how far the
+    unit moves changes when its next
+    turn comes.
 
 ## Decisions
 
@@ -755,6 +797,105 @@ starts.
     so their timeline stays; real fights
     (Fight, and the picker's) have one,
     and so do its two screens.
+- **A circling pad** (from 0.0.15,
+  owner's idea; replaces the orbit
+  arrows on the arena):
+  - At the edge of the range, nothing
+    new: the pad's arrows slide along
+    it.
+  - Touching a unit (within 2 cm), a
+    second pad beside the first shows
+    clockwise and counterclockwise; room
+    is kept for it, so the pad never
+    moves. A tap steps about 5 cm round;
+    a hold repeats, like the pad.
+  - A straight nudge into a unit it
+    touches doesn't go (no more
+    sliding round it, which shook); one
+    away from it leaves it.
+  - Where two units meet, circling goes
+    on round whichever lets it, so a
+    group (a figure 8, a cluster) is
+    circled round its outside. It stops
+    at the edge of the range.
+  - Gone: the faint circle and the
+    arrows on the arena.
+- **Skills planned like moves** (from
+  0.0.15):
+  - With a skill picked, tapping a foe
+    (in the arena or its row) plans it,
+    moving just into reach first if
+    needed; nothing happens yet. A "Use
+    Sword Cut on Kestrel-9" button above
+    the skills carries out the plan: the
+    move, then the skill. It's off while
+    the plan doesn't reach (the ghost
+    moved away).
+  - Ending the turn carries out the plan
+    too (the skill only if it reaches),
+    as it commits a planned move.
+    Cancel (beside Use) drops it, as Undo
+    drops a planned move; so does
+    picking another skill. With nothing
+    planned, ending the turn just ends
+    it. The turn order shows the plan.
+  - With the move open, tapping a foe
+    stands off: the spot on the straight
+    line through the two that keeps it
+    at the edge of the picked skill's
+    reach (or, with none, the longest
+    reach among the unit's skills),
+    backing away if nearer, closing in if
+    further, within the range. Tapping
+    an ally still walks to touch it.
+  - So keeping close (the smallest move,
+    so the next turn comes sooner) and
+    keeping away (the longest reach) are
+    each one tap.
+- **Reactions, as built** (with the
+  rogue, Units part three):
+  - At most one a round per unit, and
+    only while up; a bodyguard stepping
+    in counts as its unit's reaction.
+  - Dodge (by itself): a weapon attack
+    (anything not cast) aimed at the
+    unit misses whole, for 40 stamina.
+  - Counterspell (asked): a foe's spell
+    (cast) from within 3 m, edge to edge,
+    does nothing; the caster still
+    spends its action and pools. Costs
+    50 mana. On a foe's turn the party
+    is asked first ("Counter" or "Let it
+    through"); skipping to the party's
+    turn counters. Foes always counter.
+  - Previews say "Wren dodges it" or
+    "Countered": nothing is random, so
+    it's exact.
+  - Wren, a halfling rogue: small and
+    quick (speed 110), leathers 80 over
+    a body of 50, a shortsword (45) and
+    a free dagger throw (20, 3 m) on top
+    each turn; 60 stamina, 10 back a
+    turn, so a dodge every few rounds.
+    Isolde gets the counterspell.
+  - Tuning: with a 20-stamina dodge
+    Wren won 87% one on one; with a 5 m
+    counter range Isolde won 62%. Now
+    every unit wins 37-62% one on one
+    and 42-57% in teams.
+  - Measured with the new simulator
+    (`.github/scripts/simulate.sh`): with
+    no commander the party wins 47-50%;
+    with the party's commander, 67-73%
+    (73% one on one, 70% in pairs, 67%
+    in trios). Unit balance is checked
+    without it, so the commander is the
+    player's edge; boss foes' commanders
+    would even it.
+  - Later: the rogue's jump (a new kind
+    of move), and a setting per
+    reaction (ask, always or never)
+    with the settings screen (B4).
 - **A wedged plan stops short** (from
   0.0.13): when sliding can't find a
   clear spot, the plan stops at the
@@ -920,7 +1061,7 @@ Free movement, as in `brainstorm-2.md`
   lets go, no empty foe steps, a wedged
   plan stopping short.
 - **Orbit arrows and the commander**
-  (0.0.15, in progress): from 0.0.14, a
+  (done, #30, 0.0.15): from 0.0.14, a
   static pad and orbit arrows on the
   arena; the commander's turn, restore
   and ward.
@@ -934,13 +1075,18 @@ Free movement, as in `brainstorm-2.md`
     (done, #28, 0.0.14, bundled with
     the circling and steps fixes), with
     the freeze kind.
-  - **The rogue** comes with Reactions
-    (its dodge is one, and its jump is
-    a new kind of move).
-- **The commander** (0.0.15, in
-  progress): its turn and actions.
-- **Reactions**: triggers, automatic and
-  asked, the one-a-round limit.
+  - **The rogue** (0.0.16, in progress,
+    with Reactions): Wren and her dodge;
+    her jump (a new kind of move) comes
+    later.
+- **The commander** (done, #30,
+  0.0.15): its turn and actions.
+- **Reactions** (0.0.16, in progress):
+  automatic and asked, the one-a-round
+  limit, the dodge and the counterspell;
+  bundled with a circling pad in place
+  of the orbit arrows and skills planned
+  like moves (owner's call).
 - **B4, usability**: end turns by
   themselves, the settings screen (with
   playing foe turns through, once

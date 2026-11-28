@@ -7,18 +7,22 @@
 # with a # comment saying why. Lines of
 # only brackets or quotes are skipped.
 
-# Taps: pick a skill, tap a unit, end the
-# turn, and start again.
+# Taps: pick a skill, tap a unit, use or
+# cancel the planned skill, end the turn,
+# and start again.
 BattleView.swift
   fight.target(unit.id)
+  fight.use()
+  fight.cancel()
   fight.restart()
   fight.endTurn()
   fight.choose(index)
 
 # Taps: the foes' next step, or all of
-# them.
+# them; a counterspell, or not.
   fight.advance()
   fight.skip()
+  fight.advance(reacting: false)
 
 # Tap: open or fold the knocked-out
 # section (battleFallen shows it open).
@@ -57,14 +61,6 @@ NudgePad.swift
 CommandPanel.swift
   fight.command(.pass)
   fight.command(order)
-
-# Pressing and letting go of an orbit
-# arrow on the arena (or its touch being
-# cancelled).
-OrbitArrows.swift
-  held = way
-  pinned = $1 == nil ? nil : fight.rim
-  fight.press($1)
 
 # Touches on the arena, as they move and
 # when they lift.

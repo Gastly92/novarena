@@ -50,18 +50,17 @@ extension Battle {
 /// Circling round another unit, for
 /// planning a move that hugs it.
 public extension Battle {
-  /// Someone up the unit on turn would
+  /// Everyone up the unit on turn would
   /// touch (within 2 cm) standing at
-  /// `spot`; none if no one, or nobody is
-  /// on turn.
-  func touching(
+  /// `spot`; none if nobody is on turn.
+  func touched(
     _ spot: Point
-  ) -> BattleUnit? {
+  ) -> [BattleUnit] {
     guard let mover = try? ready() else {
-      return nil
+      return []
     }
     let radius = mover.unit.size.radius
-    return units.first {
+    return units.filter {
       let apart = radius
         + $0.unit.size.radius + 2
       return $0.id != mover.id && $0.isUp
@@ -70,61 +69,89 @@ public extension Battle {
     }
   }
 
-  /// The spot `step` centimetres round
-  /// `other` from `spot`, clockwise on
-  /// screen (or not), kept just clear of
-  /// it and within the unit on turn's
-  /// range; none if it can't go.
-  func circle(
+  /// Whether a straight move from `spot`
+  /// toward `next` heads into a unit
+  /// `spot` touches (nearer its middle):
+  /// a nudge that shouldn't go, as
+  /// circling goes round it instead.
+  func heads(
     from spot: Point,
-    round other: BattleUnit,
-    clockwise: Bool,
-    by step: Int
-  ) -> Point? {
-    guard let mover = try? ready(),
-      let ahead = Self.ahead(
-        of: spot,
-        round: other.place,
-        clockwise: clockwise,
-        by: step
-      )
-    else { return nil }
-    let apart = mover.unit.size.radius
-      + other.unit.size.radius
-    let clear = ahead.away(
-      from: other.place, by: apart
-    )
-    return clear.flatMap {
-      reachable(toward: $0)
+    into next: Point
+  ) -> Bool {
+    touched(spot).contains {
+      next.squared(to: $0.place)
+        < spot.squared(to: $0.place)
     }
   }
 
-  /// Whether `spot` is on the edge of the
-  /// unit on turn's range (within 2 cm).
-  func atEdge(_ spot: Point) -> Bool {
-    moveLeft > 0
-      && cost(to: spot) + 2 >= moveLeft
+  /// The first unit `touched(spot)` lists.
+  func touching(
+    _ spot: Point
+  ) -> BattleUnit? {
+    touched(spot).first
   }
 
-  /// The spot `step` centimetres round the
-  /// edge of the unit on turn's range from
-  /// `spot`, clockwise on screen (or not),
-  /// kept on the edge; none if it can't
-  /// go.
-  func orbit(
+  /// The spot `step` centimetres (or as
+  /// near that as it can go) round a unit
+  /// the planned `spot` touches, clockwise
+  /// on screen or not, kept just clear of
+  /// it. Where two units meet, it goes
+  /// round whichever lets it go on, so a
+  /// group is circled round its outside.
+  /// None if it can't go: nothing touched,
+  /// or every step would overlap someone,
+  /// leave the arena or go out of range.
+  func circle(
     from spot: Point,
     clockwise: Bool,
     by step: Int
   ) -> Point? {
-    guard let mover = try? ready(),
-      let ahead = Self.ahead(
-        of: spot,
-        round: mover.place,
+    var length = step
+    while length > 0 {
+      if let next = around(
+        spot,
         clockwise: clockwise,
-        by: step
-      )
-    else { return nil }
-    return reachable(toward: ahead)
+        by: length
+      ) {
+        return next
+      }
+      length /= 2
+    }
+    return nil
+  }
+}
+
+extension Battle {
+  /// The first spot `step` centimetres
+  /// round a unit `spot` touches that the
+  /// unit on turn can reach and fits in.
+  private func around(
+    _ spot: Point,
+    clockwise: Bool,
+    by step: Int
+  ) -> Point? {
+    guard let mover = try? ready() else {
+      return nil
+    }
+    let radius = mover.unit.size.radius
+    return touched(spot).lazy
+      .compactMap { other in
+        let apart = radius
+          + other.unit.size.radius
+        let ahead = Self.ahead(
+          of: spot,
+          round: other.place,
+          clockwise: clockwise,
+          by: step
+        )
+        return ahead?.away(
+          from: other.place, by: apart
+        )
+      }
+      .first {
+        fits(mover, at: $0)
+          && cost(to: $0) <= moveLeft
+      }
   }
 }
 

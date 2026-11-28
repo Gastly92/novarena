@@ -22,5 +22,6 @@ enum ScreenID: String, CaseIterable {
   case battleFallen, battleFoes
   case battleEdge, battleCircling
   case battleCommanding, battleWarded
+  case battleDodging, battleCountering
   case picker
 }

@@ -22,7 +22,7 @@ final class FightCommandTests: XCTestCase {
     }
     XCTAssertEqual(fight.seats.count, 5)
     XCTAssertTrue(fight.queueAfter.isEmpty)
-    XCTAssertNil(fight.rim)
+    XCTAssertFalse(fight.circling)
     fight.place(Point(x: 500, y: 500))
     XCTAssertNil(fight.ghost)
     let battle = fight.battle

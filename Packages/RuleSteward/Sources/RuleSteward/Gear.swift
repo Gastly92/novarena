@@ -46,6 +46,25 @@ public struct Layer: Sendable {
   }
 }
 
+/// Something a unit does out of turn when
+/// something happens. A unit reacts at
+/// most once a round (a bodyguard stepping
+/// in counts), and only while up.
+public enum Reaction: Sendable, Equatable {
+  /// An attack aimed at it that isn't a
+  /// spell (cast) misses whole, for
+  /// `Battle.dodgeCost` stamina. It reacts
+  /// by itself.
+  case dodge
+  /// A foe's spell (cast) from within
+  /// `Battle.counterRange` of it, edge to
+  /// edge, does nothing (the caster still
+  /// spends its action and pools), for
+  /// `Battle.counterCost` mana. Its side
+  /// is asked.
+  case counterspell
+}
+
 /// An always-on effect a unit carries.
 public enum Passive: Sendable {
   /// The first attack each round on an ally

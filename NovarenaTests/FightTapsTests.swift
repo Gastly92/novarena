@@ -40,10 +40,11 @@ final class FightTapsTests: XCTestCase {
   }
 
   /// With the move open, tapping a unit
-  /// plans a walk to it: as far toward
-  /// Ashka as Gerald's range goes, or to
-  /// just touch Oswin (65 cm apart). A tap
-  /// just beside a unit counts as on it.
+  /// plans a walk to it: toward the edge
+  /// of Gerald's reach on Ashka, as far as
+  /// his range goes, or to just touch
+  /// Oswin (65 cm apart). A tap just
+  /// beside a unit counts as on it.
   func testWalksToAUnit() {
     let fight = Fight()
     fight.tap(fight.battle.units[2].place)
@@ -56,12 +57,28 @@ final class FightTapsTests: XCTestCase {
     )
   }
 
+  /// Near Kestrel-9 with Sword Cut picked,
+  /// the move open, tapping it plans the
+  /// spot at the edge of Sword Cut's reach
+  /// (`Battle.standoff`), still in reach.
+  func testStandsOff() {
+    let fight = Fight(stage: .planned)
+    fight.panel = .move
+    let kestrel = fight.battle.units[3]
+    let edge = fight.battle.standoff(
+      on: 3, with: 0
+    )
+    fight.tap(kestrel.place)
+    XCTAssertEqual(fight.ghost, edge)
+    XCTAssertTrue(fight.inReach(3))
+  }
+
   /// With Sword Cut picked, tapping Ashka
   /// out of reach plans the move just into
   /// reach from where Gerald stands (the
   /// walk the plain choice takes), not to
-  /// the edge of his range; tapping her
-  /// then strikes.
+  /// the edge of his range, and plans the
+  /// strike; using it strikes.
   func testAimsJustIntoReach() {
     let fight = Fight(stage: .planned)
     let ashka = fight.battle.units[2]
@@ -70,7 +87,10 @@ final class FightTapsTests: XCTestCase {
       fight.ghost, Point(x: 642, y: 248)
     )
     XCTAssertTrue(fight.inReach(2))
-    fight.tap(ashka.place)
+    XCTAssertEqual(
+      fight.aimed, Action(0, on: 2)
+    )
+    fight.use()
     XCTAssertTrue(fight.battle.hasActed)
   }
 
@@ -86,10 +106,10 @@ final class FightTapsTests: XCTestCase {
     XCTAssertTrue(fight.inReach(0))
   }
 
-  /// Touching Oswin from above, the orbit
-  /// arrows circle round him: clockwise
-  /// to the right, going right, and the
-  /// other way to the left.
+  /// Touching Oswin from above, the
+  /// circling arrows show; clockwise goes
+  /// right round him. A nudge down, into
+  /// him, doesn't go; one up leaves him.
   func testCircles() throws {
     let fight = Fight(stage: .circling)
     let start = try XCTUnwrap(fight.ghost)
@@ -97,13 +117,12 @@ final class FightTapsTests: XCTestCase {
       start, Point(x: 250, y: 535)
     )
     let oswin = fight.battle.units[1].place
-    let rim = try XCTUnwrap(fight.rim)
-    XCTAssertEqual(rim.center, oswin)
-    XCTAssertEqual(rim.radius, 65)
-    let right = rim.arrow(.clockwise)
-    let left = rim.arrow(.counterclockwise)
-    XCTAssertGreaterThan(right.x, 250)
-    XCTAssertLessThan(left.x, 250)
+    XCTAssertTrue(fight.circling)
+    fight.nudge(.south, by: 5)
+    XCTAssertEqual(fight.ghost, start)
+    let away = Fight(stage: .circling)
+    away.nudge(.north, by: 5)
+    XCTAssertFalse(away.circling)
     fight.nudge(.clockwise, by: 10)
     let moved = try XCTUnwrap(fight.ghost)
     XCTAssertGreaterThan(moved.x, 250)

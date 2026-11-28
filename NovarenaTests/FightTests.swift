@@ -112,9 +112,10 @@ final class FightTests: XCTestCase {
 
   /// A foe out of reach can't be targeted;
   /// one in reach, tapped in the arena, is
-  /// hit after the walk. The skills stay
-  /// open for the Pommel Strike bonus;
-  /// once it's used, the actions open.
+  /// planned, then hit after the walk once
+  /// used. The skills stay open for the
+  /// Pommel Strike bonus; once it's used,
+  /// the actions open.
   func testActs() {
     let fight = Fight(stage: .planned)
     let count = fight.battle.log.count
@@ -125,6 +126,9 @@ final class FightTests: XCTestCase {
     XCTAssertEqual(fight.chosen, 0)
     let kestrel = fight.battle.units[3]
     fight.tap(kestrel.place)
+    XCTAssertNotNil(fight.aimed)
+    fight.use()
+    XCTAssertNil(fight.aimed)
     XCTAssertNil(fight.chosen)
     XCTAssertNil(fight.ghost)
     XCTAssertEqual(fight.panel, .skills)
@@ -132,6 +136,7 @@ final class FightTests: XCTestCase {
     XCTAssertFalse(fight.battle.canUse(0))
     fight.choose(2)
     fight.target(3)
+    fight.use()
     XCTAssertEqual(fight.panel, .actions)
     XCTAssertFalse(fight.battle.canUse(2))
     let hit = "Gerald: Sword Cut → Kestrel-9"
@@ -254,9 +259,9 @@ final class FightTests: XCTestCase {
   /// Maren's Mend Wounds (30 × 120% = 36,
   /// by half on metal) can only go on an
   /// ally it can mend: Gerald, his plate
-  /// at 7. Tapping him in the arena heals
-  /// him to 25; the skills stay open for
-  /// her Mace Blow.
+  /// at 7. Tapping him in the arena plans
+  /// it; using it heals him to 25, and the
+  /// skills stay open for her Mace Blow.
   func testHeals() {
     let fight = Fight(stage: .healing)
     XCTAssertEqual(fight.actor?.id, 1)
@@ -271,6 +276,7 @@ final class FightTests: XCTestCase {
     XCTAssertFalse(fight.canAim(at: 2))
     XCTAssertTrue(fight.inReach(0))
     fight.tap(fight.battle.units[0].place)
+    fight.use()
     XCTAssertEqual(
       fight.battle.units[0].layers, [25, 60]
     )

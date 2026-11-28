@@ -67,18 +67,39 @@ final class BattleTests: XCTestCase {
     )
   }
 
+  /// Ashka casts near Isolde: counter it,
+  /// and the question goes; on another
+  /// try, let it through.
+  @MainActor
+  func testCounters() {
+    let answers = [
+      "Counter", "Let it through",
+    ]
+    for answer in answers {
+      let app = App.start(
+        screen: .battleCountering
+      )
+      let ask = app.text("data-question")
+      XCTAssertTrue(ask.appears())
+      app.buttons[answer].tap()
+      XCTAssertTrue(
+        ask.waitForNonExistence(timeout: 5)
+      )
+    }
+  }
+
   /// Touching Oswin, hold the clockwise
-  /// orbit arrow on the arena: Gerald's
+  /// arrow beside the pad: Gerald's
   /// planned spot circles round him, so
   /// the move changes.
   @MainActor
-  func testOrbits() {
+  func testCircles() {
     let app = App.start(
       screen: .battleCircling
     )
     let status = app.text("move-status")
     let planned = status.label
-    app.buttons["orbit-clockwise"]
+    app.buttons["nudge-clockwise"]
       .press(forDuration: 0.6)
     XCTAssertNotEqual(status.label, planned)
   }
@@ -99,16 +120,18 @@ final class BattleTests: XCTestCase {
 
   /// With Sword Cut picked and a move
   /// planned, tap Kestrel-9 in the arena
-  /// (at 912, 556 cm): Gerald walks and
-  /// hits. The skills stay open for his
-  /// Pommel Strike; open the actions and
-  /// end the turn instead.
+  /// (at 912, 556 cm) to plan the strike,
+  /// then use it: Gerald walks and hits.
+  /// The skills stay open for his Pommel
+  /// Strike; open the actions and end the
+  /// turn instead.
   @MainActor
   func testActsThenEnds() {
     let app = App.start(
       screen: .battlePlanned
     )
     tap(app, x: 0.76, y: 0.695)
+    app.buttons["use-skill"].tap()
     let pommel = app.buttons[
       "data-ability-2"
     ]
@@ -117,6 +140,21 @@ final class BattleTests: XCTestCase {
     app.buttons["End turn"].tap()
     app.buttons["Skip to your turn"].tap()
     XCTAssertTrue(isTurn(of: "Oswin", app))
+  }
+
+  /// Cancel forgets a planned skill, so
+  /// its Use button goes.
+  @MainActor
+  func testCancelsASkill() {
+    let app = App.start(
+      screen: .battlePlanned
+    )
+    let use = app.buttons["use-skill"]
+    XCTAssertTrue(use.appears())
+    app.buttons["Cancel"].tap()
+    XCTAssertTrue(
+      use.waitForNonExistence(timeout: 5)
+    )
   }
 
   /// Undo forgets a planned move.
@@ -150,7 +188,8 @@ final class BattleTests: XCTestCase {
   }
 
   /// With Mend Wounds picked, tapping
-  /// Gerald's row heals his plate, 7 to
+  /// Gerald's row plans the heal; ending
+  /// the turn uses it: his plate, 7 to
   /// 25.
   @MainActor
   func testHealsFromTheRow() {
@@ -164,6 +203,7 @@ final class BattleTests: XCTestCase {
     let gerald = app.buttons["data-unit-0"]
     XCTAssertTrue(gerald.appears())
     gerald.tap()
+    app.buttons["End turn"].tap()
     let healed = gerald.label
     XCTAssertTrue(
       healed.contains("25 of 190")

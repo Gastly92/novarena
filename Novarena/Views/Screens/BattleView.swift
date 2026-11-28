@@ -171,6 +171,7 @@ private struct Controls: View {
       case .move:
         MovePanel(fight: fight)
       case .skills:
+        plan(of: actor)
         skills(of: actor)
       case .actions:
         Button("End turn") {
@@ -199,11 +200,65 @@ private struct Controls: View {
           .font(.caption.monospaced())
           .testID("data-step")
       }
-      Button("Next") {
-        fight.advance()
+      if let ask = fight.question {
+        counter(ask.reactor, ask.spell)
+      } else {
+        Button("Next") {
+          fight.advance()
+        }
       }
       Button("Skip to your turn") {
         fight.skip()
+      }
+    }
+  }
+
+  /// Asks whether `reactor` counters the
+  /// foe's `spell` (names from the rules,
+  /// so a `data-` identifier), for its
+  /// mana.
+  @ViewBuilder
+  private func counter(
+    _ reactor: BattleUnit,
+    _ spell: String
+  ) -> some View {
+    let name = reactor.unit.name
+    Text(verbatim: "\(name) · \(spell)")
+      .font(.headline)
+      .testID("data-question")
+    Text("""
+      Counter it, for \
+      \(Battle.counterCost) mana?
+      """)
+    Button("Counter") {
+      fight.advance()
+    }
+    Button("Let it through") {
+      fight.advance(reacting: false)
+    }
+  }
+
+  /// The planned skill and its target,
+  /// with a button to use it (off while it
+  /// doesn't reach) and one to cancel it.
+  /// Names come from the rules, in a
+  /// sentence to translate.
+  @ViewBuilder
+  private func plan(
+    of actor: BattleUnit
+  ) -> some View {
+    if let aimed = fight.aimed {
+      let skill = actor.unit
+        .abilities[aimed.ability].name
+      let foe = fight.battle
+        .units[aimed.target].unit.name
+      Button("Use \(skill) on \(foe)") {
+        fight.use()
+      }
+      .disabled(!fight.canUse)
+      .testID("use-skill")
+      Button("Cancel", role: .cancel) {
+        fight.cancel()
       }
     }
   }

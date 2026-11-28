@@ -47,6 +47,9 @@ public struct BattleUnit: Sendable,
   /// The round it last stood in for an
   /// ally (`Passive.bodyguard`).
   var guarded: Int?
+  /// The round it last reacted (a
+  /// bodyguard's step in included).
+  var reacted: Int?
 
   /// Still in the fight.
   public var isUp: Bool { !isOut }
