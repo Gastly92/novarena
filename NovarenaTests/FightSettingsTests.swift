@@ -12,8 +12,8 @@ final class FightSettingsTests: XCTestCase {
   private func unit(
     _ name: String,
     speed: Int
-  ) -> Unit {
-    Unit(
+  ) -> RuleSteward.Unit {
+    RuleSteward.Unit(
       name,
       kind: "test",
       stats: Stats(speed: speed),
