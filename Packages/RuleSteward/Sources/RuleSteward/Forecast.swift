@@ -54,6 +54,9 @@ public struct Forecast: Sendable, Equatable {
   /// The side that would win, if this ends
   /// it.
   public let winner: Side?
+  /// Where the commander's turn falls in
+  /// `queue`, with one.
+  public let commanderSlot: Int?
 }
 
 public extension Battle {
@@ -80,7 +83,10 @@ public extension Battle {
         strike($0.target, after: after)
       },
       queue: after.queue,
-      winner: after.winner
+      winner: after.winner,
+      commanderSlot: after.commanderSlot(
+        in: after.queue
+      )
     )
   }
 
@@ -124,9 +130,11 @@ public extension Battle {
           now: now.layers[$0]
         )
       }
-    let immune = after.log
+    let added = after.log
       .dropFirst(log.count)
-      .contains(.immune(now.unit.name))
+    let immune = added.contains(
+      .immune(now.unit.name)
+    )
     return Strike(
       hit: hit,
       losses: losses,

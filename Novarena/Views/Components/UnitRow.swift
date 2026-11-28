@@ -66,6 +66,13 @@ struct UnitRow: View {
         Text("Exposed")
           .font(.caption.bold())
       }
+      if unit.wards > 0 {
+        Text("""
+          Ward \(unit.wards)/\
+          \(Battle.wardHits)
+          """)
+          .font(.caption.bold())
+      }
       pools
     }
   }

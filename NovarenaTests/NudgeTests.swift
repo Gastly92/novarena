@@ -17,21 +17,6 @@ final class NudgeTests: XCTestCase {
     )
   }
 
-  /// Circling arrows sit in the top
-  /// corners; the others in the middle.
-  func testCorners() {
-    let corners = Nudge.allCases.map {
-      [$0.corner.x, $0.corner.y]
-    }
-    XCTAssertEqual(
-      corners,
-      [
-        [0, 0], [0, 0], [0, 0], [0, 0],
-        [1, -1], [-1, -1],
-      ]
-    )
-  }
-
   /// 1 cm for the first ticks, then
   /// smoothly more, up to 20.
   func testSteps() {

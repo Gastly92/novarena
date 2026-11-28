@@ -3,11 +3,10 @@ import SwiftUI
 /// Four arrows that nudge the planned
 /// move: a tap moves it 1 cm, holding
 /// repeats, faster and faster
-/// (`Fight.press(_:)`). An arrow that
-/// would slide along an edge turns, and
-/// one that can't move dims. Touching a
-/// unit, arrows in the corners circle
-/// round it.
+/// (`Fight.press(_:)`). The pad never
+/// changes; at an edge, a nudge slides
+/// along it, and orbit arrows on the arena
+/// go round it.
 struct NudgePad: View {
   let fight: Fight
   @ScaledMetric private var size = 40.0
@@ -22,9 +21,9 @@ struct NudgePad: View {
       verticalSpacing: 4
     ) {
       GridRow {
-        corner(-1, -1)
+        gap
         arrow(.north)
-        corner(1, -1)
+        gap
       }
       GridRow {
         arrow(.west)
@@ -32,27 +31,10 @@ struct NudgePad: View {
         arrow(.east)
       }
       GridRow {
-        corner(-1, 1)
+        gap
         arrow(.south)
-        corner(1, 1)
+        gap
       }
-    }
-  }
-
-  /// A corner: an arrow circling round
-  /// the unit the planned spot touches,
-  /// if one heads that way, else empty.
-  @ViewBuilder
-  private func corner(
-    _ across: Int,
-    _ down: Int
-  ) -> some View {
-    if let way = fight.circling(
-      at: (across, down)
-    ) {
-      arrow(way)
-    } else {
-      gap
     }
   }
 
@@ -67,10 +49,7 @@ struct NudgePad: View {
   private func arrow(
     _ way: Nudge
   ) -> some View {
-    let bend = fight.bend(way)
-    let icon = bend.symbol(way)
-    return Image(systemName: icon)
-      .opacity(bend == .stuck ? 0.3 : 1)
+    Image(systemName: way.symbol)
       .frame(width: size, height: size)
       .background(
         RoundedRectangle(cornerRadius: 8)
@@ -93,7 +72,7 @@ struct NudgePad: View {
   }
 }
 
-private extension Nudge {
+extension Nudge {
   /// What VoiceOver calls it.
   var label: LocalizedStringKey {
     switch self {

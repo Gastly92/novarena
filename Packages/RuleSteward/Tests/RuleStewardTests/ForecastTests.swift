@@ -38,7 +38,8 @@ final class ForecastTests: XCTestCase {
           immune: false
         ),
         queue: [2, 3, 1, 0],
-        winner: nil
+        winner: nil,
+        commanderSlot: nil
       )
     )
     XCTAssertTrue(battle.log.isEmpty)

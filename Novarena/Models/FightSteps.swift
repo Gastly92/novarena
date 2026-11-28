@@ -19,7 +19,14 @@ extension Fight {
   /// Whether it's a foe's turn, to be
   /// played a step at a time.
   var isFoesTurn: Bool {
-    actor?.side == .foes
+    !battle.commanderUp
+      && actor?.side == .foes
+  }
+
+  /// Whether it's the party's commander's
+  /// turn.
+  var isCommanding: Bool {
+    battle.commanderUp
   }
 
   /// Plays the next step of the foes'

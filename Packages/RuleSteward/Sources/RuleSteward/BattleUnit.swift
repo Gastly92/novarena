@@ -39,6 +39,8 @@ public struct BattleUnit: Sendable,
   /// has seen.
   public internal(set) var shown: Set<Int> =
     []
+  /// Hits its ward will still soak whole.
+  public internal(set) var wards = 0
   /// Whether it took any damage since its
   /// last turn (a recharging layer waits).
   var wasHit = false
@@ -144,7 +146,8 @@ public struct BattleUnit: Sendable,
     moving = 0
   }
 
-  /// Takes `amount` of `ability`'s damage.
+  /// Takes `amount` of `ability`'s damage,
+  /// unless its ward soaks the hit whole.
   /// It wears down the outermost layer
   /// left (skipping materials the ability
   /// ignores), scaled by how its kind meets
@@ -158,6 +161,10 @@ public struct BattleUnit: Sendable,
     _ amount: Int,
     from ability: Ability
   ) -> [(layer: Int, lost: Int)] {
+    if wards > 0 {
+      wards -= 1
+      return []
+    }
     if isExposed {
       let body = unit.layers.last?
         .matchup(ability.kind) ?? .normal

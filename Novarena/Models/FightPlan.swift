@@ -96,70 +96,80 @@ extension Fight {
     }
   }
 
-  /// Moves the planned spot `from` `step`
-  /// cm round the unit it touches, if any:
-  /// clockwise on screen, or not.
+  /// The circle the planned spot (or the
+  /// unit's own) rests on, that the orbit
+  /// arrows follow: round the unit it
+  /// touches (just clear of it), else the
+  /// edge of the range. None if neither,
+  /// or when it isn't the party's unit's
+  /// turn.
+  var rim: (center: Point, radius: Int)? {
+    guard !isFoesTurn, !isCommanding,
+      let actor
+    else { return nil }
+    let from = ghost ?? actor.place
+    if let other = battle.touching(from) {
+      let apart = actor.unit.size.radius
+        + other.unit.size.radius
+      return (other.place, apart)
+    }
+    return battle.atEdge(from)
+      ? (actor.place, moveLeft) : nil
+  }
+
+  /// Moves the planned spot `from` at
+  /// least 5 cm (or `step`) round what it
+  /// rests on (`rim`): clockwise on screen,
+  /// or not.
   func circle(
     _ way: Nudge,
     from: Point,
     by step: Int
   ) {
-    if let other = battle.touching(from),
-      let spot = battle.circle(
+    let clockwise = way == .clockwise
+    let length = max(step, 5)
+    let spot = battle.touching(from).map {
+      battle.circle(
         from: from,
-        round: other,
-        clockwise: way == .clockwise,
-        by: step
-      ) {
+        round: $0,
+        clockwise: clockwise,
+        by: length
+      )
+    } ?? battle.orbit(
+      from: from,
+      clockwise: clockwise,
+      by: length
+    )
+    if let spot {
       place(spot)
     }
   }
 
-  /// The arrow circling round the unit the
-  /// planned spot (or the unit's own)
-  /// touches that sits in the pad's
-  /// `corner` (each -1 or 1, across and
-  /// down): clockwise top right, the other
-  /// way top left, fixed so a held arrow
-  /// stays under the finger. None if it
-  /// touches nobody.
-  func circling(
-    at corner: (x: Int, y: Int)
-  ) -> Nudge? {
-    guard !isFoesTurn,
-      let from = ghost ?? actor?.place,
-      battle.touching(from) != nil
-    else { return nil }
-    let ways: [Nudge] = [
-      .clockwise, .counterclockwise,
-    ]
-    return ways.first {
-      $0.corner == corner
+  /// Where the orbit arrow `way` sits: on
+  /// the `rim`, a little round it from the
+  /// planned spot (or the unit's own), the
+  /// way it goes. None without a rim.
+  func orbitSpot(_ way: Nudge) -> Point? {
+    guard let rim, let actor else {
+      return nil
     }
-  }
-
-  /// How a 10 cm nudge `way` from the
-  /// planned spot (or the unit's own)
-  /// would go: straight, bending as it
-  /// slides along an edge, or nowhere (also
-  /// on a foe's turn, or once it's over).
-  func bend(_ way: Nudge) -> Bend {
-    guard !way.circles else {
-      return .straight
-    }
-    guard !isFoesTurn,
-      let from = ghost ?? actor?.place
-    else { return .stuck }
-    let goal = Point(
-      x: from.x + way.offset.x * 10,
-      y: from.y + way.offset.y * 10
+    let from = ghost ?? actor.place
+    let center = rim.center
+    let across = Double(from.x - center.x)
+    let down = Double(from.y - center.y)
+    let length = (
+      across * across + down * down
+    ).squareRoot()
+    let turn = way == .clockwise
+      ? (x: -down, y: across)
+      : (x: down, y: -across)
+    let gap = Double(
+      actor.unit.size.radius + 45
+    ) / max(length, 1)
+    return Point(
+      x: from.x + Int(turn.x * gap),
+      y: from.y + Int(turn.y * gap)
     )
-    guard let spot = battle.reachable(
-      toward: goal
-    ), spot != from else { return .stuck }
-    let across = way.offset.x == 0
-      ? spot.x - from.x : spot.y - from.y
-    return Bend(way, across: across)
   }
 
   /// Turns unit `id`'s zone on or off.

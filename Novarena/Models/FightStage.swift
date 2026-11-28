@@ -20,11 +20,20 @@ extension Fight.Stage {
       .battleFoes: .foes,
       .battleEdge: .edge,
       .battleCircling: .circling,
+      .battleCommanding: .commanding,
+      .battleWarded: .warded,
     ]
     guard let stage = stages[screen] else {
       return nil
     }
     self = stage
+  }
+
+  /// Whether the party has a commander:
+  /// only on its own screens, so the
+  /// others keep the sample's timeline.
+  var commands: Bool {
+    self == .commanding || self == .warded
   }
 
   /// Who fights for the party.
@@ -43,7 +52,7 @@ extension Fight.Stage {
   var turns: Int {
     switch self {
     case .start, .moving, .aiming, .foes,
-      .edge, .circling:
+      .edge, .circling, .commanding, .warded:
       0
     case .planned, .acted:
       4
@@ -72,6 +81,17 @@ extension Fight.Stage {
       fight.place(Point(x: 600, y: 200))
     case .circling:
       fight.tap(fight.battle.units[1].place)
+    case .commanding:
+      // Two rounds on: Oswin worn.
+      fight.endTurn()
+      fight.command(.pass)
+      for _ in 0..<2 {
+        fight.skip()
+        fight.endTurn()
+      }
+    case .warded:
+      fight.endTurn()
+      fight.command(.ward(0))
     case .zones:
       fight.showsZones = true
     case .moving:

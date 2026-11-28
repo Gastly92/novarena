@@ -20,7 +20,10 @@ struct HomeView: View {
         .multilineTextAlignment(.center)
         .wrapsText()
       NavigationLink("Fight") {
-        BattleView(fight: Fight())
+        BattleView(fight: Fight(
+          party: [.gerald, .oswin],
+          foes: [.ashka, .kestrel]
+        ))
       }
       .buttonStyle(.borderedProminent)
       .padding(.top)

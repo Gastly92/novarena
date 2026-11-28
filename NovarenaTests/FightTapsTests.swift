@@ -86,31 +86,29 @@ final class FightTapsTests: XCTestCase {
     XCTAssertTrue(fight.inReach(0))
   }
 
-  /// Touching Oswin from above, the top
-  /// corners circle round him: clockwise
-  /// (right, going right) and the other
-  /// way (left).
+  /// Touching Oswin from above, the orbit
+  /// arrows circle round him: clockwise
+  /// to the right, going right, and the
+  /// other way to the left.
   func testCircles() throws {
     let fight = Fight(stage: .circling)
     let start = try XCTUnwrap(fight.ghost)
     XCTAssertEqual(
       start, Point(x: 250, y: 535)
     )
-    XCTAssertEqual(
-      fight.circling(at: (1, -1)), .clockwise
-    )
-    XCTAssertEqual(
-      fight.circling(at: (-1, -1)),
+    let oswin = fight.battle.units[1].place
+    let rim = try XCTUnwrap(fight.rim)
+    XCTAssertEqual(rim.center, oswin)
+    XCTAssertEqual(rim.radius, 65)
+    let right = fight.orbitSpot(.clockwise)
+    let left = fight.orbitSpot(
       .counterclockwise
     )
-    XCTAssertNil(fight.circling(at: (1, 1)))
-    XCTAssertEqual(
-      fight.bend(.clockwise), .straight
-    )
+    XCTAssertGreaterThan(right?.x ?? 0, 250)
+    XCTAssertLessThan(left?.x ?? 250, 250)
     fight.nudge(.clockwise, by: 10)
     let moved = try XCTUnwrap(fight.ghost)
     XCTAssertGreaterThan(moved.x, 250)
-    let oswin = fight.battle.units[1].place
     let apart = (moved.x - oswin.x)
       * (moved.x - oswin.x)
       + (moved.y - oswin.y)
@@ -118,11 +116,6 @@ final class FightTapsTests: XCTestCase {
     XCTAssertGreaterThanOrEqual(
       apart, 65 * 65
     )
-    XCTAssertNil(
-      Fight().circling(at: (1, -1))
-    )
-    let foes = Fight(stage: .foes)
-    XCTAssertNil(foes.circling(at: (1, -1)))
     let free = Fight()
     free.nudge(.clockwise, by: 10)
     XCTAssertNil(free.ghost)
@@ -149,19 +142,5 @@ final class FightTapsTests: XCTestCase {
     fight.press(nil)
     let x = fight.ghost?.x ?? 0
     XCTAssertGreaterThan(x, 250)
-  }
-
-  /// Circling arrows' icons.
-  func testCircleSymbols() {
-    XCTAssertEqual(
-      Bend.straight.symbol(.clockwise),
-      "arrow.clockwise"
-    )
-    let other = Bend.straight.symbol(
-      .counterclockwise
-    )
-    XCTAssertEqual(
-      other, "arrow.counterclockwise"
-    )
   }
 }
