@@ -30,7 +30,7 @@ final class FightPlanTests: XCTestCase {
     away.use()
     XCTAssertFalse(away.battle.hasActed)
     away.choose(1)
-    XCTAssertNil(away.planned)
+    XCTAssertNil(away.aimed)
     let none = Fight()
     XCTAssertFalse(none.canUse)
     none.use()

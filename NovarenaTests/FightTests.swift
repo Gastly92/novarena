@@ -126,9 +126,9 @@ final class FightTests: XCTestCase {
     XCTAssertEqual(fight.chosen, 0)
     let kestrel = fight.battle.units[3]
     fight.tap(kestrel.place)
-    XCTAssertNotNil(fight.planned)
+    XCTAssertNotNil(fight.aimed)
     fight.use()
-    XCTAssertNil(fight.planned)
+    XCTAssertNil(fight.aimed)
     XCTAssertNil(fight.chosen)
     XCTAssertNil(fight.ghost)
     XCTAssertEqual(fight.panel, .skills)

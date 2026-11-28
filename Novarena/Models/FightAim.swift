@@ -103,7 +103,7 @@ extension Fight {
     guard !isFoesTurn, !isCommanding else {
       return nil
     }
-    let mine = planned.map {
+    let mine = aimed.map {
       Turn(before: ghost, action: $0)
     }
     let turns = [mine].compactMap(\.self)

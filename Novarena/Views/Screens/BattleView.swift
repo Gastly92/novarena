@@ -246,11 +246,11 @@ private struct Controls: View {
   private func plan(
     of actor: BattleUnit
   ) -> some View {
-    if let planned = fight.planned {
+    if let aimed = fight.aimed {
       let skill = actor.unit
-        .abilities[planned.ability].name
+        .abilities[aimed.ability].name
       let foe = fight.battle
-        .units[planned.target].unit.name
+        .units[aimed.target].unit.name
       Button("Use \(skill) on \(foe)") {
         fight.use()
       }

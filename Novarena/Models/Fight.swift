@@ -35,7 +35,7 @@ final class Fight {
   /// The skill planned on a unit, from the
   /// planned spot, until it's used
   /// (`use()`).
-  private(set) var planned: Action?
+  private(set) var aimed: Action?
   /// The part of the turn on show.
   var panel = Panel.move
   /// Whether zones are on: taps on units
@@ -174,8 +174,8 @@ final class Fight {
   /// a plan for another skill goes.
   func choose(_ ability: Int) {
     chosen = ability
-    if planned?.ability != ability {
-      planned = nil
+    if aimed?.ability != ability {
+      aimed = nil
     }
   }
 
@@ -288,13 +288,13 @@ final class Fight {
     guard let chosen, inReach(target) else {
       return
     }
-    planned = Action(chosen, on: target)
+    aimed = Action(chosen, on: target)
   }
 
   /// Whether the planned skill reaches its
   /// target from the planned spot.
   var canUse: Bool {
-    planned.map { inReach($0.target) }
+    aimed.map { inReach($0.target) }
       ?? false
   }
 
@@ -305,14 +305,14 @@ final class Fight {
   /// actions open. Nothing happens if it
   /// can't reach.
   func use() {
-    guard let planned, canUse else {
+    guard let aimed, canUse else {
       return
     }
     commit()
     try? battle.use(
-      planned.ability, on: planned.target
+      aimed.ability, on: aimed.target
     )
-    self.planned = nil
+    self.aimed = nil
     chosen = nil
     let left = actor?.unit.abilities.indices
       .contains(where: battle.canUse)
@@ -326,7 +326,7 @@ final class Fight {
     use()
     try? battle.act(Turn(before: ghost))
     ghost = nil
-    planned = nil
+    aimed = nil
     chosen = nil
     panel = .move
     shown = []
@@ -338,7 +338,7 @@ final class Fight {
   /// The same battle, from the start.
   func restart() {
     battle = start
-    planned = nil
+    aimed = nil
     chosen = nil
     ghost = nil
     panel = .move

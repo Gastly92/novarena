@@ -88,7 +88,7 @@ final class FightTapsTests: XCTestCase {
     )
     XCTAssertTrue(fight.inReach(2))
     XCTAssertEqual(
-      fight.planned, Action(0, on: 2)
+      fight.aimed, Action(0, on: 2)
     )
     fight.use()
     XCTAssertTrue(fight.battle.hasActed)
