@@ -39,38 +39,45 @@ final class FightTapsTests: XCTestCase {
     XCTAssertTrue(fight.watched.isEmpty)
   }
 
-  /// With the move open, tapping a unit
-  /// plans a walk to it: toward the edge
-  /// of Gerald's reach on Ashka, as far as
-  /// his range goes, or to just touch
-  /// Oswin (65 cm apart). A tap just
-  /// beside a unit counts as on it.
+  /// With the move open, tapping a foe
+  /// picks it to walk toward, moving
+  /// nothing yet; tapping an ally walks to
+  /// just touch it (Oswin, 65 cm apart),
+  /// and lets the foe go. A tap just beside
+  /// a unit counts as on it.
   func testWalksToAUnit() {
     let fight = Fight()
     fight.tap(fight.battle.units[2].place)
-    XCTAssertEqual(
-      fight.ghost, Point(x: 600, y: 200)
-    )
+    XCTAssertEqual(fight.approached, 2)
+    XCTAssertNil(fight.ghost)
     fight.tap(Point(x: 250, y: 540))
     XCTAssertEqual(
       fight.ghost, Point(x: 250, y: 535)
     )
+    XCTAssertNil(fight.approached)
   }
 
-  /// Near Kestrel-9 with Sword Cut picked,
-  /// the move open, tapping it plans the
-  /// spot at the edge of Sword Cut's reach
-  /// (`Battle.standoff`), still in reach.
-  func testStandsOff() {
-    let fight = Fight(stage: .planned)
-    fight.panel = .move
-    let kestrel = fight.battle.units[3]
-    let edge = fight.battle.standoff(
-      on: 3, with: 0
+  /// Ashka picked: up close walks toward
+  /// her as far as Gerald's range goes; in
+  /// range goes to the edge of his longest
+  /// reach (`Battle.standoff`). With no foe
+  /// picked, neither moves.
+  func testApproaches() {
+    let close = Fight(stage: .approaching)
+    close.upClose()
+    XCTAssertEqual(
+      close.ghost, Point(x: 600, y: 200)
     )
-    fight.tap(kestrel.place)
-    XCTAssertEqual(fight.ghost, edge)
-    XCTAssertTrue(fight.inReach(3))
+    let ranged = Fight(stage: .approaching)
+    let edge = ranged.rangeSpot
+    XCTAssertNotNil(edge)
+    ranged.inRange()
+    XCTAssertEqual(ranged.ghost, edge)
+    let none = Fight()
+    none.upClose()
+    none.inRange()
+    XCTAssertNil(none.ghost)
+    XCTAssertNil(none.rangeSpot)
   }
 
   /// With Sword Cut picked, tapping Ashka

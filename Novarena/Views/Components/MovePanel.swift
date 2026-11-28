@@ -4,7 +4,8 @@ import SwiftUI
 /// it and buttons to commit or undo it,
 /// then how far it goes and what's left
 /// (below, so the arrows stay put as it
-/// changes).
+/// changes), then, with a foe tapped, how
+/// to walk toward it.
 struct MovePanel: View {
   let fight: Fight
 
@@ -32,7 +33,35 @@ struct MovePanel: View {
       status
         .foregroundStyle(.secondary)
         .testID("move-status")
+      if let id = fight.approached {
+        approach(fight.battle.units[id])
+      }
     }
+  }
+
+  /// The foe picked to walk toward (its
+  /// name from the rules, so a `data-`
+  /// identifier), and buttons to walk up
+  /// close or to the edge of reach.
+  private func approach(
+    _ foe: BattleUnit
+  ) -> some View {
+    HStack {
+      Text(verbatim: foe.unit.name)
+        .font(.headline)
+        .testID("data-approached")
+      Spacer()
+      Button("Up close") {
+        fight.upClose()
+      }
+      .testID("up-close")
+      Button("In range") {
+        fight.inRange()
+      }
+      .disabled(fight.rangeSpot == nil)
+      .testID("in-range")
+    }
+    .buttonStyle(.bordered)
   }
 
   /// The planned move and what's left

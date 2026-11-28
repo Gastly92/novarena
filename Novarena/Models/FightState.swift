@@ -72,16 +72,34 @@ extension Fight {
 
   /// Ends the turn, if the settings say so
   /// and the unit on turn has no skill it
-  /// can use and no movement left.
+  /// can use on anyone from where it
+  /// stands (none it can pay for, or none
+  /// that reaches) and no movement left.
   func endIfDone() {
     guard settings.endsTurns, !isFoesTurn,
       !isCommanding, let actor
     else { return }
     let left = actor.unit.abilities.indices
-      .contains(where: battle.canUse)
+      .contains(where: reachesAnyone)
     if !left, battle.moveLeft == 0 {
       endTurn()
     }
+  }
+
+  /// Whether the unit on turn can use
+  /// `ability` on someone from where it
+  /// stands.
+  private func reachesAnyone(
+    _ ability: Int
+  ) -> Bool {
+    battle.canUse(ability)
+      && battle.units.contains {
+        let turn = Turn(
+          action: Action(ability, on: $0.id)
+        )
+        return (try? battle.forecast(turn))
+          != nil
+      }
   }
 
   /// The foes' turn, if one is up, begins:

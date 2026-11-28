@@ -264,6 +264,7 @@ private struct Controls: View {
       Button("Back away") {
         fight.backAway()
       }
+      .disabled(!fight.canBackAway)
       .testID("back-away")
       Button("Cancel", role: .cancel) {
         fight.cancel()

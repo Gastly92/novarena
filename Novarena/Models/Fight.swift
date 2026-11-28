@@ -38,6 +38,10 @@ final class Fight {
   /// planned spot, until it's used
   /// (`use()`).
   private(set) var aimed: Action?
+  /// The foe picked to walk toward, with
+  /// the move open: up close or in range
+  /// (`upClose()`, `inRange()`).
+  var approached: Int?
   /// The part of the turn on show.
   var panel = Panel.move
   /// Whether zones are on: taps on units
@@ -125,8 +129,15 @@ final class Fight {
   }
 
   /// Picks a skill for the unit on turn;
-  /// a plan for another skill goes.
+  /// a plan for another skill goes. The
+  /// skill already picked is unpicked (its
+  /// plan too), so taps move again.
   func choose(_ ability: Int) {
+    guard chosen != ability else {
+      chosen = nil
+      aimed = nil
+      return
+    }
     chosen = ability
     if aimed?.ability != ability {
       aimed = nil
@@ -294,6 +305,7 @@ final class Fight {
     try? battle.act(Turn(before: ghost))
     ghost = nil
     aimed = nil
+    approached = nil
     chosen = nil
     panel = .move
     shown = []
@@ -304,6 +316,7 @@ final class Fight {
   func restart() {
     battle = start
     aimed = nil
+    approached = nil
     chosen = nil
     ghost = nil
     panel = .move

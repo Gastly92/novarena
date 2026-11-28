@@ -7,11 +7,13 @@ import XCTest
 /// played through, counterspells.
 @MainActor
 final class FightSettingsTests: XCTestCase {
-  /// A unit with one poke and no movement:
-  /// once it pokes, nothing's left.
+  /// A unit with one poke (reaching
+  /// `reach`) and no movement: once it
+  /// pokes, nothing's left.
   private func unit(
     _ name: String,
-    speed: Int
+    speed: Int,
+    reach: Reach = .ranged(10_000)
   ) -> RuleSteward.Unit {
     RuleSteward.Unit(
       name,
@@ -31,7 +33,7 @@ final class FightSettingsTests: XCTestCase {
           power: 10,
           kind: .crush,
           discipline: .unarmed,
-          reach: .ranged(10_000)
+          reach: reach
         ),
       ]
     )
@@ -174,5 +176,36 @@ final class FightSettingsTests: XCTestCase {
     let asked = countering(.ask)
     asked.answer(false)
     XCTAssertNil(asked.question)
+  }
+
+  /// A, far from B with a poke that only
+  /// reaches 10 cm and no movement: it can
+  /// pay for the poke but reach nobody, so
+  /// committing (no move) ends its turn,
+  /// and B's begins; by hand, it waits.
+  func testEndsOutOfReach() {
+    let far = { (settings: Settings) in
+      Fight(
+        Battle(
+          party: [
+            self.unit(
+              "A",
+              speed: 150,
+              reach: .melee(10)
+            ),
+          ],
+          foes: [self.unit("B", speed: 90)]
+        ),
+        settings: settings,
+        pause: Fight.sleep
+      )
+    }
+    let ends = far(Settings())
+    XCTAssertEqual(ends.actor?.id, 0)
+    ends.commit()
+    XCTAssertTrue(ends.isFoesTurn)
+    let waits = far(.manual)
+    waits.commit()
+    XCTAssertEqual(waits.actor?.id, 0)
   }
 }

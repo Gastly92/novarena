@@ -105,4 +105,26 @@ final class FightPlanTests: XCTestCase {
     fight.choose(0)
     XCTAssertEqual(fight.preview(of: 0), [])
   }
+
+  /// Isolde's Chill Touch planned on Wren
+  /// from beside her: backing away can
+  /// move, then can't (already at the
+  /// edge); with no plan, it can't.
+  func testCanBackAway() {
+    let fight = Fight(stage: .dodging)
+    fight.target(3)
+    XCTAssertTrue(fight.canBackAway)
+    fight.backAway()
+    XCTAssertFalse(fight.canBackAway)
+    XCTAssertFalse(Fight().canBackAway)
+  }
+
+  /// Picking the picked skill again unpicks
+  /// it, and its plan.
+  func testUnpicks() {
+    let fight = Fight(stage: .planned)
+    fight.choose(0)
+    XCTAssertNil(fight.chosen)
+    XCTAssertNil(fight.aimed)
+  }
 }
