@@ -47,4 +47,21 @@ final class FightPlanTests: XCTestCase {
     none.use()
     XCTAssertTrue(none.battle.log.isEmpty)
   }
+
+  /// Without a movement pool a unit can't
+  /// move; a pool with no measure counts in
+  /// steps.
+  func testMoveStatus() {
+    let none = Fight.moveStatus(
+      nil, left: 0, planned: nil
+    )
+    XCTAssertEqual(none, "Can't move")
+    let plain = Pool(.movement, maximum: 300)
+    let status = Fight.moveStatus(
+      plain, left: 100, planned: nil
+    )
+    XCTAssertTrue(
+      status.hasPrefix(Measure.step.says(100))
+    )
+  }
 }

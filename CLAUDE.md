@@ -336,7 +336,10 @@ uploading) runs in CI.
   the `record-snapshots` label to the PR
   to record all of them again; a failed
   comparison uploads `snapshot-diffs`.
-  Add it after the last push, and don't
+  Add it after the last push, once that
+  push's run has started (added in the
+  same few seconds, the push's run
+  cancelled the labelled one), and don't
   delete images in that push: a run that
   records missing images commits them,
   and that commit cancels the labelled
