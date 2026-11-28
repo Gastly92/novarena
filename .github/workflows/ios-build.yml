@@ -289,6 +289,13 @@ jobs:
         .github/scripts/run-tests.sh
         boot
 
+    # For a speed test: what keeps the
+    # runner busy while it boots
+    # (docs/CI-SPEED.md). Temporary.
+    - name: Watch the boot
+      run: >-
+        .github/scripts/watch-boot.sh start
+
     - uses: actions/download-artifact@v8
       with:
         name: test-build
@@ -360,6 +367,11 @@ jobs:
         name: snapshot-diffs
         path: build/snapshot-diffs
         if-no-files-found: ignore
+
+    - name: Show the boot
+      if: always()
+      run: >-
+        .github/scripts/watch-boot.sh show
 
     # For the coverage gate, which merges
     # all shards.

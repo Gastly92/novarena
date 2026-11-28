@@ -86,6 +86,18 @@ tests took 5½ min in one run and 9 in
 another. One run is not enough to judge a
 change of a minute or two.
 
+### 1c. Measure the boot
+
+Trying it in PR #33: `watch-boot.sh`
+logs the busiest processes every 15 s
+from the boot on, how long the boot takes
+(`simctl bootstatus`), and the simulator
+caches' sizes. If the boot is building a
+cache (for example the simulator's
+system library cache), the next try is
+saving that cache with `actions/cache`
+and restoring it before the boot.
+
 ### 2. Let PR builds use main's cache
 
 Maybe a minute a run.
