@@ -2,9 +2,9 @@
 
 Where the time goes in a run of
 `ios-build.yml`, and what could make it
-faster. None of this is done yet: each idea
-is a CI-only pull request to try, measure,
-and keep only if it helps.
+faster. Each idea is a CI-only pull
+request to try, measure, and keep only if
+it helps.
 
 ## Where the time goes
 
@@ -15,32 +15,88 @@ From PR #20's run 80 (November 2026), about
 |---|---|---|
 | Linux checks | under 1 min | In parallel; never the slow part |
 | Build for testing | 2 min 45 s | The build 1 min 51 s, Periphery 25 s |
-| Each test shard | about 6 min 20 s | About 3 min of it is downloading the build; tests 2½–2¾ min |
+| Each test shard | about 6 min 20 s | About 3 min of it is downloading the build while the simulator boots; tests 2½–2¾ min |
 | Coverage, CI Gate | 30 s | |
 
 ## Ideas
 
-### 1. Build in each shard
+### 1. Build in each shard (tried: slower)
 
-The likely biggest win, about 2 minutes a
-run.
+Tried in PR #33 and dropped. The idea was
+that each shard spends 2-5 minutes on the
+9 MB `test-build` download (main's run
+167: 2 min 14 s and 5 min 8 s, 14 min 15 s
+in all) while the build takes 1½.
 
-- Each shard spends about 3 minutes
-  fetching the 9 MB `test-build` artifact:
-  around 2 minutes before the download even
-  starts, then 37 s to transfer it. Run 80's
-  two shards and the run before it were the
-  same.
-- Building takes 2 minutes, so each shard
-  building for itself, in parallel, beats
-  waiting for the download.
-- Periphery stays in one shard (it reuses
-  that build's index).
-- The cost: more Mac runner minutes.
-- An alternative to try: pass the build
-  through `actions/cache` with a
-  per-run key instead of an artifact. It may
-  download faster, but that's less certain.
+What happened:
+
+- Booting the simulator at the start of
+  the shard, then building (run 174):
+  26 min 51 s. The boot slowed every step
+  on the 3-core runner: `xcodebuild
+  -version` took 1-5 min instead of 0 s,
+  XcodeGen 1½-2½ min instead of 7 s, the
+  build 7-9½ min instead of 1½.
+- Building first, then booting (run 178):
+  19 min 10 s. The builds took 38 s and
+  1 min 12 s, but the boot moved into the
+  tests: finding the simulator took 6
+  min, and the main shard's tests 9 min
+  instead of 5½.
+
+So the simulator's first boot costs
+minutes of CPU wherever it goes. Waiting
+on the download hid it, and the boot is
+probably why the 9 MB download is so
+slow in the first place. Anything that
+puts CPU work in that window makes the
+run slower.
+
+Merging coverage from the two shards'
+separate builds worked, if a later idea
+needs it.
+
+### 1b. Boot during the build (slower)
+
+Tried in PR #33 (run 185) and dropped: the
+shards started alongside the build job,
+booted at once, and waited for the build
+(about 2 min) before downloading it.
+
+- 16 min 49 s, against 14 min 15 s.
+- With two more minutes to boot first,
+  the 9 MB download still took 3 min 18 s
+  and 3 min 56 s, and the main shard's
+  tests 9 min instead of 5½.
+
+### What the tries show
+
+On these 3-core runners, the simulator's
+first boot keeps the machine busy for
+something like 6-10 minutes, wherever it
+goes. Moving it around only moves the
+wait. Before trying more, measure the boot
+itself (`xcrun simctl bootstatus` with a
+timer, in a shard that does nothing else),
+and look for ways to make it lighter (a
+fresh device, or the runner image's
+documented tips) rather than hide it.
+The runs also vary a lot: the main shard's
+tests took 5½ min in one run and 9 in
+another. One run is not enough to judge a
+change of a minute or two.
+
+### 1c. Measure the boot
+
+Trying it in PR #33: `watch-boot.sh`
+logs the busiest processes every 15 s
+from the boot on, how long the boot takes
+(`simctl bootstatus`), and the simulator
+caches' sizes. If the boot is building a
+cache (for example the simulator's
+system library cache), the next try is
+saving that cache with `actions/cache`
+and restoring it before the boot.
 
 ### 2. Let PR builds use main's cache
 
