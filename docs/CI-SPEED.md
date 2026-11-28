@@ -15,50 +15,46 @@ From PR #20's run 80 (November 2026), about
 |---|---|---|
 | Linux checks | under 1 min | In parallel; never the slow part |
 | Build for testing | 2 min 45 s | The build 1 min 51 s, Periphery 25 s |
-| Each test shard | about 6 min 20 s | About 3 min of it is downloading the build; tests 2½–2¾ min |
+| Each test shard | about 6 min 20 s | About 3 min of it is downloading the build while the simulator boots; tests 2½–2¾ min |
 | Coverage, CI Gate | 30 s | |
 
 ## Ideas
 
-### 1. Build in each shard
+### 1. Build in each shard (tried: slower)
 
-Trying it. The likely biggest win, about 2
-minutes a run.
+Tried in PR #33 and dropped. The idea was
+that each shard spends 2-5 minutes on the
+9 MB `test-build` download (main's run
+167: 2 min 14 s and 5 min 8 s, 14 min 15 s
+in all) while the build takes 1½.
 
-- Main's run 167 (0.0.16, 14 min 15 s from
-  push to result) was worse still: the
-  download took 2 min 14 s in one shard
-  and 5 min 8 s in the other, while the
-  build (from main's cache) took 1 min
-  28 s.
-- PR #33's first try (run 174) took
-  26 min 51 s: the simulator booted at
-  the start of each shard, alongside the
-  build, and slowed every step on the
-  3-core runner (`xcodebuild -version`
-  1-5 min instead of 0 s, XcodeGen 1½-2½
-  min instead of 7 s, the build 7-9½ min
-  instead of 1½). The second try boots
-  after the build.
-- Merging coverage from the two shards'
-  separate builds works.
+What happened:
 
-- Each shard spends about 3 minutes
-  fetching the 9 MB `test-build` artifact:
-  around 2 minutes before the download even
-  starts, then 37 s to transfer it. Run 80's
-  two shards and the run before it were the
-  same.
-- Building takes 2 minutes, so each shard
-  building for itself, in parallel, beats
-  waiting for the download.
-- Periphery stays in one shard (it reuses
-  that build's index).
-- The cost: more Mac runner minutes.
-- An alternative to try: pass the build
-  through `actions/cache` with a
-  per-run key instead of an artifact. It may
-  download faster, but that's less certain.
+- Booting the simulator at the start of
+  the shard, then building (run 174):
+  26 min 51 s. The boot slowed every step
+  on the 3-core runner: `xcodebuild
+  -version` took 1-5 min instead of 0 s,
+  XcodeGen 1½-2½ min instead of 7 s, the
+  build 7-9½ min instead of 1½.
+- Building first, then booting (run 178):
+  19 min 10 s. The builds took 38 s and
+  1 min 12 s, but the boot moved into the
+  tests: finding the simulator took 6
+  min, and the main shard's tests 9 min
+  instead of 5½.
+
+So the simulator's first boot costs
+minutes of CPU wherever it goes. Waiting
+on the download hid it, and the boot is
+probably why the 9 MB download is so
+slow in the first place. Anything that
+puts CPU work in that window makes the
+run slower.
+
+Merging coverage from the two shards'
+separate builds worked, if a later idea
+needs it.
 
 ### 2. Let PR builds use main's cache
 
