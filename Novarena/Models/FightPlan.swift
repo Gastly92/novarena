@@ -117,38 +117,25 @@ extension Fight {
 
   /// The arrow circling round the unit the
   /// planned spot (or the unit's own)
-  /// touches that goes in the pad's
+  /// touches that sits in the pad's
   /// `corner` (each -1 or 1, across and
-  /// down): the corner its way round
-  /// heads for. None if it touches nobody.
+  /// down): clockwise top right, the other
+  /// way top left, fixed so a held arrow
+  /// stays under the finger. None if it
+  /// touches nobody.
   func circling(
     at corner: (x: Int, y: Int)
   ) -> Nudge? {
     guard !isFoesTurn,
       let from = ghost ?? actor?.place,
-      let other = battle.touching(from)
+      battle.touching(from) != nil
     else { return nil }
-    let across = from.x - other.place.x
-    let down = from.y - other.place.y
     let ways: [Nudge] = [
       .clockwise, .counterclockwise,
     ]
     return ways.first {
-      let turn = $0 == .clockwise
-        ? (x: -down, y: across)
-        : (x: down, y: -across)
-      return Self.sign(turn.x - across)
-        == corner.x
-        && Self.sign(turn.y - down)
-          == corner.y
+      $0.corner == corner
     }
-  }
-
-  /// -1 below zero, else 1.
-  private static func sign(
-    _ value: Int
-  ) -> Int {
-    value < 0 ? -1 : 1
   }
 
   /// How a 10 cm nudge `way` from the

@@ -52,9 +52,12 @@ public extension Battle {
   /// its range (on the way there), and
   /// pushed clear of whoever is in the
   /// way, so a plan slides along those
-  /// edges. None if no spot near is clear
-  /// (`spot` on someone's middle, or
-  /// wedged), or nobody is on turn.
+  /// edges. If that finds nothing (`spot`
+  /// on someone's middle, or wedged
+  /// between a unit and the edge of the
+  /// range), the furthest clear spot on
+  /// the straight way toward it. None if
+  /// not even that, or nobody is on turn.
   func reachable(
     toward spot: Point
   ) -> Point? {
@@ -83,11 +86,31 @@ public extension Battle {
           + other.unit.size.radius
         guard let out = stop.away(
           from: other.place, by: apart
-        ) else { return nil }
+        ) else { break }
         stop = out
       }
     }
-    return nil
+    let aim = arena.clamp(
+      spot, radius: radius
+    )
+    return furthest(toward: aim, by: mover)
+  }
+
+  /// The furthest spot on the straight way
+  /// from where `mover` stands toward
+  /// `spot`, within its range, where it
+  /// fits, trying every 5 cm back.
+  private func furthest(
+    toward spot: Point,
+    by mover: BattleUnit
+  ) -> Point? {
+    let most = min(cost(to: spot), moveLeft)
+    return stride(from: most, to: 0, by: -5)
+      .lazy
+      .map {
+        mover.place.toward(spot, by: $0)
+      }
+      .first { fits(mover, at: $0) }
   }
 
   /// Moves the unit on turn straight to

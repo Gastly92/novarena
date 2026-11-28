@@ -214,6 +214,28 @@ starts.
     it).
   - "[236] Kestrel-9" (a turn's start at
     tick 236) didn't say what it meant.
+- **0.0.13, aiming and moving**: taps by
+  mode, aiming at a foe out of reach, a
+  walk to a unit, circling arrows.
+  - The walk to a foe feels good.
+  - The corner arrows felt laggy: a tap
+    often needed a second, and the curve
+    felt unpredictable. (Each arrow sat
+    in the corner its way round headed
+    for, so it jumped corners as the plan
+    circled; the arrow under the finger
+    went away mid-hold, the hold was
+    never let go, its next press was
+    ignored, and the orphaned hold kept
+    circling.)
+  - A foe's turn had a needless step:
+    Next, then "turn begins", then Next
+    again.
+  - A walk to a foe with an ally in the
+    way didn't plan anything unless
+    nudged by hand. (Wedged between the
+    ally and the edge of the range,
+    sliding gave up.)
 
 ## Decisions
 
@@ -637,6 +659,59 @@ starts.
   the pad's corners circle round it,
   each in the corner its way round heads
   for, held like the others.
+- **Circling, fixed** (from 0.0.13): the
+  circling arrows sit in fixed corners,
+  clockwise top right and the other way
+  top left, so a held one stays under
+  the finger; a hold with nothing to
+  circle lets go by itself.
+- **The archer, golem and ice mage, as
+  built** (Units, part two, owner's call
+  to bundle with the 0.0.13 fixes):
+  - Tamsin, a longbow archer: leather (a
+    new material: slash 75%, burn 125%,
+    mended by half) over her body; a
+    master of the bow (a new discipline)
+    shooting 7 m, a knife up close; quick
+    on her feet.
+  - Gorrum, a stone golem: large and
+    slow, a 340-point stone shell over a
+    stone core (a new material: pierce,
+    slash, burn and shock 50%, freeze
+    75%, crush 150%; can't be mended);
+    slams (heavy), or hurls a rock for
+    stamina.
+  - Isolde, an ice mage: robes over her
+    body, a master of frost (a new
+    discipline); a free frost bolt, a
+    heavy ice lance for mana, and one
+    cantrip a turn on top, an ice shard
+    or a chill touch, sharing one bonus.
+    Freeze, a new kind: flesh 125%, a
+    demon's ember 150%, energy 50%,
+    stone 75%. (At 200% on ember, Ashka
+    fell behind.)
+  - Kestrel-9 back a little: plating
+    130 (was 140), Piston Fist 60 (65);
+    it won too much against the new
+    three. Every unit now wins 42-57%
+    one on one, in pairs and in trios.
+  - The balance runs (every team of up
+    to three of eight units) take about
+    three minutes in the rules tests.
+- **A wedged plan stops short** (from
+  0.0.13): when sliding can't find a
+  clear spot, the plan stops at the
+  furthest clear one on the straight way
+  there (every 5 cm back), rather than
+  planning nothing. Walks still pass
+  through units; only the stop must be
+  clear.
+- **Every foe step shows something**
+  (from 0.0.13): ending the party's turn
+  shows the foe's turn beginning at once,
+  and a turn's end goes with the next
+  turn's start.
 - **Foe steps say what they mean**: a
   turn's start reads "Kestrel-9's turn
   begins", not its tick. Stepping is
@@ -777,20 +852,27 @@ Free movement, as in `brainstorm-2.md`
   steps; the wait scaled by movement
   used; nudges that slide, with curved
   arrows.
-- **Aiming and moving** (0.0.13, in
-  progress): from 0.0.12, taps by mode,
+- **Aiming and moving** (done, #27,
+  0.0.13): from 0.0.12, taps by mode,
   aiming a skill at a foe out of reach
   (B4's first item), a walk to a unit,
   circling arrows, turn starts in
   words.
+- **Circling and steps, fixed** (0.0.14,
+  in progress): from 0.0.13, the circling
+  arrows in fixed corners, a hold that
+  lets go, no empty foe steps, a wedged
+  plan stopping short.
 - **Units**, in parts:
   - **Healing and the cleric**
     (done, #24, 0.0.10): heals in the
     rules, Maren (mace, Smite, a bonus
     heal), heal zones and previews, the
     picker.
-  - **The archer, golem and ice mage**,
-    with the freeze kind.
+  - **The archer, golem and ice mage**
+    (0.0.14, in progress, bundled with
+    the circling and steps fixes), with
+    the freeze kind.
   - **The rogue** comes with Reactions
     (its dodge is one, and its jump is
     a new kind of move).

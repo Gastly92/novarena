@@ -149,8 +149,10 @@ final class PoolTests: XCTestCase {
 
   /// A spot out of range snaps to the edge
   /// of it, on the way; one in range stays;
-  /// one that's taken, or with nobody on
-  /// turn, gives nothing.
+  /// one on someone's middle stops just
+  /// short of them on the way (80 cm
+  /// between middles); with nobody on
+  /// turn, nothing.
   func testSnapsToTheEdge() {
     let fight = battle(pools: [movement])
     XCTAssertEqual(
@@ -166,10 +168,11 @@ final class PoolTests: XCTestCase {
     let crowded = battle(
       pools: [movement], foe: 300
     )
-    XCTAssertNil(
+    XCTAssertEqual(
       crowded.reachable(
         toward: Point(x: 300, y: 400)
-      )
+      ),
+      Point(x: 220, y: 400)
     )
     var over = battle(
       pools: [movement],

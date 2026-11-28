@@ -30,6 +30,8 @@ public struct Kind: Hashable, Sendable {
   public static let burn = Self("burn")
   /// Lightning; breaks energy shields.
   public static let shock = Self("shock")
+  /// Cold: bites flesh, douses fire.
+  public static let freeze = Self("freeze")
   /// Holy light; sears demons.
   public static let radiant = Self(
     "radiant"
@@ -66,6 +68,15 @@ public struct Material: Hashable, Sendable {
   public static let ember = Self("ember")
   /// Padded armor: soaks blows, but burns.
   public static let cloth = Self("cloth")
+  /// Hardened hide: turns a blade a
+  /// little.
+  public static let leather = Self(
+    "leather"
+  )
+  /// Rock: shrugs off points, edges, fire
+  /// and lightning, but cracks under
+  /// blows.
+  public static let stone = Self("stone")
 }
 
 /// How a kind of damage meets a material.
@@ -105,23 +116,36 @@ extension Rules {
     .slash: [
       .metal: Matchup(50),
       .flesh: Matchup(150),
+      .leather: Matchup(75),
+      .stone: Matchup(50),
     ],
     .pierce: [
       .metal: Matchup(75, carries: true),
+      .stone: Matchup(50),
     ],
     .crush: [
       .metal: Matchup(100, carries: true),
       .wood: Matchup(150),
       .cloth: Matchup(50),
+      .stone: Matchup(150),
     ],
     .burn: [
       .wood: Matchup(150),
       .flesh: Matchup(125),
       .cloth: Matchup(150),
+      .leather: Matchup(125),
+      .stone: Matchup(50),
+    ],
+    .freeze: [
+      .flesh: Matchup(125),
+      .ember: Matchup(150),
+      .energy: Matchup(50),
+      .stone: Matchup(75),
     ],
     .shock: [
       .metal: Matchup(100, carries: true),
       .energy: Matchup(200),
+      .stone: Matchup(50),
     ],
     .radiant: [
       .ember: Matchup(150),
@@ -130,8 +154,10 @@ extension Rules {
       .metal: Matchup(50),
       .wood: Matchup(50),
       .cloth: Matchup(50),
+      .leather: Matchup(50),
       .ember: Matchup(50),
       .energy: .immune,
+      .stone: .immune,
     ],
   ]
 

@@ -25,6 +25,13 @@ final class FightStepsTests: XCTestCase {
       fight.shown.first,
       "Ashka: Fireball → Oswin"
     )
+    // Her turn's end goes with Kestrel-9's
+    // start.
+    fight.advance()
+    XCTAssertEqual(
+      fight.shown,
+      ["Kestrel-9's turn begins"]
+    )
     fight.place(Point(x: 900, y: 300))
     XCTAssertNil(fight.ghost)
     fight.skip()
@@ -36,12 +43,12 @@ final class FightStepsTests: XCTestCase {
     )
   }
 
-  /// A foe's turn begins as a step of its
-  /// own, in words.
+  /// Ending the party's turn shows the
+  /// foe's turn beginning at once, in
+  /// words.
   func testBeginsAsAStep() {
     let fight = Fight()
     fight.endTurn()
-    fight.advance()
     let shown = fight.shown
     XCTAssertEqual(
       shown, ["Ashka's turn begins"]

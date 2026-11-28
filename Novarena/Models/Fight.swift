@@ -47,7 +47,7 @@ final class Fight {
     /// Played to the end.
     case end
     /// Gerald's first turn ended without
-    /// moving: Ashka's turn begun and her
+    /// moving: Ashka's turn begun, then her
     /// move shown, a step at a time.
     case foes
     /// Gerald's first turn, a move planned
@@ -279,6 +279,15 @@ final class Fight {
     hold = Task { [self, wait] in
       var tick = 0
       while !Task.isCancelled {
+        // A circling arrow with nothing to
+        // circle lets go, so its next press
+        // starts again.
+        guard !way.circles
+          || circling(at: way.corner) != nil
+        else {
+          self.way = nil
+          return
+        }
         nudge(way, by: Nudge.step(tick))
         await wait(Nudge.delay(after: tick))
         tick += 1
@@ -326,6 +335,9 @@ final class Fight {
     chosen = nil
     panel = .move
     shown = []
+    if isFoesTurn {
+      advance()
+    }
   }
 
   /// The same battle, from the start.

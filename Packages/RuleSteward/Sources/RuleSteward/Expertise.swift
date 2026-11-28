@@ -21,6 +21,10 @@ public struct Discipline: Hashable,
   public static let fire = Self("fire")
   /// Maces, hammers and clubs.
   public static let maces = Self("maces")
+  /// Bows and crossbows.
+  public static let bows = Self("bows")
+  /// Ice and cold magic.
+  public static let frost = Self("frost")
   /// Holy magic: blessings and healing.
   public static let faith = Self("faith")
   /// Lightning, magic or machine.

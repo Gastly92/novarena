@@ -25,8 +25,7 @@ final class BattleTests: XCTestCase {
     app.buttons["Actions"].tap()
     app.buttons["End turn"].tap()
     // Ashka's turn, a step at a time:
-    // it begins, then she moves.
-    app.buttons["Next"].tap()
+    // it has begun; next, she moves.
     app.buttons["Next"].tap()
     let step = app.text("data-step")
     XCTAssertTrue(
@@ -129,7 +128,9 @@ final class BattleTests: XCTestCase {
   func testOpensTheFallen() {
     let app = App.start(screen: .battleEnd)
     app.buttons["Knocked out"].tap()
-    app.swipeUp()
+    // The list, slowly (not the arena).
+    app.collectionViews.firstMatch
+      .swipeUp(velocity: .slow)
     let ashka = app.text("data-name-2")
     XCTAssertTrue(ashka.appears())
   }

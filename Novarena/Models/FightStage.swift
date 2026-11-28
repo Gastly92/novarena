@@ -68,7 +68,6 @@ extension Fight.Stage {
     case .foes:
       fight.endTurn()
       fight.advance()
-      fight.advance()
     case .edge:
       fight.place(Point(x: 600, y: 200))
     case .circling:
