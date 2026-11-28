@@ -100,6 +100,24 @@ extension Fight {
       .trimmingCharacters(in: .whitespaces)
   }
 
+  /// Whether the next step only ends the
+  /// foes' turns: what's left is the
+  /// turn's end, and the party (or its
+  /// commander) is up after, so Next and
+  /// Skip would do the same.
+  var isLastStep: Bool {
+    guard isFoesTurn, steps == [.end] else {
+      return false
+    }
+    var after = battle
+    try? after.endTurn()
+    let next = after.next.map {
+      after.units[$0].side
+    }
+    return after.commanderUp
+      || next != .foes
+  }
+
   /// Plays the foes' turns through, to the
   /// party's turn (or the end), stopping
   /// to ask about a counterspell.

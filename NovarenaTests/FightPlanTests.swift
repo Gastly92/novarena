@@ -82,4 +82,27 @@ final class FightPlanTests: XCTestCase {
     none.backAway()
     XCTAssertNil(none.ghost)
   }
+
+  /// Maren unhurt, with Mend Wounds picked:
+  /// her row says there's nothing to mend;
+  /// a foe's says nothing.
+  func testNothingToMend() {
+    let battle = Battle(
+      party: [.maren],
+      foes: [.ashka]
+    )
+    let fight = Fight(
+      battle,
+      settings: .manual,
+      pause: Fight.sleep
+    )
+    fight.choose(2)
+    XCTAssertEqual(
+      fight.preview(of: 0),
+      ["Nothing to mend"]
+    )
+    XCTAssertEqual(fight.preview(of: 1), [])
+    fight.choose(0)
+    XCTAssertEqual(fight.preview(of: 0), [])
+  }
 }

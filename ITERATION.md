@@ -312,6 +312,15 @@ starts.
     tapping a foe already stood off, but
     nothing said so; now a "Back away"
     button sits beside Use.)
+  - The last step of the foes' turns
+    offered both Next and "Skip to your
+    turn", doing the same; now only Next.
+  - Maren couldn't mend herself. (The
+    rules allow it; unhurt, there's
+    nothing to mend, and her row went
+    grey without saying why. Now an ally
+    a heal can't help says "Nothing to
+    mend".)
 
 ## Decisions
 

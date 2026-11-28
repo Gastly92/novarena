@@ -20,6 +20,7 @@ enum ScreenID: String, CaseIterable {
   case battleEnd, battleInfo
   case battleHealing, battleExposed
   case battleFallen, battleFoes
+  case battleLastStep
   case battleEdge, battleCircling
   case battleCommanding, battleWarded
   case battleDodging, battleCountering

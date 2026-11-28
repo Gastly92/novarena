@@ -85,4 +85,21 @@ final class FightStepsTests: XCTestCase {
       ]
     )
   }
+
+  /// At the last step of the foes' turns
+  /// (Kestrel-9's ending), Next and Skip
+  /// would both reach Oswin's turn, so it's
+  /// the last step; Next gets there. Ashka's
+  /// move isn't the last, nor the party's
+  /// turn.
+  func testLastStep() {
+    let last = Fight(stage: .lastStep)
+    XCTAssertTrue(last.isLastStep)
+    last.advance()
+    XCTAssertFalse(last.isFoesTurn)
+    XCTAssertFalse(last.isLastStep)
+    XCTAssertFalse(
+      Fight(stage: .foes).isLastStep
+    )
+  }
 }

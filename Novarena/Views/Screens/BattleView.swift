@@ -207,8 +207,10 @@ private struct Controls: View {
           fight.advance()
         }
       }
-      Button("Skip to your turn") {
-        fight.skip()
+      if !fight.isLastStep {
+        Button("Skip to your turn") {
+          fight.skip()
+        }
       }
     }
   }

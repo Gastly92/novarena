@@ -35,6 +35,10 @@ extension Fight {
     /// moving: Ashka's turn begun, then her
     /// move shown, a step at a time.
     case foes
+    /// The same, played to the last step
+    /// of the foes' turns (Kestrel-9's
+    /// ending): Next, no Skip.
+    case lastStep
     /// Gerald's first turn, a move planned
     /// to the east edge of his range: up
     /// and down slide along it.
@@ -88,6 +92,7 @@ extension Fight.Stage {
       .battleHealing: .healing,
       .battleExposed: .exposed,
       .battleFoes: .foes,
+      .battleLastStep: .lastStep,
       .battleEdge: .edge,
       .battleCircling: .circling,
       .battleCommanding: .commanding,
@@ -152,6 +157,7 @@ extension Fight.Stage {
   var turns: Int {
     switch self {
     case .start, .moving, .aiming, .foes,
+      .lastStep,
       .edge, .circling, .commanding, .warded,
       .dodging, .countering:
       0
@@ -175,9 +181,8 @@ extension Fight.Stage {
       break
     case .exposed:
       fight.panel = .actions
-    case .foes:
-      fight.endTurn()
-      fight.advance()
+    case .foes, .lastStep:
+      foes(fight)
     case .edge:
       fight.place(Point(x: 600, y: 200))
     case .circling:
@@ -235,5 +240,19 @@ extension Fight.Stage {
     fight.panel = .skills
     fight.place(Point(x: 690, y: 340))
     fight.choose(3)
+  }
+
+  /// The foes' stages: Gerald's turn ended,
+  /// Ashka's move shown, or played to the
+  /// last step.
+  @MainActor
+  private func foes(_ fight: Fight) {
+    fight.endTurn()
+    fight.advance()
+    while self == .lastStep,
+      fight.isFoesTurn,
+      !fight.isLastStep {
+      fight.advance()
+    }
   }
 }
