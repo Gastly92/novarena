@@ -56,6 +56,18 @@ Merging coverage from the two shards'
 separate builds worked, if a later idea
 needs it.
 
+### 1b. Boot while the build runs
+
+Trying it in PR #33. The shards start
+with the build job instead of after it:
+each boots its simulator at once, then
+waits for the build (`wait-build.sh`
+polls the run's jobs) and downloads it.
+The boot overlaps the build job's 2
+minutes, on a runner doing nothing else.
+The cost: each shard's runner waits
+about 2 minutes.
+
 ### 2. Let PR builds use main's cache
 
 Maybe a minute a run.

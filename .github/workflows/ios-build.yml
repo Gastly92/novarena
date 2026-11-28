@@ -256,12 +256,16 @@ jobs:
 
   # The tests, split into shards that run in
   # parallel on separate runners (one
-  # simulator each). See run-tests.sh.
+  # simulator each). See run-tests.sh. They
+  # start with the build, not after it, so
+  # the simulator's slow first boot overlaps
+  # it (docs/CI-SPEED.md).
   test:
     name: Test (${{ matrix.shard }})
-    needs: build
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: xcode-27
-    timeout-minutes: 25
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -288,6 +292,12 @@ jobs:
       run: >-
         .github/scripts/run-tests.sh
         boot
+
+    - name: Wait for the build
+      timeout-minutes: 20
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: .github/scripts/wait-build.sh
 
     - uses: actions/download-artifact@v8
       with:
