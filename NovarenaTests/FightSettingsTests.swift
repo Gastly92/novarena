@@ -80,20 +80,21 @@ final class FightSettingsTests: XCTestCase {
 
   /// With nothing left after the poke (no
   /// movement, no bonus), the turn ends by
-  /// itself, and B's turn begins; by hand,
-  /// it waits.
+  /// itself (A, quick, is up again, its
+  /// action not yet taken); by hand, it
+  /// waits, A's action taken.
   func testEndsTurns() {
     let ends = fight(Settings())
     XCTAssertEqual(ends.actor?.id, 0)
     ends.choose(0)
     ends.target(1)
     ends.use()
-    XCTAssertTrue(ends.isFoesTurn)
+    XCTAssertFalse(ends.battle.hasActed)
     let waits = fight(.manual)
     waits.choose(0)
     waits.target(1)
     waits.use()
-    XCTAssertEqual(waits.actor?.id, 0)
+    XCTAssertTrue(waits.battle.hasActed)
   }
 
   /// Not stepping, foes' turns play
