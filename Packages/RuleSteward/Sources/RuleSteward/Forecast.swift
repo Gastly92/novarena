@@ -38,6 +38,10 @@ public struct Strike: Sendable, Equatable {
   /// Whether it would do nothing (an
   /// immunity).
   public let immune: Bool
+  /// Whether it would be dodged.
+  public let dodged: Bool
+  /// Whether a foe would counter it.
+  public let countered: Bool
 }
 
 /// What a turn would do, worked out on a
@@ -102,6 +106,38 @@ public extension Battle {
     let hit = stepped?.id ?? target
     let before = units[hit]
     let now = after.units[hit]
+    let (losses, gains) = Self.changes(
+      from: before, to: now
+    )
+    let added = after.log
+      .dropFirst(log.count)
+    let immune = added.contains(
+      .immune(now.unit.name)
+    )
+    return Strike(
+      hit: hit,
+      losses: losses,
+      gains: gains,
+      exposes: now.isExposed
+        && !before.isExposed,
+      knocksOut: !now.isUp,
+      immune: immune,
+      dodged: added.contains(
+        .dodges(now.unit.name)
+      ),
+      countered: added.contains(
+        where: \.counters
+      )
+    )
+  }
+
+  /// What changed in a unit's layers from
+  /// `before` to `now`: losses, then
+  /// gains.
+  private static func changes(
+    from before: BattleUnit,
+    to now: BattleUnit
+  ) -> ([Loss], [Gain]) {
     let changed = before.layers.indices
       .filter {
         before.layers[$0] != now.layers[$0]
@@ -130,19 +166,16 @@ public extension Battle {
           now: now.layers[$0]
         )
       }
-    let added = after.log
-      .dropFirst(log.count)
-    let immune = added.contains(
-      .immune(now.unit.name)
-    )
-    return Strike(
-      hit: hit,
-      losses: losses,
-      gains: gains,
-      exposes: now.isExposed
-        && !before.isExposed,
-      knocksOut: !now.isUp,
-      immune: immune
-    )
+    return (losses, gains)
+  }
+}
+
+private extension Event {
+  /// Whether it's a counterspell.
+  var counters: Bool {
+    if case .counters = self {
+      return true
+    }
+    return false
   }
 }

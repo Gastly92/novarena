@@ -144,10 +144,13 @@ public extension Battle {
   /// index in the unit's list) on `target`
   /// (an id), from where it stands: its
   /// main action, or a bonus one if its
-  /// group has uses left this turn.
+  /// group has uses left this turn. A foe
+  /// who can counter it does, unless
+  /// `reacting` is off (its side said no).
   mutating func use(
     _ ability: Int,
-    on target: Int
+    on target: Int,
+    reacting: Bool = true
   ) throws(Mistake) {
     let mover = try ready()
     let chosen = try check(
@@ -158,6 +161,8 @@ public extension Battle {
     guard isFree(chosen) else {
       throw .acted
     }
+    let counter = reacting
+      ? counter(ability, on: target) : nil
     begin(mover)
     if let bonus = chosen.bonus {
       let group = bonus.group
@@ -174,7 +179,9 @@ public extension Battle {
       chosen.name,
       target: units[target].unit.name
     ))
-    if chosen.kind.heals {
+    if let counter {
+      countered(by: counter)
+    } else if chosen.kind.heals {
       heal(
         target, with: chosen, from: mover.id
       )

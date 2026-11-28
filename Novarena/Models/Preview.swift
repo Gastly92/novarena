@@ -10,8 +10,8 @@ extension Forecast {
     guard let strike else {
       return []
     }
-    guard !strike.immune else {
-      return [String(localized: "Immune")]
+    if let line = notice(strike, battle) {
+      return [line]
     }
     var lines: [String] = []
     let struck = battle.units[strike.hit]
@@ -50,6 +50,29 @@ extension Forecast {
       )
     }
     return lines
+  }
+
+  /// What a strike that does nothing
+  /// says: immune, countered or dodged;
+  /// none if it does something.
+  private func notice(
+    _ strike: Strike,
+    _ battle: Battle
+  ) -> String? {
+    if strike.immune {
+      return String(localized: "Immune")
+    }
+    if strike.countered {
+      return String(localized: "Countered")
+    }
+    guard strike.dodged else {
+      return nil
+    }
+    let name = battle.units[strike.hit]
+      .unit.name
+    return String(
+      localized: "\(name) dodges it"
+    )
   }
 }
 

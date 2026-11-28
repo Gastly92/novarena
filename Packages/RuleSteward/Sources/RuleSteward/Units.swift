@@ -222,5 +222,6 @@ public extension Unit {
   static let all: [Unit] = [
     .gerald, .ashka, .oswin, .kestrel,
     .maren, .tamsin, .gorrum, .isolde,
+    .wren,
   ]
 }

@@ -23,6 +23,25 @@ extension Fight {
       && actor?.side == .foes
   }
 
+  /// The party's unit who could counter
+  /// the foe's next step, a spell, and
+  /// what it is: the party is asked
+  /// before it's cast. None otherwise.
+  var question: (
+    reactor: BattleUnit, spell: String
+  )? {
+    guard isFoesTurn, let actor,
+      case let .use(action) = steps.first,
+      let id = battle.counter(
+        action.ability, on: action.target
+      ),
+      battle.units[id].side == .party
+    else { return nil }
+    let spell = actor.unit
+      .abilities[action.ability].name
+    return (battle.units[id], spell)
+  }
+
   /// Whether it's the party's commander's
   /// turn.
   var isCommanding: Bool {
@@ -36,8 +55,10 @@ extension Fight {
   /// nothing, goes with the step after
   /// (the next turn's start), so each step
   /// shows something. Nothing on the
-  /// party's turn.
-  func advance() {
+  /// party's turn. With `reacting` off,
+  /// the party lets a spell it could
+  /// counter through.
+  func advance(reacting: Bool = true) {
     if steps.first == .end {
       take(steps.removeFirst())
     }
@@ -48,7 +69,9 @@ extension Fight {
       return
     }
     let mark = battle.log.count
-    take(steps.removeFirst())
+    take(
+      steps.removeFirst(), reacting: reacting
+    )
     shown = battle.log[mark...]
       .map(Self.says)
   }

@@ -35,7 +35,9 @@ final class ForecastTests: XCTestCase {
           gains: [],
           exposes: false,
           knocksOut: false,
-          immune: false
+          immune: false,
+          dodged: false,
+          countered: false
         ),
         queue: [2, 3, 1, 0],
         winner: nil,

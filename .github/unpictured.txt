@@ -16,9 +16,10 @@ BattleView.swift
   fight.choose(index)
 
 # Taps: the foes' next step, or all of
-# them.
+# them; a counterspell, or not.
   fight.advance()
   fight.skip()
+  fight.advance(reacting: false)
 
 # Tap: open or fold the knocked-out
 # section (battleFallen shows it open).

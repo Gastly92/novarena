@@ -67,6 +67,27 @@ final class BattleTests: XCTestCase {
     )
   }
 
+  /// Ashka casts near Isolde: counter it,
+  /// and the question goes; on another
+  /// try, let it through.
+  @MainActor
+  func testCounters() {
+    let answers = [
+      "Counter", "Let it through",
+    ]
+    for answer in answers {
+      let app = App.start(
+        screen: .battleCountering
+      )
+      let ask = app.text("data-question")
+      XCTAssertTrue(ask.appears())
+      app.buttons[answer].tap()
+      XCTAssertTrue(
+        ask.waitForNonExistence(timeout: 5)
+      )
+    }
+  }
+
   /// Touching Oswin, hold the clockwise
   /// orbit arrow on the arena: Gerald's
   /// planned spot circles round him, so

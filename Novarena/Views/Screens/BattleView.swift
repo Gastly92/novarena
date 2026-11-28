@@ -199,12 +199,41 @@ private struct Controls: View {
           .font(.caption.monospaced())
           .testID("data-step")
       }
-      Button("Next") {
-        fight.advance()
+      if let ask = fight.question {
+        counter(ask.reactor, ask.spell)
+      } else {
+        Button("Next") {
+          fight.advance()
+        }
       }
       Button("Skip to your turn") {
         fight.skip()
       }
+    }
+  }
+
+  /// Asks whether `reactor` counters the
+  /// foe's `spell` (names from the rules,
+  /// so a `data-` identifier), for its
+  /// mana.
+  @ViewBuilder
+  private func counter(
+    _ reactor: BattleUnit,
+    _ spell: String
+  ) -> some View {
+    let name = reactor.unit.name
+    Text(verbatim: "\(name) · \(spell)")
+      .font(.headline)
+      .testID("data-question")
+    Text("""
+      Counter it, for \
+      \(Battle.counterCost) mana?
+      """)
+    Button("Counter") {
+      fight.advance()
+    }
+    Button("Let it through") {
+      fight.advance(reacting: false)
     }
   }
 

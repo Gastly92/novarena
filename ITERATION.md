@@ -755,6 +755,41 @@ starts.
     so their timeline stays; real fights
     (Fight, and the picker's) have one,
     and so do its two screens.
+- **Reactions, as built** (with the
+  rogue, Units part three):
+  - At most one a round per unit, and
+    only while up; a bodyguard stepping
+    in counts as its unit's reaction.
+  - Dodge (by itself): a weapon attack
+    (anything not cast) aimed at the
+    unit misses whole, for 40 stamina.
+  - Counterspell (asked): a foe's spell
+    (cast) from within 3 m, edge to edge,
+    does nothing; the caster still
+    spends its action and pools. Costs
+    50 mana. On a foe's turn the party
+    is asked first ("Counter" or "Let it
+    through"); skipping to the party's
+    turn counters. Foes always counter.
+  - Previews say "Wren dodges it" or
+    "Countered": nothing is random, so
+    it's exact.
+  - Wren, a halfling rogue: small and
+    quick (speed 110), leathers 80 over
+    a body of 50, a shortsword (45) and
+    a free dagger throw (20, 3 m) on top
+    each turn; 60 stamina, 10 back a
+    turn, so a dodge every few rounds.
+    Isolde gets the counterspell.
+  - Tuning: with a 20-stamina dodge
+    Wren won 87% one on one; with a 5 m
+    counter range Isolde won 62%. Now
+    every unit wins 37-62% one on one
+    and 42-57% in teams.
+  - Later: the rogue's jump (a new kind
+    of move), and a setting per
+    reaction (ask, always or never)
+    with the settings screen (B4).
 - **A wedged plan stops short** (from
   0.0.13): when sliding can't find a
   clear spot, the plan stops at the
@@ -920,7 +955,7 @@ Free movement, as in `brainstorm-2.md`
   lets go, no empty foe steps, a wedged
   plan stopping short.
 - **Orbit arrows and the commander**
-  (0.0.15, in progress): from 0.0.14, a
+  (done, #30, 0.0.15): from 0.0.14, a
   static pad and orbit arrows on the
   arena; the commander's turn, restore
   and ward.
@@ -934,13 +969,15 @@ Free movement, as in `brainstorm-2.md`
     (done, #28, 0.0.14, bundled with
     the circling and steps fixes), with
     the freeze kind.
-  - **The rogue** comes with Reactions
-    (its dodge is one, and its jump is
-    a new kind of move).
-- **The commander** (0.0.15, in
-  progress): its turn and actions.
-- **Reactions**: triggers, automatic and
-  asked, the one-a-round limit.
+  - **The rogue** (0.0.16, in progress,
+    with Reactions): Wren and her dodge;
+    her jump (a new kind of move) comes
+    later.
+- **The commander** (done, #30,
+  0.0.15): its turn and actions.
+- **Reactions** (0.0.16, in progress):
+  automatic and asked, the one-a-round
+  limit, the dodge and the counterspell.
 - **B4, usability**: end turns by
   themselves, the settings screen (with
   playing foe turns through, once

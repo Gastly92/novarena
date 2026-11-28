@@ -215,7 +215,7 @@ public struct Battle: Sendable {
         && $0.id != target.id
         && $0.unit.passives
           .contains(.bodyguard)
-        && $0.guarded != round
+        && $0.reacted != round
     }?.id
   }
 
@@ -256,6 +256,7 @@ public struct Battle: Sendable {
     var target = aimed.id
     if let guardian = guardian(for: aimed) {
       units[guardian].guarded = tick / 100
+      units[guardian].reacted = tick / 100
       log.append(.guards(
         units[guardian].unit.name,
         ally: aimed.unit.name
@@ -263,6 +264,9 @@ public struct Battle: Sendable {
       target = guardian
     }
     let name = units[target].unit.name
+    guard !dodge(target, ability) else {
+      return
+    }
     let amount = Rules.damage(
       ability,
       by: units[actor].unit,

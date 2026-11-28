@@ -26,6 +26,8 @@ public struct Unit: Sendable {
   public let pools: [Pool]
   /// Its always-on effects.
   public let passives: [Passive]
+  /// What it does out of turn.
+  public let reactions: [Reaction]
 
   /// A unit.
   public init(
@@ -37,7 +39,8 @@ public struct Unit: Sendable {
     abilities: [Ability],
     size: Size = .medium,
     pools: [Pool] = [],
-    passives: [Passive] = []
+    passives: [Passive] = [],
+    reactions: [Reaction] = []
   ) {
     self.name = name
     self.kind = kind
@@ -48,6 +51,7 @@ public struct Unit: Sendable {
     self.size = size
     self.pools = pools
     self.passives = passives
+    self.reactions = reactions
   }
 
   /// Its level in `discipline`.
