@@ -107,8 +107,12 @@ public extension Battle {
     case .pass:
       break
     }
+    // Passing waits as a unit that doesn't
+    // move does (pace 90).
     leader.nextTurn += Rules.wait(
-      speed: 100, weight: .normal
+      speed: 100,
+      weight: .normal,
+      pace: order == .pass ? 90 : 100
     )
     commander = leader
   }

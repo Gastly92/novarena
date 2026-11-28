@@ -7,12 +7,13 @@
 # with a # comment saying why. Lines of
 # only brackets or quotes are skipped.
 
-# Taps: pick a skill, tap a unit, use or
-# cancel the planned skill, end the turn,
-# and start again.
+# Taps: pick a skill, tap a unit, use,
+# back away with or cancel the planned
+# skill, end the turn, and start again.
 BattleView.swift
   fight.target(unit.id)
   fight.use()
+  fight.backAway()
   fight.cancel()
   fight.restart()
   fight.endTurn()
@@ -22,7 +23,8 @@ BattleView.swift
 # them; a counterspell, or not.
   fight.advance()
   fight.skip()
-  fight.advance(reacting: false)
+  fight.answer(true)
+  fight.answer(false)
 
 # Tap: open or fold the knocked-out
 # section (battleFallen shows it open).

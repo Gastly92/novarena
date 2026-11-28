@@ -293,6 +293,41 @@ starts.
     unit moves changes when its next
     turn comes.
 
+- **0.0.16, reactions, the rogue, a
+  circling pad and planned skills**:
+  - Circling round a unit looks much
+    better. Starting it, either way,
+    stuttered: a pause before the smooth
+    movement picked up. (A held arrow
+    waited 400 ms after its first step,
+    so a tap moves one step; the
+    circling arrows now wait 150 ms.)
+  - Why isn't a circling tap 1 cm, like
+    the pad's? (It was 5 cm from the
+    first design; now 1 cm, a hold
+    speeding up as on the pad.)
+  - With the longbow there was no way to
+    step back from a foe while staying
+    in range. (With the move open,
+    tapping a foe already stood off, but
+    nothing said so; now a "Back away"
+    button sits beside Use.)
+  - The last step of the foes' turns
+    offered both Next and "Skip to your
+    turn", doing the same; now only Next.
+  - Maren couldn't mend herself. (The
+    rules allow it; unhurt, there's
+    nothing to mend, and her row went
+    grey without saying why. Now an ally
+    a heal can't help says "Nothing to
+    mend".) She was exposed, every layer
+    at 0, and a broken layer couldn't be
+    mended. Owner: shouldn't intensity
+    end a two-healer loop anyway? (It
+    does: heals don't grow with it.)
+  - Does the commander passing bring its
+    next turn sooner? (It didn't.)
+
 ## Decisions
 
 - **The turn order is a row of
@@ -848,10 +883,55 @@ starts.
     backing away if nearer, closing in if
     further, within the range. Tapping
     an ally still walks to touch it.
+  - With a skill planned, "Back away"
+    (beside Use and Cancel) moves the
+    planned spot to the edge of that
+    skill's reach on its target, as far
+    as the unit can go, the skill still
+    planned (from 0.0.16).
   - So keeping close (the smallest move,
     so the next turn comes sooner) and
     keeping away (the longest reach) are
     each one tap.
+- **Mending a broken body** (from
+  0.0.16, owner's call): a heal can mend
+  an exposed unit's body (its last
+  layer) from 0, by its usual amount;
+  other broken layers stay broken. (A
+  half amount was tried and dropped:
+  it changed no battle's outcome, and
+  was one more thing to track.)
+  Intensity keeps two healers from
+  holding a unit up forever: every
+  battle in the balance runs still ends.
+  Maren then beat Tamsin one on one
+  (Tamsin 25%), so Tamsin is a little
+  quicker, speed 105 (was 100). Every
+  unit wins 37-62% one on one and 41-57%
+  in teams.
+- **The commander's pass** (from 0.0.16,
+  owner's call): passing waits 90 ticks,
+  as a unit that doesn't move does; an
+  order still waits 100.
+- **Settings, as built** (B4):
+  - A settings screen from home, kept
+    on the phone (`@AppStorage`; the
+    privacy manifest's `CA92.1`, the
+    privacy page). A fight reads them as
+    it starts.
+  - End turns by themselves (on): once
+    the unit on turn has no skill it can
+    use and no movement left, after a
+    skill is used or a move committed.
+  - Foes' turns a step at a time (on):
+    off, ending a turn plays the foes
+    straight through to the party's.
+  - Counterspells: ask (the default),
+    always or never. Asking, "Skip to
+    your turn" stops at the question.
+  - The screens for tests keep turns
+    ending by hand, so they stay as
+    they were.
 - **Reactions, as built** (with the
   rogue, Units part three):
   - At most one a round per unit, and
@@ -1075,23 +1155,24 @@ Free movement, as in `brainstorm-2.md`
     (done, #28, 0.0.14, bundled with
     the circling and steps fixes), with
     the freeze kind.
-  - **The rogue** (0.0.16, in progress,
+  - **The rogue** (done, #31, 0.0.16,
     with Reactions): Wren and her dodge;
     her jump (a new kind of move) comes
     later.
 - **The commander** (done, #30,
   0.0.15): its turn and actions.
-- **Reactions** (0.0.16, in progress):
+- **Reactions** (done, #31, 0.0.16):
   automatic and asked, the one-a-round
   limit, the dodge and the counterspell;
   bundled with a circling pad in place
   of the orbit arrows and skills planned
   like moves (owner's call).
-- **B4, usability**: end turns by
-  themselves, the settings screen (with
-  playing foe turns through, once
-  animated). Planning the approach to a
-  far foe came with "Aiming and
+- **B4, usability** (0.0.17, in
+  progress): turns that end by
+  themselves, and a settings screen with
+  them, playing foes' turns through, and
+  counterspells. Planning the approach
+  to a far foe came with "Aiming and
   moving".
 - **AI, basic and tactical**: the AI
   levels' interface, and the tactical

@@ -77,7 +77,7 @@ public extension Unit {
   static let tamsin = Unit(
     "Tamsin",
     kind: "longbow archer",
-    stats: Stats(speed: 100),
+    stats: Stats(speed: 105),
     layers: [
       Layer(
         "Leather",

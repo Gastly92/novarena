@@ -9,7 +9,8 @@ extension Fight {
   /// line each; none until one is picked,
   /// or if it can't be used on `id` (an
   /// ally for an attack, a foe for a heal,
-  /// anyone down).
+  /// anyone down), except "Nothing to
+  /// mend" on an ally a heal can't help.
   func preview(of id: Int) -> [String] {
     guard let turn = plan(on: id) else {
       return []
@@ -21,9 +22,27 @@ extension Fight {
       return [
         String(localized: "Out of reach"),
       ]
+    } catch .badTarget where unhurt(id) {
+      return [
+        String(localized: "Nothing to mend"),
+      ]
     } catch {
       return []
     }
+  }
+
+  /// Whether unit `id` is an ally up that
+  /// the picked heal has nothing to mend
+  /// on (it can't be aimed at, but should
+  /// say why).
+  private func unhurt(_ id: Int) -> Bool {
+    let skill = chosen.flatMap {
+      actor?.unit.abilities[$0]
+    }
+    let unit = battle.units[id]
+    return skill?.kind.heals == true
+      && unit.isUp
+      && unit.side == actor?.side
   }
 
   /// Whether the picked skill, from the

@@ -13,7 +13,13 @@ final class PrivacyInfoTests: XCTestCase {
     XCTAssertEqual(
       manifest.collectedTypes, 0
     )
-    // No APIs that need a reason yet.
-    XCTAssertEqual(manifest.reasons, [:])
+    // Settings are kept in UserDefaults,
+    // read only by the app itself (CA92.1).
+    let defaults = "NSPrivacyAccessed"
+      + "APICategoryUserDefaults"
+    XCTAssertEqual(
+      manifest.reasons,
+      [defaults: ["CA92.1"]]
+    )
   }
 }

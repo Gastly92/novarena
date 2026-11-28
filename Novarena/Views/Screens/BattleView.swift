@@ -207,8 +207,10 @@ private struct Controls: View {
           fight.advance()
         }
       }
-      Button("Skip to your turn") {
-        fight.skip()
+      if !fight.isLastStep {
+        Button("Skip to your turn") {
+          fight.skip()
+        }
       }
     }
   }
@@ -231,16 +233,18 @@ private struct Controls: View {
       \(Battle.counterCost) mana?
       """)
     Button("Counter") {
-      fight.advance()
+      fight.answer(true)
     }
     Button("Let it through") {
-      fight.advance(reacting: false)
+      fight.answer(false)
     }
   }
 
   /// The planned skill and its target,
   /// with a button to use it (off while it
-  /// doesn't reach) and one to cancel it.
+  /// doesn't reach), one to back away to
+  /// the edge of its reach, and one to
+  /// cancel it.
   /// Names come from the rules, in a
   /// sentence to translate.
   @ViewBuilder
@@ -257,6 +261,10 @@ private struct Controls: View {
       }
       .disabled(!fight.canUse)
       .testID("use-skill")
+      Button("Back away") {
+        fight.backAway()
+      }
+      .testID("back-away")
       Button("Cancel", role: .cancel) {
         fight.cancel()
       }

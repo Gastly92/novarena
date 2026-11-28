@@ -47,13 +47,16 @@ enum Nudge: CaseIterable {
     min(1 + tick * tick / 40, 20)
   }
 
-  /// The wait after the `tick`th nudge: a
-  /// moment after the first, so a tap
-  /// moves 1 cm, then quick repeats.
-  static func delay(
-    after tick: Int
-  ) -> Duration {
-    .milliseconds(tick == 0 ? 400 : 30)
+  /// The wait after this arrow's `tick`th
+  /// nudge: a moment after the first, so a
+  /// tap moves one step, then quick
+  /// repeats. Circling waits less (a long
+  /// pause read as a stutter there).
+  func delay(after tick: Int) -> Duration {
+    guard tick == 0 else {
+      return .milliseconds(30)
+    }
+    return .milliseconds(circles ? 150 : 400)
   }
 
   /// Its arrow's icon.

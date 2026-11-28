@@ -85,8 +85,8 @@ final class HealTests: XCTestCase {
   }
 
   /// Not on a foe, a whole ally, a broken
-  /// layer (an exposed unit stays
-  /// exposed), or a machine.
+  /// layer over a whole body, or a
+  /// machine.
   func testBadTargets() {
     var whole = battle([layer(.flesh)])
     Fixtures.expect(.badTarget) {
@@ -95,8 +95,10 @@ final class HealTests: XCTestCase {
     Fixtures.expect(.badTarget) {
       try whole.act(1, on: 2)
     }
-    var broken = battle([layer(.flesh)])
-    broken.units[1].layers = [0]
+    var broken = battle([
+      layer(.flesh), layer(.flesh, "Body"),
+    ])
+    broken.units[1].layers = [0, 100]
     Fixtures.expect(.badTarget) {
       try broken.act(1, on: 1)
     }
@@ -109,6 +111,22 @@ final class HealTests: XCTestCase {
     XCTAssertTrue(
       unit.mend(30, from: heal).isEmpty
     )
+  }
+
+  /// A broken body (an exposed unit) can be
+  /// mended, as any worn layer: 30 of 30;
+  /// a broken layer over it stays broken.
+  func testMendsABrokenBody() throws {
+    var battle = battle([
+      layer(.flesh), layer(.flesh, "Body"),
+    ])
+    battle.units[1].layers = [0, 0]
+    XCTAssertTrue(battle.units[1].isExposed)
+    try battle.act(1, on: 1)
+    XCTAssertEqual(
+      battle.units[1].layers, [0, 30]
+    )
+    XCTAssertFalse(battle.units[1].isExposed)
   }
 
   /// The plain choice heals when that

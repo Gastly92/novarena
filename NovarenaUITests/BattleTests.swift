@@ -142,6 +142,20 @@ final class BattleTests: XCTestCase {
     XCTAssertTrue(isTurn(of: "Oswin", app))
   }
 
+  /// Back away keeps the skill planned,
+  /// still in reach (`FightPlanTests`
+  /// checks where the spot goes).
+  @MainActor
+  func testBacksAway() {
+    let app = App.start(
+      screen: .battlePlanned
+    )
+    app.buttons["back-away"].tap()
+    let use = app.buttons["use-skill"]
+    XCTAssertTrue(use.exists)
+    XCTAssertTrue(use.isEnabled)
+  }
+
   /// Cancel forgets a planned skill, so
   /// its Use button goes.
   @MainActor

@@ -42,4 +42,26 @@ final class HomeTests: XCTestCase {
     ]
     XCTAssertEqual(names.sorted(), want)
   }
+
+  /// Settings opens from home; turns
+  /// ending by themselves is on, and a tap
+  /// on its switch turns it off.
+  @MainActor
+  func testOpensSettings() {
+    let app = App.start()
+    app.buttons["Settings"].tap()
+    let ends = app.switches[
+      "End turns by themselves"
+    ]
+    XCTAssertTrue(ends.appears())
+    let shown = ends.value as? String
+    XCTAssertEqual(shown, "1")
+    let right = CGVector(dx: 0.95, dy: 0.5)
+    let knob = ends.coordinate(
+      withNormalizedOffset: right
+    )
+    knob.tap()
+    let off = ends.value as? String
+    XCTAssertEqual(off, "0")
+  }
 }

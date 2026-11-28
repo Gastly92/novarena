@@ -28,10 +28,20 @@ final class NudgeTests: XCTestCase {
   }
 
   /// A pause after the first nudge, so a
-  /// tap moves 1 cm; then quick repeats.
+  /// tap moves one step (shorter for
+  /// circling); then quick repeats.
   func testDelays() {
-    let first = Nudge.delay(after: 0)
-    let next = Nudge.delay(after: 1)
+    let first = Nudge.east.delay(after: 0)
+    let next = Nudge.east.delay(after: 1)
+    let circling = Nudge.clockwise
+    XCTAssertEqual(
+      circling.delay(after: 0),
+      .milliseconds(150)
+    )
+    XCTAssertEqual(
+      circling.delay(after: 1),
+      .milliseconds(30)
+    )
     XCTAssertEqual(first, .milliseconds(400))
     XCTAssertEqual(next, .milliseconds(30))
   }

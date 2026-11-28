@@ -208,10 +208,14 @@ public struct BattleUnit: Sendable,
   /// The outermost layer `kind` can mend:
   /// worn but not broken (a broken layer,
   /// like one that regrows, stays broken),
-  /// and of a material it works on.
+  /// or the body (the last) even broken,
+  /// so an exposed unit can be healed; and
+  /// of a material it works on.
   func mendable(_ kind: Kind) -> Int? {
     layers.indices.first {
-      (1..<unit.layers[$0].points)
+      let least = $0 == layers.count - 1
+        ? 0 : 1
+      return (least..<unit.layers[$0].points)
         .contains(layers[$0])
         && unit.layers[$0].matchup(kind)
           .percent > 0
