@@ -206,12 +206,15 @@ extension Fight.Stage {
       fight.panel = .skills
       fight.place(Point(x: 817, y: 448))
       fight.choose(0)
+      fight.target(3)
     case .acted:
       fight.place(Point(x: 817, y: 448))
       fight.choose(0)
       fight.target(3)
+      fight.use()
       fight.choose(2)
       fight.target(3)
+      fight.use()
     case .healing:
       fight.panel = .skills
       fight.choose(2)

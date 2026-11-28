@@ -32,6 +32,10 @@ final class Fight {
   /// Where the unit on turn plans to move,
   /// until it's committed.
   private(set) var ghost: Point?
+  /// The skill planned on a unit, from the
+  /// planned spot, until it's used
+  /// (`use()`).
+  private(set) var planned: Action?
   /// The part of the turn on show.
   var panel = Panel.move
   /// Whether zones are on: taps on units
@@ -166,9 +170,13 @@ final class Fight {
     battle.moveLeft
   }
 
-  /// Picks a skill for the unit on turn.
+  /// Picks a skill for the unit on turn;
+  /// a plan for another skill goes.
   func choose(_ ability: Int) {
     chosen = ability
+    if planned?.ability != ability {
+      planned = nil
+    }
   }
 
   /// Plans a move to `point`, or as far
@@ -273,29 +281,52 @@ final class Fight {
     ghost = nil
   }
 
-  /// Uses the picked skill on `target`,
-  /// walking the planned move first; the
-  /// skills stay open while one can still
-  /// be used (a bonus), else the actions
-  /// open. Nothing happens if it can't
-  /// reach.
+  /// Plans the picked skill on `target`,
+  /// if it reaches from the planned spot;
+  /// `use()` carries it out.
   func target(_ target: Int) {
     guard let chosen, inReach(target) else {
       return
     }
+    planned = Action(chosen, on: target)
+  }
+
+  /// Whether the planned skill reaches its
+  /// target from the planned spot.
+  var canUse: Bool {
+    planned.map { inReach($0.target) }
+      ?? false
+  }
+
+  /// Carries out the plan: walks the
+  /// planned move, then uses the planned
+  /// skill. The skills stay open while one
+  /// can still be used (a bonus), else the
+  /// actions open. Nothing happens if it
+  /// can't reach.
+  func use() {
+    guard let planned, canUse else {
+      return
+    }
     commit()
-    try? battle.use(chosen, on: target)
-    self.chosen = nil
+    try? battle.use(
+      planned.ability, on: planned.target
+    )
+    self.planned = nil
+    chosen = nil
     let left = actor?.unit.abilities.indices
       .contains(where: battle.canUse)
     panel = left == true ? .skills : .actions
   }
 
-  /// Walks the planned move, if any, and
-  /// ends the turn; then the foes act.
+  /// Carries out the plan (the planned
+  /// skill too, if it reaches) and ends
+  /// the turn; then the foes act.
   func endTurn() {
+    use()
     try? battle.act(Turn(before: ghost))
     ghost = nil
+    planned = nil
     chosen = nil
     panel = .move
     shown = []
@@ -307,6 +338,7 @@ final class Fight {
   /// The same battle, from the start.
   func restart() {
     battle = start
+    planned = nil
     chosen = nil
     ghost = nil
     panel = .move

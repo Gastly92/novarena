@@ -41,18 +41,15 @@ extension Fight {
     }
   }
 
-  /// Uses the picked skill on unit `id` if
-  /// it reaches from the planned spot; else
-  /// plans the move just into reach (or as
+  /// Plans the picked skill on unit `id`
+  /// (`target(_:)`), first planning the
+  /// move just into reach if it doesn't
+  /// reach from the planned spot (or as
   /// far toward it as the unit can go this
   /// turn), or no move if it reaches from
   /// where the unit stands.
   func aim(at id: Int) {
-    guard !inReach(id) else {
-      target(id)
-      return
-    }
-    if let chosen,
+    if !inReach(id), let chosen,
       let turn = battle.approach(
         chosen, on: id
       ) {
@@ -62,15 +59,27 @@ extension Fight {
         undo()
       }
     }
+    target(id)
   }
 
   /// Plans a straight walk from `actor`
-  /// toward `unit`, stopping just touching
-  /// it (or at the edge of the range).
+  /// toward `unit`: to a foe, to the edge
+  /// of the picked skill's reach (or the
+  /// longest reach), backing away if
+  /// nearer (`Battle.standoff`); to an
+  /// ally, just touching it. Either stops
+  /// at the edge of the range.
   func walk(
     to unit: BattleUnit,
     from actor: BattleUnit
   ) {
+    if unit.side != actor.side,
+      let spot = battle.standoff(
+        on: unit.id, with: chosen
+      ) {
+      place(spot)
+      return
+    }
     let apart = actor.unit.size.radius
       + unit.unit.size.radius
     place(unit.place.toward(

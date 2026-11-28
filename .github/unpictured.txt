@@ -7,10 +7,12 @@
 # with a # comment saying why. Lines of
 # only brackets or quotes are skipped.
 
-# Taps: pick a skill, tap a unit, end the
-# turn, and start again.
+# Taps: pick a skill, tap a unit, use the
+# planned skill, end the turn, and start
+# again.
 BattleView.swift
   fight.target(unit.id)
+  fight.use()
   fight.restart()
   fight.endTurn()
   fight.choose(index)

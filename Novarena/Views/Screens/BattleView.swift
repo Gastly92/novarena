@@ -171,6 +171,7 @@ private struct Controls: View {
       case .move:
         MovePanel(fight: fight)
       case .skills:
+        plan(of: actor)
         skills(of: actor)
       case .actions:
         Button("End turn") {
@@ -234,6 +235,27 @@ private struct Controls: View {
     }
     Button("Let it through") {
       fight.advance(reacting: false)
+    }
+  }
+
+  /// The planned skill and its target,
+  /// with a button to use it (off while it
+  /// doesn't reach). Names come from the
+  /// rules, in a sentence to translate.
+  @ViewBuilder
+  private func plan(
+    of actor: BattleUnit
+  ) -> some View {
+    if let planned = fight.planned {
+      let skill = actor.unit
+        .abilities[planned.ability].name
+      let foe = fight.battle
+        .units[planned.target].unit.name
+      Button("Use \(skill) on \(foe)") {
+        fight.use()
+      }
+      .disabled(!fight.canUse)
+      .testID("use-skill")
     }
   }
 

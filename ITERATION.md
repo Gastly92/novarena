@@ -275,6 +275,23 @@ starts.
     counterclockwise goes round it,
     carrying on round the next unit
     where two meet.
+  - With the move open, tapping a foe
+    walked right up to it, even for the
+    archer, whose longbow already
+    reached. Wanted: just into the
+    skill's range, as far off as
+    possible, or backing away to it.
+  - Picking a skill and a foe showed the
+    move to get there (good), but in
+    reach it struck at once: no chance
+    to back away first. Owner's call: no
+    attacks of opportunity while moving;
+    the whole turn (move and skill) is
+    planned on the ghost, and the skill
+    committed like the move. Both ways
+    should be easy, since how far the
+    unit moves changes when its next
+    turn comes.
 
 ## Decisions
 
@@ -803,6 +820,35 @@ starts.
     at the edge of the range.
   - Gone: the faint circle and the
     arrows on the arena.
+- **Skills planned like moves** (from
+  0.0.15):
+  - With a skill picked, tapping a foe
+    (in the arena or its row) plans it,
+    moving just into reach first if
+    needed; nothing happens yet. A "Use
+    Sword Cut on Kestrel-9" button above
+    the skills carries out the plan: the
+    move, then the skill. It's off while
+    the plan doesn't reach (the ghost
+    moved away).
+  - Ending the turn carries out the plan
+    too (the skill only if it reaches),
+    as it commits a planned move.
+    Picking another skill drops it. The
+    turn order shows the plan.
+  - With the move open, tapping a foe
+    stands off: the spot on the straight
+    line through the two that keeps it
+    at the edge of the picked skill's
+    reach (or, with none, the longest
+    reach among the unit's skills),
+    backing away if nearer, closing in if
+    further, within the range. Tapping
+    an ally still walks to touch it.
+  - So keeping close (the smallest move,
+    so the next turn comes sooner) and
+    keeping away (the longest reach) are
+    each one tap.
 - **Reactions, as built** (with the
   rogue, Units part three):
   - At most one a round per unit, and
@@ -1027,7 +1073,8 @@ Free movement, as in `brainstorm-2.md`
   automatic and asked, the one-a-round
   limit, the dodge and the counterspell;
   bundled with a circling pad in place
-  of the orbit arrows (owner's call).
+  of the orbit arrows and skills planned
+  like moves (owner's call).
 - **B4, usability**: end turns by
   themselves, the settings screen (with
   playing foe turns through, once

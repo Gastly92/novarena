@@ -120,16 +120,18 @@ final class BattleTests: XCTestCase {
 
   /// With Sword Cut picked and a move
   /// planned, tap Kestrel-9 in the arena
-  /// (at 912, 556 cm): Gerald walks and
-  /// hits. The skills stay open for his
-  /// Pommel Strike; open the actions and
-  /// end the turn instead.
+  /// (at 912, 556 cm) to plan the strike,
+  /// then use it: Gerald walks and hits.
+  /// The skills stay open for his Pommel
+  /// Strike; open the actions and end the
+  /// turn instead.
   @MainActor
   func testActsThenEnds() {
     let app = App.start(
       screen: .battlePlanned
     )
     tap(app, x: 0.76, y: 0.695)
+    app.buttons["use-skill"].tap()
     let pommel = app.buttons[
       "data-ability-2"
     ]
@@ -171,7 +173,8 @@ final class BattleTests: XCTestCase {
   }
 
   /// With Mend Wounds picked, tapping
-  /// Gerald's row heals his plate, 7 to
+  /// Gerald's row plans the heal; ending
+  /// the turn uses it: his plate, 7 to
   /// 25.
   @MainActor
   func testHealsFromTheRow() {
@@ -185,6 +188,7 @@ final class BattleTests: XCTestCase {
     let gerald = app.buttons["data-unit-0"]
     XCTAssertTrue(gerald.appears())
     gerald.tap()
+    app.buttons["End turn"].tap()
     let healed = gerald.label
     XCTAssertTrue(
       healed.contains("25 of 190")

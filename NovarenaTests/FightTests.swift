@@ -112,9 +112,10 @@ final class FightTests: XCTestCase {
 
   /// A foe out of reach can't be targeted;
   /// one in reach, tapped in the arena, is
-  /// hit after the walk. The skills stay
-  /// open for the Pommel Strike bonus;
-  /// once it's used, the actions open.
+  /// planned, then hit after the walk once
+  /// used. The skills stay open for the
+  /// Pommel Strike bonus; once it's used,
+  /// the actions open.
   func testActs() {
     let fight = Fight(stage: .planned)
     let count = fight.battle.log.count
@@ -125,6 +126,9 @@ final class FightTests: XCTestCase {
     XCTAssertEqual(fight.chosen, 0)
     let kestrel = fight.battle.units[3]
     fight.tap(kestrel.place)
+    XCTAssertNotNil(fight.planned)
+    fight.use()
+    XCTAssertNil(fight.planned)
     XCTAssertNil(fight.chosen)
     XCTAssertNil(fight.ghost)
     XCTAssertEqual(fight.panel, .skills)
@@ -132,6 +136,7 @@ final class FightTests: XCTestCase {
     XCTAssertFalse(fight.battle.canUse(0))
     fight.choose(2)
     fight.target(3)
+    fight.use()
     XCTAssertEqual(fight.panel, .actions)
     XCTAssertFalse(fight.battle.canUse(2))
     let hit = "Gerald: Sword Cut → Kestrel-9"
