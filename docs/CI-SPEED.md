@@ -2,9 +2,9 @@
 
 Where the time goes in a run of
 `ios-build.yml`, and what could make it
-faster. None of this is done yet: each idea
-is a CI-only pull request to try, measure,
-and keep only if it helps.
+faster. Each idea is a CI-only pull
+request to try, measure, and keep only if
+it helps.
 
 ## Where the time goes
 
@@ -22,8 +22,15 @@ From PR #20's run 80 (November 2026), about
 
 ### 1. Build in each shard
 
-The likely biggest win, about 2 minutes a
-run.
+Trying it. The likely biggest win, about 2
+minutes a run.
+
+- Main's run 167 (0.0.16, 14 min 15 s from
+  push to result) was worse still: the
+  download took 2 min 14 s in one shard
+  and 5 min 8 s in the other, while the
+  build (from main's cache) took 1 min
+  28 s.
 
 - Each shard spends about 3 minutes
   fetching the 9 MB `test-build` artifact:

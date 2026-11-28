@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# CI's tests, in two steps on separate
-# runners:
+# CI's tests, in steps on each shard's
+# runner:
 #   run-tests.sh boot
 #     starts the simulator early, so it
-#     boots while the build downloads;
-#   run-tests.sh build
-#     builds the app and tests once;
+#     boots while the app builds;
+#   run-tests.sh build <shard>
+#     builds the app and tests;
 #   run-tests.sh test <shard>
 #     runs one shard of the tests on that
 #     build (main, localization).
@@ -22,6 +22,9 @@
 set -euo pipefail
 
 mode="${1:?boot, build or test}"
+# The shard (main, localization); boot
+# needs none.
+shard="${2:-main}"
 app=$(sed -n 's/^name: *//p' project.yml)
 
 # Always this iPhone, on the iOS the
@@ -108,7 +111,7 @@ pick() {
         "the snapshots use iOS $want. To" \
         "move to it, add the" \
         "record-snapshots label."
-      # For the build job's output (the
+      # For the test job's output (the
       # main branch opens a PR for it).
       if [ "$mode" = build ] \
         && [ -n "${GITHUB_OUTPUT:-}" ]; then
@@ -123,9 +126,10 @@ pick() {
 }
 
 # A warning on the PR, once a run (from the
-# build step).
+# main shard's build step).
 note() {
-  if [ "$mode" = build ]; then
+  if [ "$mode" = build ] \
+    && [ "$shard" = main ]; then
     echo "::warning::$*"
   else
     echo "$*"
@@ -162,7 +166,7 @@ if [ "$mode" = build ]; then
       || tail -n 60 build/build.log
     exit "$status"
   fi
-  echo "Build for testing:" \
+  echo "Build for testing ($shard):" \
     "$((SECONDS - start)) s" >> "$summary"
   exit 0
 fi
@@ -170,7 +174,6 @@ fi
 # Which tests each shard runs: the slow
 # localization check (every screen) on its
 # own, and main takes the rest.
-shard="${2:?shard: main or localization}"
 ui="${app}UITests"
 check="$ui/LocalizationTests"
 case "$shard" in

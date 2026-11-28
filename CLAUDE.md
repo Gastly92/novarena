@@ -118,13 +118,15 @@ uploading) runs in CI.
   workflows, list the label in
   `.github/actionlint.yaml` if actionlint
   doesn't know it, and re-record the
-  snapshots). It generates the project and
-  builds the tests once, then runs them in
-  two shards on separate runners in
-  parallel (`.github/scripts/run-tests.sh`;
-  `main`, and `localization` for
-  `LocalizationTests` alone), and a
-  `Coverage` job merges the shards'
+  snapshots). It runs the tests in two
+  shards on separate runners in parallel
+  (`.github/scripts/run-tests.sh`; `main`,
+  and `localization` for
+  `LocalizationTests` alone), each
+  generating the project and building for
+  itself (quicker than downloading one
+  shared build; Periphery runs in `main`),
+  and a `Coverage` job merges the shards'
   results. A Release device build runs
   alongside. The CI summary shows how long
   building and each shard took. Docs-only

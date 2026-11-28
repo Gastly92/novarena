@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # On main, when the runner has a newer iOS
 # than the snapshots were drawn on
-# (run-tests.sh gives it as the build job's
+# (run-tests.sh gives it as the test job's
 # `newer` output): opens a PR that moves
 # them to it. The PR sets
 # __Snapshots__/iOS.txt, carries the
