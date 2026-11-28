@@ -18,7 +18,8 @@ final class CommanderTests: XCTestCase {
 
   /// Its first turn ties the units' (100)
   /// and comes first; units wait. Passing
-  /// moves its next turn on by 100.
+  /// moves its next turn on by 90, as a
+  /// unit that doesn't move waits.
   func testTakesItsTurn() throws {
     var fight = battle()
     XCTAssertTrue(fight.commanderUp)
@@ -36,7 +37,7 @@ final class CommanderTests: XCTestCase {
     )
     XCTAssertFalse(fight.commanderUp)
     XCTAssertEqual(
-      fight.commander?.nextTurn, 200
+      fight.commander?.nextTurn, 190
     )
     XCTAssertEqual(
       fight.commanderSlot(in: fight.queue),

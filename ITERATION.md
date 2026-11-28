@@ -320,7 +320,13 @@ starts.
     nothing to mend, and her row went
     grey without saying why. Now an ally
     a heal can't help says "Nothing to
-    mend".)
+    mend".) She was exposed, every layer
+    at 0, and a broken layer couldn't be
+    mended. Owner: shouldn't intensity
+    end a two-healer loop anyway? (It
+    does: heals don't grow with it.)
+  - Does the commander passing bring its
+    next turn sooner? (It didn't.)
 
 ## Decisions
 
@@ -887,6 +893,23 @@ starts.
     so the next turn comes sooner) and
     keeping away (the longest reach) are
     each one tap.
+- **Mending a broken body** (from
+  0.0.16, owner's call): a heal can mend
+  an exposed unit's body (its last
+  layer) from 0, at half its usual
+  amount; other broken layers stay
+  broken. Intensity keeps two healers
+  from holding a unit up forever: every
+  battle in the balance runs still ends.
+  Maren then beat Tamsin one on one
+  (Tamsin 25%), so Tamsin is a little
+  quicker, speed 105 (was 100). Every
+  unit wins 37-62% one on one and 42-58%
+  in teams.
+- **The commander's pass** (from 0.0.16,
+  owner's call): passing waits 90 ticks,
+  as a unit that doesn't move does; an
+  order still waits 100.
 - **Settings, as built** (B4):
   - A settings screen from home, kept
     on the phone (`@AppStorage`; the
