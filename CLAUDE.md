@@ -279,6 +279,13 @@ uploading) runs in CI.
   runner stall; bring it back from
   `gastly92/ios-template` when a screen
   needs a long-press.)
+- Don't end a UI test, or a step of
+  one, with `app.terminate()`: the next
+  `App.start` closes the app anyway, and
+  an explicit terminate now and then hung
+  on CI for a minute, then failed the
+  run ("Failed to terminate", pid 0),
+  three times in `LocalizationCheck`.
 - In `@MainActor` tests, wait with
   `await fulfillment(of:)`, never
   `wait(for:)`: it blocks the main actor,
@@ -313,6 +320,13 @@ uploading) runs in CI.
   the `record-snapshots` label to the PR
   to record all of them again; a failed
   comparison uploads `snapshot-diffs`.
+  Add it after the last push, and don't
+  delete images in that push: a run that
+  records missing images commits them,
+  and that commit cancels the labelled
+  run. If a re-record got cancelled,
+  delete the images that changed instead
+  (they record as missing).
   `precision: 0.9999` lets only 0.01% of
   pixels differ (~130 on a phone image):
   runners now and then draw up to ~36 a
