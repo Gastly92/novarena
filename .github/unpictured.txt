@@ -59,10 +59,12 @@ CommandPanel.swift
   fight.command(order)
 
 # Pressing and letting go of an orbit
-# arrow on the arena.
-ArenaView.swift
-  fight.press(way)
-  fight.press(nil)
+# arrow on the arena (or its touch being
+# cancelled).
+OrbitArrows.swift
+  held = way
+  pinned = $1 == nil ? nil : fight.rim
+  fight.press($1)
 
 # Touches on the arena, as they move and
 # when they lift.

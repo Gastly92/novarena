@@ -15,7 +15,6 @@ import SwiftUI
 /// carry a `data-` identifier.
 struct ArenaView: View {
   let fight: Fight
-  @ScaledMetric private var knob = 30.0
 
   init(fight: Fight) {
     self.fight = fight
@@ -76,61 +75,10 @@ struct ArenaView: View {
         ring(reach, on: map)
       }
       if let rim = fight.rim {
-        path(rim, on: map)
-        orbit(.counterclockwise, on: map)
-        orbit(.clockwise, on: map)
+        OrbitArrows(
+          fight: fight, rim: rim, map: map
+        )
       }
-    }
-  }
-
-  /// The circle the planned spot rests on,
-  /// faintly: what the orbit arrows follow.
-  private func path(
-    _ rim: (center: Point, radius: Int),
-    on map: ArenaMap
-  ) -> some View {
-    let across = map.points(2 * rim.radius)
-    return Circle()
-      .stroke(
-        .secondary,
-        style: StrokeStyle(
-          lineWidth: 1, dash: [2, 4]
-        )
-      )
-      .frame(width: across, height: across)
-      .position(map.location(of: rim.center))
-  }
-
-  /// An arrow on the arena beside the
-  /// planned spot that steps it round the
-  /// rim while held.
-  @ViewBuilder
-  private func orbit(
-    _ way: Nudge,
-    on map: ArenaMap
-  ) -> some View {
-    if let spot = fight.orbitSpot(way) {
-      Image(systemName: way.symbol)
-        .font(.caption.bold())
-        .frame(width: knob, height: knob)
-        .background(
-          Circle().fill(.regularMaterial)
-        )
-        .contentShape(Circle())
-        .gesture(
-          DragGesture(minimumDistance: 0)
-            .onChanged { _ in
-              fight.press(way)
-            }
-            .onEnded { _ in
-              fight.press(nil)
-            }
-        )
-        .accessibilityElement()
-        .accessibilityLabel(way.label)
-        .accessibilityAddTraits(.isButton)
-        .testID("orbit-\(way)")
-        .position(map.location(of: spot))
     }
   }
 

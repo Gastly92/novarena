@@ -100,12 +100,10 @@ final class FightTapsTests: XCTestCase {
     let rim = try XCTUnwrap(fight.rim)
     XCTAssertEqual(rim.center, oswin)
     XCTAssertEqual(rim.radius, 65)
-    let right = fight.orbitSpot(.clockwise)
-    let left = fight.orbitSpot(
-      .counterclockwise
-    )
-    XCTAssertGreaterThan(right?.x ?? 0, 250)
-    XCTAssertLessThan(left?.x ?? 250, 250)
+    let right = rim.arrow(.clockwise)
+    let left = rim.arrow(.counterclockwise)
+    XCTAssertGreaterThan(right.x, 250)
+    XCTAssertLessThan(left.x, 250)
     fight.nudge(.clockwise, by: 10)
     let moved = try XCTUnwrap(fight.ghost)
     XCTAssertGreaterThan(moved.x, 250)

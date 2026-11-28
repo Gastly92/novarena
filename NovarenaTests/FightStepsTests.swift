@@ -68,18 +68,15 @@ final class FightStepsTests: XCTestCase {
     let rim = try XCTUnwrap(edge.rim)
     XCTAssertEqual(rim.center, gerald.place)
     XCTAssertEqual(rim.radius, edge.moveLeft)
-    let below = edge.orbitSpot(.clockwise)
-    let above = edge.orbitSpot(
-      .counterclockwise
-    )
-    XCTAssertGreaterThan(below?.y ?? 0, 200)
-    XCTAssertLessThan(above?.y ?? 200, 200)
+    let below = rim.arrow(.clockwise)
+    let above = rim.arrow(.counterclockwise)
+    XCTAssertGreaterThan(below.y, 200)
+    XCTAssertLessThan(above.y, 200)
     edge.nudge(.clockwise, by: 1)
     let moved = try XCTUnwrap(edge.ghost)
     XCTAssertGreaterThan(moved.y, 200)
     let start = Fight()
     XCTAssertNil(start.rim)
-    XCTAssertNil(start.orbitSpot(.clockwise))
     XCTAssertNil(Fight(stage: .foes).rim)
     XCTAssertNil(Fight(stage: .end).rim)
   }

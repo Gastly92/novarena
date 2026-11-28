@@ -103,18 +103,29 @@ extension Fight {
   /// edge of the range. None if neither,
   /// or when it isn't the party's unit's
   /// turn.
-  var rim: (center: Point, radius: Int)? {
+  var rim: Rim? {
     guard !isFoesTurn, !isCommanding,
       let actor
     else { return nil }
     let from = ghost ?? actor.place
+    let gap = actor.unit.size.radius + 45
     if let other = battle.touching(from) {
       let apart = actor.unit.size.radius
         + other.unit.size.radius
-      return (other.place, apart)
+      return Rim(
+        center: other.place,
+        radius: apart,
+        spot: from,
+        gap: gap
+      )
     }
     return battle.atEdge(from)
-      ? (actor.place, moveLeft) : nil
+      ? Rim(
+        center: actor.place,
+        radius: moveLeft,
+        spot: from,
+        gap: gap
+      ) : nil
   }
 
   /// Moves the planned spot `from` at
@@ -145,33 +156,6 @@ extension Fight {
     }
   }
 
-  /// Where the orbit arrow `way` sits: on
-  /// the `rim`, a little round it from the
-  /// planned spot (or the unit's own), the
-  /// way it goes. None without a rim.
-  func orbitSpot(_ way: Nudge) -> Point? {
-    guard let rim, let actor else {
-      return nil
-    }
-    let from = ghost ?? actor.place
-    let center = rim.center
-    let across = Double(from.x - center.x)
-    let down = Double(from.y - center.y)
-    let length = (
-      across * across + down * down
-    ).squareRoot()
-    let turn = way == .clockwise
-      ? (x: -down, y: across)
-      : (x: down, y: -across)
-    let gap = Double(
-      actor.unit.size.radius + 45
-    ) / max(length, 1)
-    return Point(
-      x: from.x + Int(turn.x * gap),
-      y: from.y + Int(turn.y * gap)
-    )
-  }
-
   /// Turns unit `id`'s zone on or off.
   func watch(_ id: Int) {
     watched.formSymmetricDifference([id])
@@ -198,4 +182,36 @@ struct Zone {
   let radius: Int
   let side: Side
   let heals: Bool
+}
+
+/// The circle the planned spot rests on
+/// (`Fight.rim`), and where the orbit
+/// arrows sit.
+struct Rim {
+  let center: Point
+  let radius: Int
+  /// The planned spot, on it.
+  let spot: Point
+  /// How far from the spot the arrows
+  /// sit, in centimetres.
+  let gap: Int
+
+  /// Where the orbit arrow `way` sits:
+  /// `gap` round from the spot, the way
+  /// it goes.
+  func arrow(_ way: Nudge) -> Point {
+    let across = Double(spot.x - center.x)
+    let down = Double(spot.y - center.y)
+    let length = (
+      across * across + down * down
+    ).squareRoot()
+    let turn = way == .clockwise
+      ? (x: -down, y: across)
+      : (x: down, y: -across)
+    let scale = Double(gap) / max(length, 1)
+    return Point(
+      x: spot.x + Int(turn.x * scale),
+      y: spot.y + Int(turn.y * scale)
+    )
+  }
 }
