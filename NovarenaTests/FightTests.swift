@@ -259,9 +259,9 @@ final class FightTests: XCTestCase {
   /// Maren's Mend Wounds (30 × 120% = 36,
   /// by half on metal) can only go on an
   /// ally it can mend: Gerald, his plate
-  /// at 7. Tapping him in the arena heals
-  /// him to 25; the skills stay open for
-  /// her Mace Blow.
+  /// at 7. Tapping him in the arena plans
+  /// it; using it heals him to 25, and the
+  /// skills stay open for her Mace Blow.
   func testHeals() {
     let fight = Fight(stage: .healing)
     XCTAssertEqual(fight.actor?.id, 1)
@@ -276,6 +276,7 @@ final class FightTests: XCTestCase {
     XCTAssertFalse(fight.canAim(at: 2))
     XCTAssertTrue(fight.inReach(0))
     fight.tap(fight.battle.units[0].place)
+    fight.use()
     XCTAssertEqual(
       fight.battle.units[0].layers, [25, 60]
     )
