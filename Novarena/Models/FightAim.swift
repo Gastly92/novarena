@@ -64,8 +64,44 @@ extension Fight {
   /// it's over, or if it would end the
   /// battle.
   var queueAfter: [BattleUnit] {
-    guard !isFoesTurn else {
+    (afterTurn?.queue ?? []).map {
+      battle.units[$0]
+    }
+  }
+
+  /// The turn order shown, a seat each:
+  /// the order after this turn (or, with
+  /// none to plan, as it stands), with the
+  /// commander's seat where its turn falls;
+  /// none once it's over.
+  var seats: [Seat] {
+    let after = afterTurn
+    let ids = after?.queue ?? battle.queue
+    guard !ids.isEmpty else {
       return []
+    }
+    let slot = after.map(\.commanderSlot)
+      ?? battle.commanderSlot(in: ids)
+    var all = ids.enumerated().map {
+      Seat.unit(
+        battle.units[$0.element],
+        place: $0.offset
+      )
+    }
+    if let slot {
+      all.insert(.commander, at: slot)
+    }
+    return all
+  }
+
+  /// What this turn would do (with the
+  /// picked skill on the first unit it
+  /// reaches, if any); none on a foe's or
+  /// the commander's turn, once it's over,
+  /// or if it would end the battle.
+  private var afterTurn: Forecast? {
+    guard !isFoesTurn, !isCommanding else {
+      return nil
     }
     let turns = battle.units
       .compactMap { plan(on: $0.id) }
@@ -76,9 +112,8 @@ extension Fight {
     let after = forecasts.first {
       $0.strike != nil
     } ?? forecasts.last
-    return (after?.queue ?? []).map {
-      battle.units[$0]
-    }
+    return after?.queue.isEmpty == false
+      ? after : nil
   }
 
   /// The rest of the turn using the picked
@@ -92,4 +127,12 @@ extension Fight {
       )
     }
   }
+}
+
+/// A seat in the turn order: a unit (its
+/// place among the units), or the
+/// commander.
+enum Seat {
+  case unit(BattleUnit, place: Int)
+  case commander
 }

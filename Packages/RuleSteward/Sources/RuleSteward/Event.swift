@@ -32,6 +32,12 @@ public enum Event: Sendable, Equatable {
   case mends(
     String, String, gained: Int, now: Int
   )
+  /// A unit's ward soaks a hit, with this
+  /// many hits left in it.
+  case ward(String, left: Int)
+  /// The commander wards a unit for this
+  /// many hits.
+  case warded(String, hits: Int)
   /// A unit has no layers left.
   case exposed(String)
   /// A unit is knocked out.
@@ -78,6 +84,10 @@ extension Event: CustomStringConvertible {
         \(name)'s \(layer) +\(gain) \
       (\(now))
       """
+    case let .ward(name, left):
+      "  \(name)'s ward holds (\(left) left)"
+    case let .warded(name, hits):
+      "  \(name) is warded (\(hits) hits)"
     case let .exposed(name):
       "  \(name) is exposed"
     case let .out(name):

@@ -111,13 +111,32 @@ public extension Battle {
     }
   }
 
+  /// The commander's plain order: restore
+  /// the ally most worn (by its layers, in
+  /// percent) that has a layer to restore,
+  /// else pass.
+  var plainOrder: Order {
+    let worn = units.indices.filter {
+      canCommand(.restore($0))
+    }
+    let most = worn.min {
+      units[$0].percent < units[$1].percent
+    }
+    return most.map(Order.restore) ?? .pass
+  }
+
   /// Plays every turn with `plainChoice`
+  /// (and the commander's `plainOrder`)
   /// until one side wins, or `turns` run
   /// out.
   mutating func playPlainly(
     turns: Int = 200
   ) {
     for _ in 0..<turns {
+      if commanderUp {
+        try? command(plainOrder)
+        continue
+      }
       guard let turn = plainChoice else {
         return
       }

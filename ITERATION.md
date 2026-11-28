@@ -236,6 +236,20 @@ starts.
     nudged by hand. (Wedged between the
     ally and the edge of the range,
     sliding gave up.)
+- **0.0.14, circling and steps fixed;
+  the archer, golem and ice mage**:
+  - The rest looks good, but the corner
+    arrows got worse: several directions
+    showed at once, which was confusing,
+    and the "move around" arrows got
+    stuck and did nothing.
+  - Owner's ask: a static pad, and moving
+    round a different, more reliable way,
+    for both cases: at the edge of the
+    movement range, and against an ally
+    or a foe. A "lollipop" to drag round
+    the circle was weighed and dropped;
+    stepping one tap at a time stays.
 
 ## Decisions
 
@@ -699,6 +713,48 @@ starts.
   - The balance runs (every team of up
     to three of eight units) take about
     three minutes in the rules tests.
+- **Orbit arrows on the arena** (from
+  0.0.14; replaces the circling corner
+  arrows and the arrows that bent at the
+  edge):
+  - The pad is static: four plain
+    chevrons that only ever go straight.
+  - When the planned spot touches a unit,
+    or sits on the edge of the range, a
+    faint dashed circle shows what it
+    rests on (round the unit, just clear
+    of it; or the range), and two round
+    arrow buttons sit on the arena either
+    side of the ghost, on that circle.
+  - A tap steps about 5 cm round it; a
+    hold repeats and speeds up, like the
+    pad. Touching a unit wins over the
+    edge.
+  - Gone: the pad's corners, its bending
+    icons and the circling it decided.
+- **The commander, as built** (owner's
+  call to bundle with the orbit arrows):
+  - A crown portrait in the turn order.
+    Its turns come every 100 ticks (a
+    speed of 100), the first at 100;
+    a tie with a unit goes to the
+    commander.
+  - On its turn, one order: restore an
+    ally (a quarter of its outermost
+    standing layer's points, up to
+    whole), ward an ally (the next 3
+    hits it takes do nothing; once per
+    unit a battle), or pass.
+  - The ward is a count on the unit, not
+    a real layer: a warded hit is soaked
+    whole, and the row shows "Ward 3/3".
+  - Foes have none yet; the plain order
+    (for runs played plainly) restores
+    the most worn ally that can be.
+  - The sample stages keep no commander,
+    so their timeline stays; real fights
+    (Fight, and the picker's) have one,
+    and so do its two screens.
 - **A wedged plan stops short** (from
   0.0.13): when sliding can't find a
   clear spot, the plan stops at the
@@ -858,11 +914,16 @@ Free movement, as in `brainstorm-2.md`
   (B4's first item), a walk to a unit,
   circling arrows, turn starts in
   words.
-- **Circling and steps, fixed** (0.0.14,
-  in progress): from 0.0.13, the circling
+- **Circling and steps, fixed** (done,
+  #28, 0.0.14): from 0.0.13, the circling
   arrows in fixed corners, a hold that
   lets go, no empty foe steps, a wedged
   plan stopping short.
+- **Orbit arrows and the commander**
+  (0.0.15, in progress): from 0.0.14, a
+  static pad and orbit arrows on the
+  arena; the commander's turn, restore
+  and ward.
 - **Units**, in parts:
   - **Healing and the cleric**
     (done, #24, 0.0.10): heals in the
@@ -870,14 +931,14 @@ Free movement, as in `brainstorm-2.md`
     heal), heal zones and previews, the
     picker.
   - **The archer, golem and ice mage**
-    (0.0.14, in progress, bundled with
+    (done, #28, 0.0.14, bundled with
     the circling and steps fixes), with
     the freeze kind.
   - **The rogue** comes with Reactions
     (its dodge is one, and its jump is
     a new kind of move).
-- **The commander**: its turn and
-  actions.
+- **The commander** (0.0.15, in
+  progress): its turn and actions.
 - **Reactions**: triggers, automatic and
   asked, the one-a-round limit.
 - **B4, usability**: end turns by

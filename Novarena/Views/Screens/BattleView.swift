@@ -151,6 +151,8 @@ private struct Controls: View {
       Button("Fight again") {
         fight.restart()
       }
+    } else if fight.isCommanding {
+      CommandPanel(fight: fight)
     } else if fight.isFoesTurn,
       let foe = fight.actor {
       foeTurn(foe)

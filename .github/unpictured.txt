@@ -52,6 +52,20 @@ NudgePad.swift
   fight.press(way)
   fight.press(nil)
 
+# The commander's orders: restore, ward
+# or pass.
+CommandPanel.swift
+  fight.command(.pass)
+  fight.command(order)
+
+# Pressing and letting go of an orbit
+# arrow on the arena (or its touch being
+# cancelled).
+OrbitArrows.swift
+  held = way
+  pinned = $1 == nil ? nil : fight.rim
+  fight.press($1)
+
 # Touches on the arena, as they move and
 # when they lift.
 ArenaView.swift

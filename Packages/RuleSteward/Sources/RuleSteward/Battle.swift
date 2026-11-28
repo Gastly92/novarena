@@ -23,6 +23,11 @@ public enum Mistake: Error, Equatable {
   /// It has already taken its main action
   /// this turn, or the bonus group's uses.
   case acted
+  /// The commander's turn comes first.
+  case commanding
+  /// It isn't the commander's turn, or
+  /// there's no commander.
+  case notCommanding
 }
 
 /// A battle between the party and its foes,
@@ -42,20 +47,30 @@ public struct Battle: Sendable {
   /// How far the unit on turn is through
   /// it, once it has begun.
   var progress: Progress?
+  /// One side's commander, off the field,
+  /// if it has one.
+  public internal(set) var commander:
+    Commander?
 
   /// A battle between `party` and `foes`
   /// in `arena`, each unit starting at its
   /// spot in `places` (party first), or
   /// where the arena deploys it.
   /// Everyone's first turn comes after one
-  /// usual wait.
+  /// usual wait. A `commander` side gets
+  /// one, its first turn after a usual
+  /// wait too.
   public init(
     party: [Unit],
     foes: [Unit],
     arena: Arena = .open,
-    places: [Point]? = nil
+    places: [Point]? = nil,
+    commander side: Side? = nil
   ) {
     self.arena = arena
+    commander = side.map {
+      Commander(side: $0)
+    }
     let spots = places ?? arena.deploy(
       party: party.count, foes: foes.count
     )
@@ -253,10 +268,17 @@ public struct Battle: Sendable {
       by: units[actor].unit,
       intensity: Rules.intensity(at: tick)
     )
+    let warded = units[target].wards > 0
     let losses = units[target].take(
       amount, from: ability
     )
     let struck = units[target]
+    guard !warded else {
+      log.append(.ward(
+        name, left: struck.wards
+      ))
+      return
+    }
     for (layer, lost) in losses {
       log.append(.layer(
         name,

@@ -286,11 +286,15 @@ public extension Battle {
 extension Battle {
   /// The unit on turn as its turn has it:
   /// refilled at the start, if the turn
-  /// hasn't begun yet.
+  /// hasn't begun yet. Units wait while
+  /// the commander is up.
   func ready()
     throws(Mistake) -> BattleUnit {
     guard let actor = next else {
       throw .over
+    }
+    guard !commanderUp else {
+      throw .commanding
     }
     var unit = units[actor]
     if progress == nil {

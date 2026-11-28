@@ -2,8 +2,8 @@
 import RuleSteward
 import XCTest
 
-/// Foes' turns a step at a time, and how
-/// the arrows bend at an edge.
+/// Foes' turns a step at a time, and the
+/// orbit arrows at an edge.
 @MainActor
 final class FightStepsTests: XCTestCase {
   /// After Gerald waits, Ashka's turn plays
@@ -56,62 +56,42 @@ final class FightStepsTests: XCTestCase {
   }
 
   /// At the east edge of Gerald's range,
-  /// up and down slide along the curve
-  /// (bending west), east can't go, west
-  /// goes straight; elsewhere on the edge
-  /// arrows bend east, north or south.
-  func testBends() {
+  /// the orbit arrows follow it: the rim
+  /// is his range round him, clockwise
+  /// sits below the planned spot and goes
+  /// down, the other way above. Away from
+  /// an edge or a unit, on a foe's turn,
+  /// or once it's over, there's no rim.
+  func testOrbits() throws {
     let edge = Fight(stage: .edge)
-    XCTAssertEqual(
-      edge.ghost, Point(x: 600, y: 200)
-    )
-    XCTAssertEqual(
-      edge.bend(.north), .toward(.west)
-    )
-    XCTAssertEqual(
-      edge.bend(.south), .toward(.west)
-    )
-    XCTAssertEqual(edge.bend(.east), .stuck)
-    XCTAssertEqual(
-      edge.bend(.west), .straight
-    )
-    let low = Fight()
-    low.place(Point(x: 0, y: 700))
-    XCTAssertEqual(
-      low.bend(.south), .toward(.east)
-    )
-    XCTAssertEqual(
-      low.bend(.west), .toward(.north)
-    )
-    let high = Fight()
-    high.place(Point(x: 1000, y: 0))
-    XCTAssertEqual(
-      high.bend(.east), .toward(.south)
-    )
-    let over = Fight(stage: .end)
-    XCTAssertEqual(over.bend(.north), .stuck)
-    let foes = Fight(stage: .foes)
-    XCTAssertEqual(foes.bend(.north), .stuck)
+    let gerald = edge.battle.units[0]
+    let rim = try XCTUnwrap(edge.rim)
+    XCTAssertEqual(rim.center, gerald.place)
+    XCTAssertEqual(rim.radius, edge.moveLeft)
+    let below = rim.arrow(.clockwise)
+    let above = rim.arrow(.counterclockwise)
+    XCTAssertGreaterThan(below.y, 200)
+    XCTAssertLessThan(above.y, 200)
+    edge.nudge(.clockwise, by: 1)
+    let moved = try XCTUnwrap(edge.ghost)
+    XCTAssertGreaterThan(moved.y, 200)
+    let start = Fight()
+    XCTAssertNil(start.rim)
+    XCTAssertNil(Fight(stage: .foes).rim)
+    XCTAssertNil(Fight(stage: .end).rim)
   }
 
-  /// Arrows' icons: chevrons, or turning
-  /// arrows that bend.
+  /// Arrows' icons: chevrons, and turning
+  /// arrows for circling.
   func testSymbols() {
     XCTAssertEqual(
-      Bend.straight.symbol(.north),
-      "chevron.up"
-    )
-    XCTAssertEqual(
-      Bend.stuck.symbol(.west),
-      "chevron.left"
-    )
-    XCTAssertEqual(
-      Bend.toward(.west).symbol(.south),
-      "arrow.turn.down.left"
-    )
-    XCTAssertEqual(
-      Bend.toward(.south).symbol(.east),
-      "arrow.turn.right.down"
+      Nudge.allCases.map(\.symbol),
+      [
+        "chevron.up", "chevron.left",
+        "chevron.right", "chevron.down",
+        "arrow.clockwise",
+        "arrow.counterclockwise",
+      ]
     )
   }
 }

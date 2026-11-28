@@ -54,6 +54,13 @@ final class Fight {
     /// to the east edge of his range: up
     /// and down slide along it.
     case edge
+    /// With the party's commander: its
+    /// second turn, Oswin worn.
+    case commanding
+    /// With the commander: Gerald's first
+    /// turn ended, then Gerald warded, and
+    /// Ashka's turn begun.
+    case warded
     /// Gerald's first turn, Oswin tapped
     /// with the move open: a walk planned
     /// to touch him, arrows circling round
@@ -78,6 +85,8 @@ final class Fight {
   private let party: [Unit]
   /// Who they face.
   private let foes: [Unit]
+  /// Its commander's side, if any.
+  private let leader: Side?
   /// The skill picked for the unit on
   /// turn, waiting for a target.
   private(set) var chosen: Int?
@@ -119,6 +128,7 @@ final class Fight {
     self.init(
       party: stage.party,
       foes: stage.foes,
+      commander: stage.commands,
       pause: pause
     )
     play(stage.turns)
@@ -130,12 +140,18 @@ final class Fight {
   init(
     party: [Unit],
     foes: [Unit],
+    commander: Bool = true,
     pause: @escaping Pause = Fight.sleep
   ) {
     wait = pause
     self.party = party
     self.foes = foes
-    battle = Battle(party: party, foes: foes)
+    leader = commander ? .party : nil
+    battle = Battle(
+      party: party,
+      foes: foes,
+      commander: leader
+    )
   }
 
   /// Plays `turns` turns with the plain
@@ -218,7 +234,7 @@ final class Fight {
   /// (to the edge of its range); its own
   /// spot clears the plan.
   func place(_ point: Point) {
-    guard !isFoesTurn else {
+    guard !isFoesTurn, !isCommanding else {
       return
     }
     if point == actor?.place {
@@ -282,8 +298,7 @@ final class Fight {
         // A circling arrow with nothing to
         // circle lets go, so its next press
         // starts again.
-        guard !way.circles
-          || circling(at: way.corner) != nil
+        guard !way.circles || rim != nil
         else {
           self.way = nil
           return
@@ -342,12 +357,27 @@ final class Fight {
 
   /// The same battle, from the start.
   func restart() {
-    battle = Battle(party: party, foes: foes)
+    battle = Battle(
+      party: party,
+      foes: foes,
+      commander: leader
+    )
     chosen = nil
     ghost = nil
     panel = .move
     steps = []
     shown = []
+  }
+
+  /// The party's commander gives `order`;
+  /// then, if a foe is up, its turn
+  /// begins.
+  func command(_ order: Order) {
+    try? battle.command(order)
+    shown = []
+    if isFoesTurn {
+      advance()
+    }
   }
 
   /// Takes `step` in the battle. A step

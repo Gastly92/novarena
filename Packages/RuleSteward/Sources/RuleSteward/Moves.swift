@@ -81,19 +81,77 @@ public extension Battle {
     clockwise: Bool,
     by step: Int
   ) -> Point? {
-    let center = other.place
+    guard let mover = try? ready(),
+      let ahead = Self.ahead(
+        of: spot,
+        round: other.place,
+        clockwise: clockwise,
+        by: step
+      )
+    else { return nil }
+    let apart = mover.unit.size.radius
+      + other.unit.size.radius
+    let clear = ahead.away(
+      from: other.place, by: apart
+    )
+    return clear.flatMap {
+      reachable(toward: $0)
+    }
+  }
+
+  /// Whether `spot` is on the edge of the
+  /// unit on turn's range (within 2 cm).
+  func atEdge(_ spot: Point) -> Bool {
+    moveLeft > 0
+      && cost(to: spot) + 2 >= moveLeft
+  }
+
+  /// The spot `step` centimetres round the
+  /// edge of the unit on turn's range from
+  /// `spot`, clockwise on screen (or not),
+  /// kept on the edge; none if it can't
+  /// go.
+  func orbit(
+    from spot: Point,
+    clockwise: Bool,
+    by step: Int
+  ) -> Point? {
+    guard let mover = try? ready(),
+      let ahead = Self.ahead(
+        of: spot,
+        round: mover.place,
+        clockwise: clockwise,
+        by: step
+      )
+    else { return nil }
+    return reachable(toward: ahead)
+  }
+}
+
+extension Battle {
+  /// `step` centimetres on from `spot`
+  /// along the circle round `center`
+  /// (clockwise on screen, or not), rounded
+  /// outward so it always moves; none from
+  /// `center` itself.
+  static func ahead(
+    of spot: Point,
+    round center: Point,
+    clockwise: Bool,
+    by step: Int
+  ) -> Point? {
     let across = spot.x - center.x
     let down = spot.y - center.y
     let length = Geometry.rootUp(
       center.squared(to: spot)
     )
-    guard length > 0,
-      let mover = try? ready()
-    else { return nil }
+    guard length > 0 else {
+      return nil
+    }
     let turn = clockwise
       ? (x: -down, y: across)
       : (x: down, y: -across)
-    let ahead = Point(
+    return Point(
       x: spot.x + Geometry.outward(
         turn.x * step, over: length
       ),
@@ -101,13 +159,5 @@ public extension Battle {
         turn.y * step, over: length
       )
     )
-    let apart = mover.unit.size.radius
-      + other.unit.size.radius
-    let clear = ahead.away(
-      from: center, by: apart
-    )
-    return clear.flatMap {
-      reachable(toward: $0)
-    }
   }
 }

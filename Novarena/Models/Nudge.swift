@@ -10,8 +10,9 @@ enum Nudge: CaseIterable {
   case east
   /// Down the screen.
   case south
-  /// Round the unit the planned spot
-  /// touches, clockwise on screen.
+  /// Round what the planned spot rests on
+  /// (a unit, or the edge of the range),
+  /// clockwise on screen.
   case clockwise
   /// The other way round.
   case counterclockwise
@@ -29,21 +30,6 @@ enum Nudge: CaseIterable {
     case .south:
       (0, 1)
     case .clockwise, .counterclockwise:
-      (0, 0)
-    }
-  }
-
-  /// The pad's corner a circling arrow
-  /// sits in (across, down): clockwise top
-  /// right, the other way top left; the
-  /// middle of the pad for the others.
-  var corner: (x: Int, y: Int) {
-    switch self {
-    case .clockwise:
-      (1, -1)
-    case .counterclockwise:
-      (-1, -1)
-    default:
       (0, 0)
     }
   }
@@ -69,69 +55,22 @@ enum Nudge: CaseIterable {
   ) -> Duration {
     .milliseconds(tick == 0 ? 400 : 30)
   }
-}
 
-/// How a nudge would go: straight on,
-/// bending toward one side (sliding along
-/// the edge of the range or round a unit),
-/// or nowhere.
-enum Bend: Equatable {
-  case straight
-  case toward(Nudge)
-  case stuck
-
-  /// Bends a nudge `way` that moved
-  /// `across` centimetres sideways (right
-  /// or down positive) would go.
-  init(_ way: Nudge, across: Int) {
-    guard across != 0 else {
-      self = .straight
-      return
-    }
-    let upright = way.offset.x == 0
-    switch (upright, across < 0) {
-    case (true, true):
-      self = .toward(.west)
-    case (true, false):
-      self = .toward(.east)
-    case (false, true):
-      self = .toward(.north)
-    case (false, false):
-      self = .toward(.south)
-    }
-  }
-
-  /// The icon for an arrow nudging `way`:
-  /// a chevron, or a turning arrow when it
-  /// bends.
-  func symbol(_ way: Nudge) -> String {
-    let name = way.word
-    guard !way.circles else {
-      return "arrow.\(name)"
-    }
-    guard case let .toward(side) = self
-    else { return "chevron.\(name)" }
-    return "arrow.turn.\(name).\(side.word)"
-  }
-}
-
-extension Nudge {
-  /// Its direction's name, as SF Symbols
-  /// spell it.
-  var word: String {
+  /// Its arrow's icon.
+  var symbol: String {
     switch self {
     case .north:
-      "up"
+      "chevron.up"
     case .west:
-      "left"
+      "chevron.left"
     case .east:
-      "right"
+      "chevron.right"
     case .south:
-      "down"
+      "chevron.down"
     case .clockwise:
-      "clockwise"
+      "arrow.clockwise"
     case .counterclockwise:
-      "counterclockwise"
+      "arrow.counterclockwise"
     }
   }
 }

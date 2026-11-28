@@ -35,6 +35,54 @@ final class BattleTests: XCTestCase {
     XCTAssertTrue(isTurn(of: "Oswin", app))
   }
 
+  /// On the commander's turn, restore
+  /// Oswin: the commander's turn is over.
+  @MainActor
+  func testCommands() {
+    let app = App.start(
+      screen: .battleCommanding
+    )
+    let title = app.text(
+      "Your commander's turn"
+    )
+    XCTAssertTrue(title.appears())
+    app.buttons["restore-1"].tap()
+    XCTAssertTrue(
+      title.waitForNonExistence(timeout: 5)
+    )
+  }
+
+  /// The commander can pass instead.
+  @MainActor
+  func testPasses() {
+    let app = App.start(
+      screen: .battleCommanding
+    )
+    app.buttons["Pass"].tap()
+    let title = app.text(
+      "Your commander's turn"
+    )
+    XCTAssertTrue(
+      title.waitForNonExistence(timeout: 5)
+    )
+  }
+
+  /// Touching Oswin, hold the clockwise
+  /// orbit arrow on the arena: Gerald's
+  /// planned spot circles round him, so
+  /// the move changes.
+  @MainActor
+  func testOrbits() {
+    let app = App.start(
+      screen: .battleCircling
+    )
+    let status = app.text("move-status")
+    let planned = status.label
+    app.buttons["orbit-clockwise"]
+      .press(forDuration: 0.6)
+    XCTAssertNotEqual(status.label, planned)
+  }
+
   /// Drag from Gerald to plan a move there.
   @MainActor
   func testDragsAMove() {
