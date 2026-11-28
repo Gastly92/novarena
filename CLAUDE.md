@@ -79,6 +79,22 @@ uploading) runs in CI.
   quicker loops, a Linux Swift toolchain
   from swift.org runs `swift test` in the
   package directly.
+- Balance: `BalanceTests` plays every
+  team of one to three of `Unit.all`
+  against every other, both ways round,
+  with plain choices and no commander,
+  and fails unless each unit wins 33-66%
+  one on one and 40-60% in teams. To see
+  the numbers while tuning, run
+  `.github/scripts/simulate.sh`
+  (`Simulator`, `SimulateTests`):
+  settings `SIMULATE_SIZES`,
+  `SIMULATE_UNITS`, `SIMULATE_COMMANDER`
+  and `SIMULATE_MATRIX` (who beats whom
+  one on one) are in the script. Teams of
+  three take a couple of minutes. Record
+  the numbers a change gave in
+  `ITERATION.md`.
 - `SampleBattleTests` pins the whole log
   of the four sample units' battle. A rule
   change that changes that fight changes

@@ -883,6 +883,15 @@ starts.
     counter range Isolde won 62%. Now
     every unit wins 37-62% one on one
     and 42-57% in teams.
+  - Measured with the new simulator
+    (`.github/scripts/simulate.sh`): with
+    no commander the party wins 47-50%;
+    with the party's commander, 67-73%
+    (73% one on one, 70% in pairs, 67%
+    in trios). Unit balance is checked
+    without it, so the commander is the
+    player's edge; boss foes' commanders
+    would even it.
   - Later: the rogue's jump (a new kind
     of move), and a setting per
     reaction (ask, always or never)
