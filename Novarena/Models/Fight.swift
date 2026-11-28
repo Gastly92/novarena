@@ -215,7 +215,7 @@ final class Fight {
           return
         }
         nudge(way, by: Nudge.step(tick))
-        await wait(Nudge.delay(after: tick))
+        await wait(way.delay(after: tick))
         tick += 1
       }
     }

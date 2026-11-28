@@ -293,6 +293,16 @@ starts.
     unit moves changes when its next
     turn comes.
 
+- **0.0.16, reactions, the rogue, a
+  circling pad and planned skills**:
+  - Circling round a unit looks much
+    better. Starting it, either way,
+    stuttered: a pause before the smooth
+    movement picked up. (A held arrow
+    waited 400 ms after its first step,
+    so a tap moves one step; the
+    circling arrows now wait 150 ms.)
+
 ## Decisions
 
 - **The turn order is a row of
