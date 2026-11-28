@@ -665,6 +665,40 @@ starts.
   top left, so a held one stays under
   the finger; a hold with nothing to
   circle lets go by itself.
+- **The archer, golem and ice mage, as
+  built** (Units, part two, owner's call
+  to bundle with the 0.0.13 fixes):
+  - Tamsin, a longbow archer: leather (a
+    new material: slash 75%, burn 125%,
+    mended by half) over her body; a
+    master of the bow (a new discipline)
+    shooting 7 m, a knife up close; quick
+    on her feet.
+  - Gorrum, a stone golem: large and
+    slow, a 340-point stone shell over a
+    stone core (a new material: pierce,
+    slash, burn and shock 50%, freeze
+    75%, crush 150%; can't be mended);
+    slams (heavy), or hurls a rock for
+    stamina.
+  - Isolde, an ice mage: robes over her
+    body, a master of frost (a new
+    discipline); a free frost bolt, a
+    heavy ice lance for mana, and one
+    cantrip a turn on top, an ice shard
+    or a chill touch, sharing one bonus.
+    Freeze, a new kind: flesh 125%, a
+    demon's ember 150%, energy 50%,
+    stone 75%. (At 200% on ember, Ashka
+    fell behind.)
+  - Kestrel-9 back a little: plating
+    130 (was 140), Piston Fist 60 (65);
+    it won too much against the new
+    three. Every unit now wins 42-57%
+    one on one, in pairs and in trios.
+  - The balance runs (every team of up
+    to three of eight units) take about
+    three minutes in the rules tests.
 - **A wedged plan stops short** (from
   0.0.13): when sliding can't find a
   clear spot, the plan stops at the
@@ -835,8 +869,10 @@ Free movement, as in `brainstorm-2.md`
     rules, Maren (mace, Smite, a bonus
     heal), heal zones and previews, the
     picker.
-  - **The archer, golem and ice mage**,
-    with the freeze kind.
+  - **The archer, golem and ice mage**
+    (0.0.14, in progress, bundled with
+    the circling and steps fixes), with
+    the freeze kind.
   - **The rogue** comes with Reactions
     (its dodge is one, and its jump is
     a new kind of move).
