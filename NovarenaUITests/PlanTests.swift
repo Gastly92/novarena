@@ -5,19 +5,16 @@ import XCTest
 /// cancelled or unpicked; foes walked
 /// toward.
 final class PlanTests: XCTestCase {
-  /// Isolde beside Wren: tap Wren's row
-  /// (from the short actions panel, so the
-  /// rows show) to plan Chill Touch, then
-  /// back away from the skills: the move
-  /// changes, the skill still planned.
+  /// Isolde beside Wren: tap Wren in the
+  /// arena (at 730, 380 cm) to plan Chill
+  /// Touch, then back away: off once at
+  /// the edge, the skill still planned.
   @MainActor
   func testBacksAway() {
     let app = App.start(
       screen: .battleDodging
     )
-    app.buttons["Actions"].tap()
-    app.buttons["data-unit-3"].tap()
-    app.buttons["Skills"].tap()
+    tapArena(app, x: 0.6083, y: 0.475)
     let back = app.buttons["back-away"]
     XCTAssertTrue(back.isEnabled)
     back.tap()
@@ -46,9 +43,10 @@ final class PlanTests: XCTestCase {
   }
 
   /// Tapping the picked skill again unpicks
-  /// it, so a tap on Ashka (at 717, 333
-  /// cm) with the move open picks her to
-  /// walk toward, not to aim at.
+  /// it, so a tap on Ashka (at 950, 200
+  /// cm, where she starts) with the move
+  /// open picks her to walk toward, not
+  /// to aim at.
   @MainActor
   func testUnpicks() {
     let app = App.start(
@@ -56,14 +54,7 @@ final class PlanTests: XCTestCase {
     )
     app.buttons["data-ability-0"].tap()
     app.buttons["Move"].tap()
-    let ashka = CGVector(
-      dx: 0.5975, dy: 0.416
-    )
-    let arena = app.buttons["arena"]
-    let spot = arena.coordinate(
-      withNormalizedOffset: ashka
-    )
-    spot.tap()
+    tapArena(app, x: 0.7917, y: 0.25)
     let picked = app.text("data-approached")
     XCTAssertTrue(picked.appears())
   }
@@ -81,5 +72,22 @@ final class PlanTests: XCTestCase {
     XCTAssertTrue(
       use.waitForNonExistence(timeout: 5)
     )
+  }
+
+  /// Taps the arena there, as fractions of
+  /// its width and height.
+  @MainActor
+  private func tapArena(
+    _ app: XCUIApplication,
+    x: Double,
+    y: Double
+  ) {
+    let arena = app.buttons["arena"]
+    let spot = arena.coordinate(
+      withNormalizedOffset: CGVector(
+        dx: x, dy: y
+      )
+    )
+    spot.tap()
   }
 }
