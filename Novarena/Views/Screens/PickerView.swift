@@ -8,16 +8,26 @@ import SwiftUI
 /// carry a `data-` identifier.
 struct PickerView: View {
   @State private var lineup: Lineup
+  /// Where settings are kept.
+  let defaults: UserDefaults
 
-  init(lineup: Lineup = Lineup()) {
+  init(
+    defaults: UserDefaults,
+    lineup: Lineup = Lineup()
+  ) {
     _lineup = State(initialValue: lineup)
+    self.defaults = defaults
   }
 
   var body: some View {
     List {
       Section {
         NavigationLink("Fight") {
-          BattleView(fight: lineup.fight())
+          BattleView(
+            fight: lineup.fight(
+              Settings(defaults)
+            )
+          )
         }
         .disabled(!lineup.isReady)
         .testID("start-fight")

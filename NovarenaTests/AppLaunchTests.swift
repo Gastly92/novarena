@@ -19,4 +19,27 @@ final class AppLaunchTests: XCTestCase {
     ])
     XCTAssertEqual(unknown.screen, .home)
   }
+
+  /// UI tests get an emptied settings
+  /// suite; the app, the phone's.
+  func testDefaults() {
+    let normal = AppLaunch(arguments: [])
+    XCTAssertEqual(
+      normal.defaults, .standard
+    )
+    let first = AppLaunch(arguments: [
+      "-uiTesting",
+    ])
+    first.defaults.set(
+      false, forKey: Settings.endsKey
+    )
+    let next = AppLaunch(arguments: [
+      "-uiTesting",
+    ])
+    XCTAssertNil(
+      next.defaults.object(
+        forKey: Settings.endsKey
+      )
+    )
+  }
 }

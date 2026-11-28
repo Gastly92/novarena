@@ -26,11 +26,13 @@ extension Fight {
   /// The party's unit who could counter
   /// the foe's next step, a spell, and
   /// what it is: the party is asked
-  /// before it's cast. None otherwise.
+  /// before it's cast, if the settings
+  /// say to ask. None otherwise.
   var question: (
     reactor: BattleUnit, spell: String
   )? {
-    guard isFoesTurn, let actor,
+    guard settings.counters == .ask,
+      isFoesTurn, let actor,
       case let .use(action) = steps.first,
       let id = battle.counter(
         action.ability, on: action.target
@@ -55,10 +57,18 @@ extension Fight {
   /// nothing, goes with the step after
   /// (the next turn's start), so each step
   /// shows something. Nothing on the
-  /// party's turn. With `reacting` off,
-  /// the party lets a spell it could
-  /// counter through.
-  func advance(reacting: Bool = true) {
+  /// party's turn. The party counters a
+  /// spell it can unless the settings say
+  /// never.
+  func advance() {
+    advance(
+      reacting: settings.counters != .never
+    )
+  }
+
+  /// The same, the party countering a
+  /// spell it can only if `reacting`.
+  func advance(reacting: Bool) {
     if steps.first == .end {
       take(steps.removeFirst())
     }
@@ -91,10 +101,21 @@ extension Fight {
   }
 
   /// Plays the foes' turns through, to the
-  /// party's turn (or the end).
+  /// party's turn (or the end), stopping
+  /// to ask about a counterspell.
   func skip() {
-    while isFoesTurn {
+    while isFoesTurn, question == nil {
       advance()
+    }
+  }
+
+  /// The party's answer to `question`:
+  /// counter the spell, or not. Foes'
+  /// turns go on as the settings say.
+  func answer(_ counters: Bool) {
+    advance(reacting: counters)
+    if !settings.stepsFoes {
+      skip()
     }
   }
 

@@ -405,16 +405,27 @@ uploading) runs in CI.
   than ignore it; no `periphery:ignore`
   comments. For a real false positive,
   restructure the code or ask the user.
-- No saved data, notifications or
-  settings yet. When they come, start
-  from the template's versions
+- Settings (`Support/Settings.swift`,
+  `SettingsView`) are `@AppStorage` in
+  the `UserDefaults` `AppLaunch` passes
+  in: the phone's, or an emptied suite in
+  UI tests (snapshots get one a screen,
+  `TestScreens`). A fight reads them as
+  it starts; the sample stages play
+  `Settings.manual` (turns end by hand),
+  so their snapshots don't move with the
+  defaults. The privacy manifest gives
+  `CA92.1` (`PrivacyInfoTests`), and the
+  privacy page says settings stay on the
+  phone.
+- No saved data or notifications yet.
+  When they come, start from the
+  template's versions
   (`gastly92/ios-template`): SwiftData
   with a frozen, versioned schema and
   migration tests (saved data must never
   be lost); a `Notifier` passed in at
-  launch; `@AppStorage` with test-owned
-  `UserDefaults` (and the privacy
-  manifest's `CA92.1` reason).
+  launch.
 - The Xcode project is generated from
   `project.yml` by XcodeGen. Never add a
   `.xcodeproj`; put new source files under

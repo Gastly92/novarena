@@ -852,6 +852,25 @@ starts.
     so the next turn comes sooner) and
     keeping away (the longest reach) are
     each one tap.
+- **Settings, as built** (B4):
+  - A settings screen from home, kept
+    on the phone (`@AppStorage`; the
+    privacy manifest's `CA92.1`, the
+    privacy page). A fight reads them as
+    it starts.
+  - End turns by themselves (on): once
+    the unit on turn has no skill it can
+    use and no movement left, after a
+    skill is used or a move committed.
+  - Foes' turns a step at a time (on):
+    off, ending a turn plays the foes
+    straight through to the party's.
+  - Counterspells: ask (the default),
+    always or never. Asking, "Skip to
+    your turn" stops at the question.
+  - The screens for tests keep turns
+    ending by hand, so they stay as
+    they were.
 - **Reactions, as built** (with the
   rogue, Units part three):
   - At most one a round per unit, and
@@ -1075,23 +1094,24 @@ Free movement, as in `brainstorm-2.md`
     (done, #28, 0.0.14, bundled with
     the circling and steps fixes), with
     the freeze kind.
-  - **The rogue** (0.0.16, in progress,
+  - **The rogue** (done, #31, 0.0.16,
     with Reactions): Wren and her dodge;
     her jump (a new kind of move) comes
     later.
 - **The commander** (done, #30,
   0.0.15): its turn and actions.
-- **Reactions** (0.0.16, in progress):
+- **Reactions** (done, #31, 0.0.16):
   automatic and asked, the one-a-round
   limit, the dodge and the counterspell;
   bundled with a circling pad in place
   of the orbit arrows and skills planned
   like moves (owner's call).
-- **B4, usability**: end turns by
-  themselves, the settings screen (with
-  playing foe turns through, once
-  animated). Planning the approach to a
-  far foe came with "Aiming and
+- **B4, usability** (0.0.17, in
+  progress): turns that end by
+  themselves, and a settings screen with
+  them, playing foes' turns through, and
+  counterspells. Planning the approach
+  to a far foe came with "Aiming and
   moving".
 - **AI, basic and tactical**: the AI
   levels' interface, and the tactical

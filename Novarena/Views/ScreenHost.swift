@@ -6,16 +6,24 @@ import SwiftUI
 /// snapshot tests open directly.
 struct ScreenHost: View {
   let screen: ScreenID
+  /// Where settings are kept.
+  let defaults: UserDefaults
 
-  init(screen: ScreenID) {
+  init(
+    screen: ScreenID,
+    defaults: UserDefaults
+  ) {
     self.screen = screen
+    self.defaults = defaults
   }
 
   var body: some View {
     NavigationStack {
       switch screen {
       case .home:
-        HomeView()
+        HomeView(defaults: defaults)
+      case .settings:
+        SettingsView(defaults: defaults)
       case .battleInfo:
         BattleInfoView(battle: middle)
       case .battleFallen:
@@ -24,7 +32,7 @@ struct ScreenHost: View {
           showsFallen: true
         )
       case .picker:
-        PickerView()
+        PickerView(defaults: defaults)
       default:
         if let stage = Fight.Stage(
           screen: screen

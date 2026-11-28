@@ -71,12 +71,16 @@ struct Lineup: Equatable {
     !party.isEmpty && !foes.isEmpty
   }
 
-  /// A fight between the picks.
+  /// A fight between the picks, played as
+  /// `settings` say.
   @MainActor
-  func fight() -> Fight {
+  func fight(
+    _ settings: Settings = Settings()
+  ) -> Fight {
     Fight(
       party: party.map { Unit.all[$0] },
-      foes: foes.map { Unit.all[$0] }
+      foes: foes.map { Unit.all[$0] },
+      settings: settings
     )
   }
 }

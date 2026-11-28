@@ -26,6 +26,8 @@ final class Fight {
   /// The battle as it began, to fight
   /// again.
   private let start: Battle
+  /// How the player likes it to play.
+  let settings: Settings
   /// The skill picked for the unit on
   /// turn, waiting for a target.
   private(set) var chosen: Int?
@@ -68,7 +70,11 @@ final class Fight {
     stage: Stage = .start,
     pause: @escaping Pause = Fight.sleep
   ) {
-    self.init(stage.battle, pause: pause)
+    self.init(
+      stage.battle,
+      settings: .manual,
+      pause: pause
+    )
     play(stage.turns)
     stage.setUp(self)
   }
@@ -78,6 +84,7 @@ final class Fight {
   convenience init(
     party: [Unit],
     foes: [Unit],
+    settings: Settings = Settings(),
     pause: @escaping Pause = Fight.sleep
   ) {
     self.init(
@@ -86,18 +93,22 @@ final class Fight {
         foes: foes,
         commander: .party
       ),
+      settings: settings,
       pause: pause
     )
   }
 
-  /// `battle`, as it stands.
+  /// `battle`, as it stands, played as
+  /// `settings` say.
   init(
     _ battle: Battle,
+    settings: Settings,
     pause: @escaping Pause
   ) {
     wait = pause
     start = battle
     self.battle = battle
+    self.settings = settings
   }
 
   /// Plays `turns` turns with the plain
@@ -111,63 +122,6 @@ final class Fight {
   /// Waits for a while, really.
   nonisolated static let sleep: Pause = {
     _ = try? await Task.sleep(for: $0)
-  }
-
-  /// The unit whose turn it is.
-  var actor: BattleUnit? {
-    battle.next.map { battle.units[$0] }
-  }
-
-  /// Everyone up, in turn order.
-  var queue: [BattleUnit] {
-    battle.queue.map { battle.units[$0] }
-  }
-
-  /// One side's units, in list order.
-  func units(_ side: Side) -> [BattleUnit] {
-    battle.units.filter { $0.side == side }
-  }
-
-  /// One side's units still up.
-  func standing(
-    _ side: Side
-  ) -> [BattleUnit] {
-    units(side).filter(\.isUp)
-  }
-
-  /// Everyone knocked out, party first.
-  var fallen: [BattleUnit] {
-    battle.units.filter { !$0.isUp }
-  }
-
-  /// The latest log lines, newest first.
-  var latest: [String] {
-    battle.log.suffix(12).reversed().map {
-      $0.description.trimmingCharacters(
-        in: .whitespaces
-      )
-    }
-  }
-
-  /// Who won, once someone has.
-  var outcome: String? {
-    battle.winner.map {
-      $0 == .party
-        ? String(localized: "The party wins")
-        : String(localized: "The foes win")
-    }
-  }
-
-  /// What the planned move would cost, in
-  /// centimetres, if one is planned.
-  var planned: Int? {
-    ghost.map { battle.cost(to: $0) }
-  }
-
-  /// What's left of the unit on turn's
-  /// movement, before the planned move.
-  var moveLeft: Int {
-    battle.moveLeft
   }
 
   /// Picks a skill for the unit on turn;
@@ -273,8 +227,15 @@ final class Fight {
   }
 
   /// Walks the planned move. It can't be
-  /// undone after.
+  /// undone after. The turn ends if that
+  /// leaves nothing to do (`endIfDone`).
   func commit() {
+    walk()
+    endIfDone()
+  }
+
+  /// Walks the planned move.
+  private func walk() {
     if let ghost {
       try? battle.move(to: ghost)
     }
@@ -297,24 +258,24 @@ final class Fight {
     aimed = nil
   }
 
-  /// Whether the planned skill reaches its
-  /// target from the planned spot.
-  var canUse: Bool {
-    aimed.map { inReach($0.target) }
-      ?? false
+  /// Carries out the plan (`carryOut()`);
+  /// then the turn ends if nothing's left
+  /// to do (`endIfDone`).
+  func use() {
+    carryOut()
+    endIfDone()
   }
 
-  /// Carries out the plan: walks the
-  /// planned move, then uses the planned
-  /// skill. The skills stay open while one
-  /// can still be used (a bonus), else the
-  /// actions open. Nothing happens if it
-  /// can't reach.
-  func use() {
+  /// Walks the planned move, then uses the
+  /// planned skill. The skills stay open
+  /// while one can still be used (a bonus),
+  /// else the actions open. Nothing happens
+  /// if it can't reach.
+  private func carryOut() {
     guard let aimed, canUse else {
       return
     }
-    commit()
+    walk()
     try? battle.use(
       aimed.ability, on: aimed.target
     )
@@ -329,16 +290,14 @@ final class Fight {
   /// skill too, if it reaches) and ends
   /// the turn; then the foes act.
   func endTurn() {
-    use()
+    carryOut()
     try? battle.act(Turn(before: ghost))
     ghost = nil
     aimed = nil
     chosen = nil
     panel = .move
     shown = []
-    if isFoesTurn {
-      advance()
-    }
+    foesGo()
   }
 
   /// The same battle, from the start.
@@ -358,9 +317,7 @@ final class Fight {
   func command(_ order: Order) {
     try? battle.command(order)
     shown = []
-    if isFoesTurn {
-      advance()
-    }
+    foesGo()
   }
 
   /// Takes `step` in the battle. A step

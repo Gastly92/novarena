@@ -231,10 +231,10 @@ private struct Controls: View {
       \(Battle.counterCost) mana?
       """)
     Button("Counter") {
-      fight.advance()
+      fight.answer(true)
     }
     Button("Let it through") {
-      fight.advance(reacting: false)
+      fight.answer(false)
     }
   }
 

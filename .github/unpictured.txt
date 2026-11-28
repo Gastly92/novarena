@@ -22,7 +22,8 @@ BattleView.swift
 # them; a counterspell, or not.
   fight.advance()
   fight.skip()
-  fight.advance(reacting: false)
+  fight.answer(true)
+  fight.answer(false)
 
 # Tap: open or fold the knocked-out
 # section (battleFallen shows it open).

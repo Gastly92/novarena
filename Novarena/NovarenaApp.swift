@@ -20,7 +20,10 @@ struct NovarenaApp: App {
 
   var body: some Scene {
     WindowGroup {
-      ScreenHost(screen: launch.screen)
+      ScreenHost(
+        screen: launch.screen,
+        defaults: launch.defaults
+      )
     }
   }
 }

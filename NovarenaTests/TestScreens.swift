@@ -9,7 +9,11 @@ enum TestScreens {
   static func page(
     _ screen: ScreenID
   ) -> some View {
-    ScreenHost(screen: screen)
-      .transaction { $0.animation = nil }
+    let suite = "snapshot.\(screen.rawValue)"
+    return ScreenHost(
+      screen: screen,
+      defaults: AppLaunch.clean(suite)
+    )
+    .transaction { $0.animation = nil }
   }
 }
