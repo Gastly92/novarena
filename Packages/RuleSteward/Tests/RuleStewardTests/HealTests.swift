@@ -114,8 +114,8 @@ final class HealTests: XCTestCase {
   }
 
   /// A broken body (an exposed unit) can be
-  /// mended, at half: 15 of 30; a broken
-  /// layer over it stays broken.
+  /// mended, as any worn layer: 30 of 30;
+  /// a broken layer over it stays broken.
   func testMendsABrokenBody() throws {
     var battle = battle([
       layer(.flesh), layer(.flesh, "Body"),
@@ -124,7 +124,7 @@ final class HealTests: XCTestCase {
     XCTAssertTrue(battle.units[1].isExposed)
     try battle.act(1, on: 1)
     XCTAssertEqual(
-      battle.units[1].layers, [0, 15]
+      battle.units[1].layers, [0, 30]
     )
     XCTAssertFalse(battle.units[1].isExposed)
   }

@@ -896,15 +896,17 @@ starts.
 - **Mending a broken body** (from
   0.0.16, owner's call): a heal can mend
   an exposed unit's body (its last
-  layer) from 0, at half its usual
-  amount; other broken layers stay
-  broken. Intensity keeps two healers
+  layer) from 0, by its usual amount;
+  other broken layers stay broken. (A
+  half amount was tried and dropped:
+  it changed no battle's outcome, and
+  was one more thing to track.) Intensity keeps two healers
   from holding a unit up forever: every
   battle in the balance runs still ends.
   Maren then beat Tamsin one on one
   (Tamsin 25%), so Tamsin is a little
   quicker, speed 105 (was 100). Every
-  unit wins 37-62% one on one and 42-58%
+  unit wins 37-62% one on one and 41-57%
   in teams.
 - **The commander's pass** (from 0.0.16,
   owner's call): passing waits 90 ticks,

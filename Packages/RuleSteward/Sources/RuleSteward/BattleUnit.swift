@@ -234,11 +234,9 @@ public struct BattleUnit: Sendable,
     guard let index = mendable(ability.kind)
     else { return [] }
     let layer = unit.layers[index]
-    // A broken body comes back at half.
-    let broken = layers[index] == 0 ? 2 : 1
     let scaled = amount
       * layer.matchup(ability.kind).percent
-      / 100 / broken
+      / 100
     let gained = min(
       layer.points - layers[index], scaled
     )
