@@ -128,7 +128,9 @@ final class BattleTests: XCTestCase {
   func testOpensTheFallen() {
     let app = App.start(screen: .battleEnd)
     app.buttons["Knocked out"].tap()
-    app.swipeUp()
+    // The list, slowly (not the arena).
+    app.collectionViews.firstMatch
+      .swipeUp(velocity: .slow)
     let ashka = app.text("data-name-2")
     XCTAssertTrue(ashka.appears())
   }
