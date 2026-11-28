@@ -63,4 +63,23 @@ final class FightPlanTests: XCTestCase {
     let steps = Measure.step.says(100)
     XCTAssertTrue(status.hasPrefix(steps))
   }
+
+  /// Backing away moves the planned spot to
+  /// the edge of the planned skill's reach,
+  /// still planned and in reach; with no
+  /// plan, nothing moves.
+  func testBacksAway() {
+    let fight = Fight(stage: .planned)
+    let plan = fight.aimed
+    let edge = fight.battle.standoff(
+      on: 3, with: 0
+    )
+    fight.backAway()
+    XCTAssertEqual(fight.ghost, edge)
+    XCTAssertEqual(fight.aimed, plan)
+    XCTAssertTrue(fight.canUse)
+    let none = Fight()
+    none.backAway()
+    XCTAssertNil(none.ghost)
+  }
 }

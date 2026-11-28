@@ -101,4 +101,20 @@ extension Fight {
     return across * across + down * down
       <= radius * radius
   }
+
+  /// Moves the planned spot back (or in)
+  /// to the edge of the planned skill's
+  /// reach on its target
+  /// (`Battle.standoff`), as far as the
+  /// unit can go; the skill stays planned.
+  /// Nothing without a plan.
+  func backAway() {
+    guard let aimed,
+      let spot = battle.standoff(
+        on: aimed.target,
+        with: aimed.ability
+      )
+    else { return }
+    place(spot)
+  }
 }

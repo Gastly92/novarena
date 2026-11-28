@@ -108,10 +108,10 @@ extension Fight {
     return battle.touching(from) != nil
   }
 
-  /// Moves the planned spot `from` at
-  /// least 5 cm (or `step`) round the unit
-  /// it touches (`Battle.circle`):
-  /// clockwise on screen, or not.
+  /// Moves the planned spot `from` `step`
+  /// centimetres round the unit it touches
+  /// (`Battle.circle`): clockwise on
+  /// screen, or not.
   func circle(
     _ way: Nudge,
     from: Point,
@@ -120,7 +120,7 @@ extension Fight {
     if let spot = battle.circle(
       from: from,
       clockwise: way == .clockwise,
-      by: max(step, 5)
+      by: step
     ) {
       place(spot)
     }

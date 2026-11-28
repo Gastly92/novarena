@@ -302,6 +302,16 @@ starts.
     waited 400 ms after its first step,
     so a tap moves one step; the
     circling arrows now wait 150 ms.)
+  - Why isn't a circling tap 1 cm, like
+    the pad's? (It was 5 cm from the
+    first design; now 1 cm, a hold
+    speeding up as on the pad.)
+  - With the longbow there was no way to
+    step back from a foe while staying
+    in range. (With the move open,
+    tapping a foe already stood off, but
+    nothing said so; now a "Back away"
+    button sits beside Use.)
 
 ## Decisions
 
@@ -858,6 +868,12 @@ starts.
     backing away if nearer, closing in if
     further, within the range. Tapping
     an ally still walks to touch it.
+  - With a skill planned, "Back away"
+    (beside Use and Cancel) moves the
+    planned spot to the edge of that
+    skill's reach on its target, as far
+    as the unit can go, the skill still
+    planned (from 0.0.16).
   - So keeping close (the smallest move,
     so the next turn comes sooner) and
     keeping away (the longest reach) are
