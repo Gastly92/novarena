@@ -67,7 +67,10 @@ struct LocalizationCheck {
       } catch {
         XCTFail("[\(name)] \(error)")
       }
-      app.terminate()
+      // No app.terminate(): the next
+      // screen's launch closes this one.
+      // A separate terminate now and then
+      // hung on CI, then failed the run.
     }
   }
 
