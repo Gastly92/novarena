@@ -231,6 +231,11 @@ starts.
   - A foe's turn had a needless step:
     Next, then "turn begins", then Next
     again.
+  - A walk to a foe with an ally in the
+    way didn't plan anything unless
+    nudged by hand. (Wedged between the
+    ally and the edge of the range,
+    sliding gave up.)
 
 ## Decisions
 
@@ -660,6 +665,14 @@ starts.
   top left, so a held one stays under
   the finger; a hold with nothing to
   circle lets go by itself.
+- **A wedged plan stops short** (from
+  0.0.13): when sliding can't find a
+  clear spot, the plan stops at the
+  furthest clear one on the straight way
+  there (every 5 cm back), rather than
+  planning nothing. Walks still pass
+  through units; only the stop must be
+  clear.
 - **Every foe step shows something**
   (from 0.0.13): ending the party's turn
   shows the foe's turn beginning at once,
@@ -814,7 +827,8 @@ Free movement, as in `brainstorm-2.md`
 - **Circling and steps, fixed** (0.0.14,
   in progress): from 0.0.13, the circling
   arrows in fixed corners, a hold that
-  lets go, no empty foe steps.
+  lets go, no empty foe steps, a wedged
+  plan stopping short.
 - **Units**, in parts:
   - **Healing and the cleric**
     (done, #24, 0.0.10): heals in the

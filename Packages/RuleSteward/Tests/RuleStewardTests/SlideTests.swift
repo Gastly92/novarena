@@ -73,15 +73,18 @@ final class SlideTests: XCTestCase {
   /// Wedged between the edge of the range
   /// and a unit on it (pushing out of B
   /// leaves the range, pulling back lands
-  /// in B), nothing is planned.
+  /// in B), the plan stops at the furthest
+  /// clear spot on the way: 161 cm along,
+  /// just clear of B.
   func testWedged() {
     let fight = battle(
       foe: Point(x: 640, y: 400)
     )
-    XCTAssertNil(
+    XCTAssertEqual(
       fight.reachable(
         toward: Point(x: 680, y: 380)
-      )
+      ),
+      Point(x: 560, y: 389)
     )
   }
 
