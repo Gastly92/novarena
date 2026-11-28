@@ -60,8 +60,7 @@ final class FightPlanTests: XCTestCase {
     let status = Fight.moveStatus(
       plain, left: 100, planned: nil
     )
-    XCTAssertTrue(
-      status.hasPrefix(Measure.step.says(100))
-    )
+    let steps = Measure.step.says(100)
+    XCTAssertTrue(status.hasPrefix(steps))
   }
 }
