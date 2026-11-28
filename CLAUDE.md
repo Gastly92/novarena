@@ -119,13 +119,11 @@ uploading) runs in CI.
   `.github/actionlint.yaml` if actionlint
   doesn't know it, and re-record the
   snapshots). It generates the project and
-  builds the tests once, and runs them in
+  builds the tests once, then runs them in
   two shards on separate runners in
   parallel (`.github/scripts/run-tests.sh`;
   `main`, and `localization` for
-  `LocalizationTests` alone), which start
-  with the build, boot their simulators
-  and wait for it (`wait-build.sh`), and a
+  `LocalizationTests` alone), and a
   `Coverage` job merges the shards'
   results. A Release device build runs
   alongside. The CI summary shows how long

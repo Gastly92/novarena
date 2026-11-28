@@ -56,17 +56,35 @@ Merging coverage from the two shards'
 separate builds worked, if a later idea
 needs it.
 
-### 1b. Boot while the build runs
+### 1b. Boot during the build (slower)
 
-Trying it in PR #33. The shards start
-with the build job instead of after it:
-each boots its simulator at once, then
-waits for the build (`wait-build.sh`
-polls the run's jobs) and downloads it.
-The boot overlaps the build job's 2
-minutes, on a runner doing nothing else.
-The cost: each shard's runner waits
-about 2 minutes.
+Tried in PR #33 (run 185) and dropped: the
+shards started alongside the build job,
+booted at once, and waited for the build
+(about 2 min) before downloading it.
+
+- 16 min 49 s, against 14 min 15 s.
+- With two more minutes to boot first,
+  the 9 MB download still took 3 min 18 s
+  and 3 min 56 s, and the main shard's
+  tests 9 min instead of 5½.
+
+### What the tries show
+
+On these 3-core runners, the simulator's
+first boot keeps the machine busy for
+something like 6-10 minutes, wherever it
+goes. Moving it around only moves the
+wait. Before trying more, measure the boot
+itself (`xcrun simctl bootstatus` with a
+timer, in a shard that does nothing else),
+and look for ways to make it lighter (a
+fresh device, or the runner image's
+documented tips) rather than hide it.
+The runs also vary a lot: the main shard's
+tests took 5½ min in one run and 9 in
+another. One run is not enough to judge a
+change of a minute or two.
 
 ### 2. Let PR builds use main's cache
 
