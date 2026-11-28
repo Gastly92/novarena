@@ -189,15 +189,6 @@ jobs:
     steps:
     - uses: actions/checkout@v7
 
-    # It boots while the app builds.
-    - name: Boot the simulator
-      # Takes seconds; a hung runner sat
-      # here until the job's limit.
-      timeout-minutes: 5
-      run: >-
-        .github/scripts/run-tests.sh
-        boot
-
     - name: Show toolchain
       run: xcodebuild -version
 
@@ -250,6 +241,17 @@ jobs:
         key: >-
           ${{ steps.key.outputs.prefix }}-${{
           github.sha }}
+
+    # After the build: booting alongside it
+    # slowed every step about fivefold on
+    # the 3-core runner (PR #33).
+    - name: Boot the simulator
+      # Takes seconds; a hung runner sat
+      # here until the job's limit.
+      timeout-minutes: 5
+      run: >-
+        .github/scripts/run-tests.sh
+        boot
 
     - name: Run tests
       # Only the run the label started

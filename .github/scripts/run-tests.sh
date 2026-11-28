@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # CI's tests, in steps on each shard's
 # runner:
-#   run-tests.sh boot
-#     starts the simulator early, so it
-#     boots while the app builds;
 #   run-tests.sh build <shard>
 #     builds the app and tests;
+#   run-tests.sh boot
+#     starts the simulator (after the
+#     build, which it slows down);
 #   run-tests.sh test <shard>
 #     runs one shard of the tests on that
 #     build (main, localization).

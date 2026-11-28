@@ -31,6 +31,17 @@ minutes a run.
   and 5 min 8 s in the other, while the
   build (from main's cache) took 1 min
   28 s.
+- PR #33's first try (run 174) took
+  26 min 51 s: the simulator booted at
+  the start of each shard, alongside the
+  build, and slowed every step on the
+  3-core runner (`xcodebuild -version`
+  1-5 min instead of 0 s, XcodeGen 1½-2½
+  min instead of 7 s, the build 7-9½ min
+  instead of 1½). The second try boots
+  after the build.
+- Merging coverage from the two shards'
+  separate builds works.
 
 - Each shard spends about 3 minutes
   fetching the 9 MB `test-build` artifact:
